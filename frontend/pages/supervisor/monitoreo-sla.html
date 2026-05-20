@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Monitoreo SLA | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel supervisor</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+
+        <div>
+          <strong>Supervisor</strong>
+          <span>Gestión de casos</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-supervisor.html">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="clasificar-casos.html">
+          <i class="fa-solid fa-tags"></i>
+          Clasificar casos
+        </a>
+
+        <a href="asignar-casos.html">
+          <i class="fa-solid fa-user-check"></i>
+          Asignar casos
+        </a>
+
+        <a href="monitoreo-sla.html" class="active">
+          <i class="fa-solid fa-hourglass-half"></i>
+          Monitoreo SLA
+          <span class="sidebar-badge" id="sidebarSlaRiskCount">4</span>
+        </a>
+
+        <a href="desempeno-asesores.html">
+          <i class="fa-solid fa-users-gear"></i>
+          Desempeño asesores
+        </a>
+
+        <a href="reportes-supervisor.html">
+          <i class="fa-solid fa-chart-pie"></i>
+          Reportes
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Monitor IA</h3>
+        <p>Detecta casos en riesgo y sugiere acciones preventivas.</p>
+
+        <button id="openSlaBot">
+          Analizar
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Control de plazos</span>
+          <h1>Monitoreo SLA</h1>
+          <p>
+            Supervisa los tiempos de atención, casos vencidos, casos en riesgo y cumplimiento por asesor.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="exportSlaReport">
+            <i class="fa-solid fa-download"></i>
+            Exportar
+          </button>
+
+          <button class="btn btn-primary" id="refreshSla">
+            <i class="fa-solid fa-rotate"></i>
+            Actualizar
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="sla-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-hourglass-half"></i>
+            Seguimiento en tiempo real
+          </span>
+
+          <h2>Evita vencimientos y prioriza casos críticos</h2>
+
+          <p>
+            El monitoreo SLA permite identificar casos próximos a vencer, vencidos
+            o con riesgo operativo, para tomar acciones de reasignación, escalamiento o atención inmediata.
+          </p>
+
+          <div class="client-banner__actions">
+            <button class="btn btn-primary" id="showCriticalSla">
+              Ver críticos
+            </button>
+
+            <button class="btn btn-light" id="generateSlaPlan">
+              Plan IA
+            </button>
+          </div>
+        </div>
+
+        <aside class="sla-hero__card">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <strong>Alerta SLA</strong>
+          <span id="slaAiTip">
+            Existen 4 casos con riesgo de vencimiento en las próximas 6 horas.
+          </span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Dentro de SLA</span>
+            <strong id="metricSlaOk">12</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+
+          <div>
+            <span>En riesgo</span>
+            <strong id="metricSlaRisk">4</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Vencidos</span>
+            <strong id="metricSlaExpired">2</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-chart-line"></i>
+          </div>
+
+          <div>
+            <span>Cumplimiento</span>
+            <strong id="metricSlaCompliance">86%</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Filtros -->
+      <section class="sla-filter-panel">
+        <div class="sla-filter-panel__header">
+          <div>
+            <span>Filtros SLA</span>
+            <h2>Buscar casos por plazo</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearSlaFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="sla-filter-grid">
+          <label>
+            Buscar
+            <input
+              type="text"
+              id="slaSearch"
+              placeholder="Código, asesor, servicio o categoría..."
+            />
+          </label>
+
+          <label>
+            Estado SLA
+            <select id="filterSlaStatus">
+              <option value="all">Todos</option>
+              <option value="Dentro de SLA">Dentro de SLA</option>
+              <option value="En riesgo">En riesgo</option>
+              <option value="Vencido">Vencido</option>
+            </select>
+          </label>
+
+          <label>
+            Prioridad
+            <select id="filterSlaPriority">
+              <option value="all">Todas</option>
+              <option value="Crítica">Crítica</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </label>
+
+          <label>
+            Asesor
+            <select id="filterSlaAdvisor">
+              <option value="all">Todos</option>
+              <option value="Asesor Técnico Hogar">Asesor Técnico Hogar</option>
+              <option value="Asesor Móvil">Asesor Móvil</option>
+              <option value="Asesor Facturación">Asesor Facturación</option>
+              <option value="Asesor Comercial">Asesor Comercial</option>
+            </select>
+          </label>
+
+          <label>
+            Servicio
+            <select id="filterSlaService">
+              <option value="all">Todos</option>
+              <option value="Internet hogar">Internet hogar</option>
+              <option value="Telefonía móvil">Telefonía móvil</option>
+              <option value="Claro TV+">Claro TV+</option>
+              <option value="Telefonía fija">Telefonía fija</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- Tabs -->
+      <section class="case-filter-row sla-tabs">
+        <button class="case-filter active" data-tab="all">Todos</button>
+        <button class="case-filter" data-tab="Vencido">Vencidos</button>
+        <button class="case-filter" data-tab="En riesgo">En riesgo</button>
+        <button class="case-filter" data-tab="Dentro de SLA">Dentro de SLA</button>
+        <button class="case-filter" data-tab="Crítica">Críticos</button>
+      </section>
+
+      <!-- Layout -->
+      <section class="sla-layout">
+        <!-- Tabla SLA -->
+        <article class="panel-card sla-panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Casos monitoreados</span>
+              <h2>Control de vencimientos</h2>
+            </div>
+
+            <button class="small-link" id="prioritizeSlaAi">
+              <i class="fa-solid fa-robot"></i>
+              Priorizar IA
+            </button>
+          </div>
+
+          <div class="sla-table">
+            <div class="sla-table__head">
+              <span>Código</span>
+              <span>Asesor</span>
+              <span>Servicio</span>
+              <span>Prioridad</span>
+              <span>Estado SLA</span>
+              <span>Restante</span>
+              <span>Avance</span>
+              <span>Acciones</span>
+            </div>
+
+            <div id="slaRows"></div>
+          </div>
+
+          <div class="empty-state hidden" id="emptySla">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <h3>No se encontraron casos</h3>
+            <p>Prueba cambiando los filtros aplicados.</p>
+          </div>
+        </article>
+
+        <!-- Lateral -->
+        <aside class="sla-side">
+          <article class="side-card side-card-dark">
+            <span>Resumen IA</span>
+            <h3>Riesgo operativo</h3>
+
+            <p>
+              La IA analiza vencimientos, prioridades y asesores con mayor carga.
+            </p>
+
+            <div class="estimate-box" id="slaSummaryBox">
+              Se recomienda revisar primero los casos vencidos y luego los casos críticos con menos de 6 horas restantes.
+            </div>
+
+            <button id="generateSlaSummary">
+              Generar análisis
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-users"></i>
+            </div>
+
+            <h3>Riesgo por asesor</h3>
+
+            <div class="sla-advisor-risk" id="slaAdvisorRisk">
+              <!-- JS -->
+            </div>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Acciones sugeridas</h3>
+
+            <ul class="recommendation-list">
+              <li>Reasignar casos vencidos si el asesor tiene alta carga.</li>
+              <li>Escalar incidencias críticas con menos de 6 horas.</li>
+              <li>Solicitar actualización a asesores con casos sin movimiento.</li>
+              <li>Priorizar casos técnicos sobre reclamos de baja criticidad.</li>
+            </ul>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal detalle SLA -->
+  <section class="modal" id="slaDetailModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeSlaDetail">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-hourglass-half"></i>
+      </div>
+
+      <h2 id="slaDetailTitle">Detalle SLA</h2>
+      <p id="slaDetailSubtitle">Información del caso seleccionado.</p>
+
+      <div class="preview-content" id="slaDetailContent"></div>
+
+      <div class="detail-actions">
+        <a href="asignar-casos.html" class="btn btn-primary">
+          Reasignar
+        </a>
+
+        <a href="reportes-supervisor.html" class="btn btn-light-red">
+          Ver reporte
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="slaBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Monitor SLA IA</strong>
+        <span>Supervisor</span>
+      </div>
+
+      <button id="closeSlaBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a detectar casos vencidos, casos en riesgo y asesores con alta carga.
+      </div>
+
+      <button class="chat-option">Ver vencidos</button>
+      <button class="chat-option">Priorizar riesgo SLA</button>
+      <button class="chat-option">Sugerir reasignación</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openSlaHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/monitoreo-sla.js"></script>
+</body>
+</html>

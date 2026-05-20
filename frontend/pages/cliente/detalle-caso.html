@@ -1,0 +1,604 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Detalle del Caso | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Centro de Atención</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div>
+          <strong>Cliente Claro</strong>
+          <span>Perfil persona</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-cliente.html">
+          <i class="fa-solid fa-house"></i>
+          Inicio
+        </a>
+
+        <a href="registrar-reclamo.html">
+          <i class="fa-solid fa-file-circle-plus"></i>
+          Registrar reclamo
+        </a>
+
+        <a href="reportar-incidencia.html">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Reportar incidencia
+        </a>
+
+        <a href="mis-casos.html">
+          <i class="fa-solid fa-folder-open"></i>
+          Mis casos
+        </a>
+
+        <a href="historial-caso.html" class="active">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Historial
+        </a>
+
+        <a href="subir-evidencia.html">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          Subir evidencia
+        </a>
+
+        <a href="notificaciones.html">
+          <i class="fa-solid fa-bell"></i>
+          Notificaciones
+          <span class="sidebar-badge">3</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Resumen IA</h3>
+        <p>Obtén un resumen simple del estado actual y próximos pasos.</p>
+
+        <button id="openDetailBot">
+          Ver resumen
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Seguimiento detallado</span>
+          <h1>Detalle del caso</h1>
+          <p>
+            Revisa el estado actual, historial, evidencias, responsable y acciones disponibles.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <a href="mis-casos.html" class="topbar-search">
+            <i class="fa-solid fa-arrow-left"></i>
+            Volver a mis casos
+          </a>
+
+          <button class="icon-btn app-notification">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero detalle -->
+      <section class="detail-hero">
+        <div class="detail-hero__main">
+          <span>
+            <i class="fa-solid fa-ticket"></i>
+            Caso CL-RC-000123
+          </span>
+
+          <h2>Reclamo por facturación en servicio de internet hogar</h2>
+
+          <p>
+            El caso se encuentra actualmente en atención. El asesor responsable
+            está revisando la información registrada y las evidencias adjuntas.
+          </p>
+
+          <div class="detail-hero__badges">
+            <span class="status-pill status-blue">En atención</span>
+            <span class="priority-pill priority-high">Prioridad alta</span>
+            <span class="sla-pill">
+              <i class="fa-solid fa-clock"></i>
+              SLA restante: 18 h
+            </span>
+          </div>
+        </div>
+
+        <aside class="detail-hero__progress">
+          <h3>Avance del caso</h3>
+
+          <div class="progress-ring">
+            <div class="progress-ring__value">62%</div>
+          </div>
+
+          <p>Etapa actual: revisión por asesor</p>
+        </aside>
+      </section>
+
+      <!-- Métricas del caso -->
+      <section class="case-summary-grid">
+        <article class="case-summary-card">
+          <i class="fa-solid fa-calendar-days"></i>
+          <div>
+            <span>Fecha de registro</span>
+            <strong>18/05/2026</strong>
+          </div>
+        </article>
+
+        <article class="case-summary-card">
+          <i class="fa-solid fa-user-headset"></i>
+          <div>
+            <span>Responsable</span>
+            <strong>Área de Atención</strong>
+          </div>
+        </article>
+
+        <article class="case-summary-card">
+          <i class="fa-solid fa-signal"></i>
+          <div>
+            <span>Servicio afectado</span>
+            <strong>Internet hogar</strong>
+          </div>
+        </article>
+
+        <article class="case-summary-card">
+          <i class="fa-solid fa-bell"></i>
+          <div>
+            <span>Última actualización</span>
+            <strong>Hoy, 10:35</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Layout principal detalle -->
+      <section class="detail-layout">
+        <!-- Columna principal -->
+        <div class="detail-main-column">
+          <!-- Información del caso -->
+          <article class="panel-card">
+            <div class="panel-card__header">
+              <div>
+                <span>Información general</span>
+                <h2>Datos del caso</h2>
+              </div>
+
+              <button class="small-link" id="copyCaseCode">
+                <i class="fa-regular fa-copy"></i>
+                Copiar código
+              </button>
+            </div>
+
+            <div class="detail-info-grid">
+              <div class="detail-info-item">
+                <strong>Código</strong>
+                <span>CL-RC-000123</span>
+              </div>
+
+              <div class="detail-info-item">
+                <strong>Tipo de caso</strong>
+                <span>Reclamo</span>
+              </div>
+
+              <div class="detail-info-item">
+                <strong>Categoría</strong>
+                <span>Facturación</span>
+              </div>
+
+              <div class="detail-info-item">
+                <strong>Canal de ingreso</strong>
+                <span>WebApp</span>
+              </div>
+
+              <div class="detail-info-item">
+                <strong>Cliente</strong>
+                <span>Cliente Claro</span>
+              </div>
+
+              <div class="detail-info-item">
+                <strong>Contacto</strong>
+                <span>cliente@correo.com / 999 999 999</span>
+              </div>
+
+              <div class="detail-info-item span-2">
+                <strong>Descripción registrada</strong>
+                <span>
+                  Solicito la revisión de mi recibo debido a que se muestra un
+                  monto mayor al esperado en el servicio de internet hogar.
+                  Adjunto evidencia del recibo observado.
+                </span>
+              </div>
+            </div>
+          </article>
+
+          <!-- Línea de tiempo -->
+          <article class="panel-card">
+            <div class="panel-card__header">
+              <div>
+                <span>Trazabilidad</span>
+                <h2>Línea de tiempo del caso</h2>
+              </div>
+
+              <button class="small-link" id="expandTimeline">
+                Expandir todo
+              </button>
+            </div>
+
+            <div class="detail-timeline" id="detailTimeline">
+              <article class="detail-timeline-item completed">
+                <div class="detail-timeline-marker">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+
+                <div class="detail-timeline-content">
+                  <div class="timeline-content-header">
+                    <h3>Caso registrado</h3>
+                    <span>18/05/2026 · 09:10</span>
+                  </div>
+
+                  <p>
+                    El cliente registró el reclamo desde la WebApp y adjuntó una evidencia inicial.
+                  </p>
+
+                  <button class="timeline-toggle">Ver detalle</button>
+
+                  <div class="timeline-extra">
+                    <strong>Acción:</strong> Registro inicial del caso.<br>
+                    <strong>Usuario:</strong> Cliente Claro.<br>
+                    <strong>Estado generado:</strong> Registrado.
+                  </div>
+                </div>
+              </article>
+
+              <article class="detail-timeline-item completed">
+                <div class="detail-timeline-marker">
+                  <i class="fa-solid fa-check"></i>
+                </div>
+
+                <div class="detail-timeline-content">
+                  <div class="timeline-content-header">
+                    <h3>Caso clasificado</h3>
+                    <span>18/05/2026 · 11:40</span>
+                  </div>
+
+                  <p>
+                    El caso fue clasificado como reclamo de facturación con prioridad alta.
+                  </p>
+
+                  <button class="timeline-toggle">Ver detalle</button>
+
+                  <div class="timeline-extra">
+                    <strong>Categoría:</strong> Facturación.<br>
+                    <strong>Prioridad:</strong> Alta.<br>
+                    <strong>Responsable:</strong> Supervisor de atención.
+                  </div>
+                </div>
+              </article>
+
+              <article class="detail-timeline-item active">
+                <div class="detail-timeline-marker">
+                  <i class="fa-solid fa-spinner"></i>
+                </div>
+
+                <div class="detail-timeline-content">
+                  <div class="timeline-content-header">
+                    <h3>En atención</h3>
+                    <span>Hoy · 10:35</span>
+                  </div>
+
+                  <p>
+                    El asesor responsable está revisando el recibo adjunto y la información del servicio.
+                  </p>
+
+                  <button class="timeline-toggle">Ver detalle</button>
+
+                  <div class="timeline-extra">
+                    <strong>Estado actual:</strong> En atención.<br>
+                    <strong>Comentario:</strong> Se revisará la consistencia del monto facturado.<br>
+                    <strong>Siguiente paso:</strong> Emitir respuesta o solicitar información adicional.
+                  </div>
+                </div>
+              </article>
+
+              <article class="detail-timeline-item pending">
+                <div class="detail-timeline-marker">
+                  <i class="fa-solid fa-clock"></i>
+                </div>
+
+                <div class="detail-timeline-content">
+                  <div class="timeline-content-header">
+                    <h3>Resolución del caso</h3>
+                    <span>Pendiente</span>
+                  </div>
+
+                  <p>
+                    El caso aún no tiene una respuesta final registrada.
+                  </p>
+                </div>
+              </article>
+
+              <article class="detail-timeline-item pending">
+                <div class="detail-timeline-marker">
+                  <i class="fa-solid fa-lock"></i>
+                </div>
+
+                <div class="detail-timeline-content">
+                  <div class="timeline-content-header">
+                    <h3>Cierre formal</h3>
+                    <span>Pendiente</span>
+                  </div>
+
+                  <p>
+                    El cierre se realizará cuando exista una respuesta o acción final.
+                  </p>
+                </div>
+              </article>
+            </div>
+          </article>
+
+          <!-- Evidencias -->
+          <article class="panel-card">
+            <div class="panel-card__header">
+              <div>
+                <span>Documentación</span>
+                <h2>Evidencias adjuntas</h2>
+              </div>
+
+              <a href="subir-evidencia.html" class="small-link">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                Adjuntar nueva
+              </a>
+            </div>
+
+            <div class="evidence-grid">
+              <article class="evidence-card">
+                <div class="evidence-card__icon">
+                  <i class="fa-solid fa-file-pdf"></i>
+                </div>
+
+                <div>
+                  <strong>recibo_mayo_2026.pdf</strong>
+                  <span>Subido el 18/05/2026 · 1.2 MB</span>
+                </div>
+
+                <button>
+                  <i class="fa-solid fa-download"></i>
+                </button>
+              </article>
+
+              <article class="evidence-card">
+                <div class="evidence-card__icon image">
+                  <i class="fa-solid fa-image"></i>
+                </div>
+
+                <div>
+                  <strong>captura_monto_observado.png</strong>
+                  <span>Subido el 18/05/2026 · 840 KB</span>
+                </div>
+
+                <button>
+                  <i class="fa-solid fa-eye"></i>
+                </button>
+              </article>
+            </div>
+          </article>
+        </div>
+
+        <!-- Columna lateral -->
+        <aside class="detail-side-column">
+          <!-- Acciones -->
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-list-check"></i>
+            </div>
+
+            <h3>Acciones disponibles</h3>
+
+            <p>
+              Puedes complementar información, descargar constancia o solicitar ayuda.
+            </p>
+
+            <div class="detail-action-list">
+              <a href="subir-evidencia.html">
+                <i class="fa-solid fa-cloud-arrow-up"></i>
+                Adjuntar evidencia
+              </a>
+
+              <button id="downloadProof">
+                <i class="fa-solid fa-file-arrow-down"></i>
+                Descargar constancia
+              </button>
+
+              <button id="requestReview">
+                <i class="fa-solid fa-rotate-right"></i>
+                Solicitar revisión
+              </button>
+
+              <button id="rateAttention">
+                <i class="fa-solid fa-star"></i>
+                Calificar atención
+              </button>
+            </div>
+          </article>
+
+          <!-- Resumen IA -->
+          <article class="side-card side-card-dark">
+            <span>Resumen inteligente</span>
+            <h3>Lectura rápida del caso</h3>
+
+            <p>
+              La IA resume el estado actual y recomienda la siguiente acción del cliente.
+            </p>
+
+            <div class="estimate-box" id="aiCaseSummary">
+              El caso está en atención. No se requiere acción inmediata del cliente,
+              salvo que el asesor solicite información adicional.
+            </div>
+
+            <button id="generateAiSummary">
+              Generar nuevo resumen
+            </button>
+          </article>
+
+          <!-- SLA -->
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-hourglass-half"></i>
+            </div>
+
+            <h3>Control de plazo</h3>
+
+            <div class="sla-panel">
+              <div>
+                <span>Plazo estimado</span>
+                <strong>48 horas</strong>
+              </div>
+
+              <div>
+                <span>Tiempo transcurrido</span>
+                <strong>30 horas</strong>
+              </div>
+
+              <div>
+                <span>Tiempo restante</span>
+                <strong>18 horas</strong>
+              </div>
+            </div>
+
+            <div class="sla-bar">
+              <div class="sla-bar__progress"></div>
+            </div>
+
+            <p class="sla-note">
+              El caso se mantiene dentro del plazo estimado de atención.
+            </p>
+          </article>
+
+          <!-- Notificaciones -->
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-bell"></i>
+            </div>
+
+            <h3>Notificaciones del caso</h3>
+
+            <div class="case-notification-list">
+              <div>
+                <strong>Cambio de estado</strong>
+                <span>El caso pasó a “En atención”.</span>
+              </div>
+
+              <div>
+                <strong>Recordatorio</strong>
+                <span>Recibirás una alerta si se solicita información.</span>
+              </div>
+            </div>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal calificación -->
+  <section class="modal" id="ratingModal">
+    <div class="modal-card">
+      <button class="modal-close" id="closeRatingModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-star"></i>
+      </div>
+
+      <h2>Calificar atención</h2>
+      <p>Esta opción estará disponible cuando el caso se encuentre resuelto.</p>
+
+      <div class="rating-stars">
+        <button><i class="fa-solid fa-star"></i></button>
+        <button><i class="fa-solid fa-star"></i></button>
+        <button><i class="fa-solid fa-star"></i></button>
+        <button><i class="fa-solid fa-star"></i></button>
+        <button><i class="fa-regular fa-star"></i></button>
+      </div>
+
+      <button class="btn btn-primary btn-full">
+        Enviar calificación
+      </button>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="detailBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Resumen IA Claro</strong>
+        <span>Detalle del caso</span>
+      </div>
+
+      <button id="closeDetailBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Tu caso se encuentra en atención. El asesor está revisando la información
+        y no se requiere una acción inmediata.
+      </div>
+
+      <button class="chat-option">¿Qué significa en atención?</button>
+      <button class="chat-option">¿Cuánto falta para la respuesta?</button>
+      <button class="chat-option">Quiero adjuntar evidencia</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openDetailHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/detalle-caso.js"></script>
+</body>
+</html>

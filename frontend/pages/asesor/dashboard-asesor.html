@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Dashboard Asesor | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel interno</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+
+        <div>
+          <strong>Asesor de Atención</strong>
+          <span>Perfil interno</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-asesor.html" class="active">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="bandeja-casos.html">
+          <i class="fa-solid fa-inbox"></i>
+          Mi bandeja
+          <span class="sidebar-badge" id="sidebarCasesCount">12</span>
+        </a>
+
+        <a href="detalle-atencion.html">
+          <i class="fa-solid fa-folder-open"></i>
+          Detalle de atención
+        </a>
+
+        <a href="actualizar-seguimiento.html">
+          <i class="fa-solid fa-pen-to-square"></i>
+          Actualizar seguimiento
+        </a>
+
+        <a href="solicitar-informacion.html">
+          <i class="fa-solid fa-circle-question"></i>
+          Solicitar información
+        </a>
+
+        <a href="casos-resueltos.html">
+          <i class="fa-solid fa-circle-check"></i>
+          Casos resueltos
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Asistente IA</h3>
+        <p>Resume casos, sugiere respuestas y alerta riesgos de SLA.</p>
+
+        <button id="openAdvisorBot">
+          Abrir IA
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Panel operativo</span>
+          <h1>Dashboard del asesor</h1>
+          <p>
+            Gestiona tus casos asignados, prioriza la atención y revisa alertas operativas.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <a href="bandeja-casos.html" class="btn btn-primary">
+            <i class="fa-solid fa-inbox"></i>
+            Ir a mi bandeja
+          </a>
+
+          <button class="icon-btn app-notification">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+
+          <button class="profile-chip">
+            <span>Asesor</span>
+            <i class="fa-solid fa-chevron-down"></i>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="advisor-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-headset"></i>
+            Atención operativa inteligente
+          </span>
+
+          <h2>Prioriza los casos correctos en el momento correcto</h2>
+
+          <p>
+            El sistema identifica casos urgentes, próximos a vencer y pendientes de información
+            para ayudarte a cumplir los tiempos de atención.
+          </p>
+
+          <div class="client-banner__actions">
+            <a href="bandeja-casos.html" class="btn btn-primary">
+              Ver casos asignados
+            </a>
+
+            <a href="actualizar-seguimiento.html" class="btn btn-light">
+              Actualizar seguimiento
+            </a>
+
+            <button class="btn btn-light" id="generateWorkPlan">
+              Generar plan IA
+            </button>
+          </div>
+        </div>
+
+        <aside class="advisor-hero__card">
+          <i class="fa-solid fa-wand-magic-sparkles"></i>
+          <strong>Recomendación IA</strong>
+          <span id="advisorAiTip">
+            Atiende primero los casos críticos y los que tienen SLA menor a 6 horas.
+          </span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-inbox"></i>
+          </div>
+
+          <div>
+            <span>Casos asignados</span>
+            <strong id="metricAssigned">12</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Casos urgentes</span>
+            <strong id="metricUrgent">4</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+
+          <div>
+            <span>SLA en riesgo</span>
+            <strong id="metricRisk">3</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Resueltos hoy</span>
+            <strong id="metricResolvedToday">5</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Acciones rápidas -->
+      <section class="dashboard-section">
+        <div class="dashboard-section__header">
+          <div>
+            <span>Acciones rápidas</span>
+            <h2>Operaciones frecuentes</h2>
+          </div>
+
+          <a href="bandeja-casos.html">
+            Ver bandeja completa
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="action-grid">
+          <a href="bandeja-casos.html" class="action-card">
+            <i class="fa-solid fa-list-check"></i>
+            <h3>Atender siguiente caso</h3>
+            <p>Abre el caso recomendado por prioridad, vencimiento y criticidad.</p>
+          </a>
+
+          <a href="actualizar-seguimiento.html" class="action-card">
+            <i class="fa-solid fa-pen-to-square"></i>
+            <h3>Actualizar seguimiento</h3>
+            <p>Registra avances, observaciones, nuevos estados o evidencias.</p>
+          </a>
+
+          <a href="solicitar-informacion.html" class="action-card">
+            <i class="fa-solid fa-circle-question"></i>
+            <h3>Solicitar información</h3>
+            <p>Pide datos adicionales al cliente cuando el caso esté incompleto.</p>
+          </a>
+
+          <a href="casos-resueltos.html" class="action-card">
+            <i class="fa-solid fa-circle-check"></i>
+            <h3>Registrar solución</h3>
+            <p>Marca casos como resueltos cuando exista una respuesta sustentada.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Contenido principal -->
+      <section class="dashboard-content-grid">
+        <!-- Casos prioritarios -->
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Priorización operativa</span>
+              <h2>Casos recomendados</h2>
+            </div>
+
+            <button class="small-link" id="refreshAdvisorCases">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="advisor-case-list" id="advisorCaseList">
+            <!-- Se llena con JS preparado para backend -->
+          </div>
+        </article>
+
+        <!-- Alertas -->
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Alertas</span>
+              <h2>Riesgos detectados</h2>
+            </div>
+
+            <button class="small-link" id="generateAlertsSummary">
+              Resumen IA
+            </button>
+          </div>
+
+          <div class="advisor-alert-list">
+            <article class="advisor-alert danger">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <div>
+                <strong>3 casos con SLA en riesgo</strong>
+                <p>Revisar casos con menos de 6 horas de plazo restante.</p>
+              </div>
+            </article>
+
+            <article class="advisor-alert warning">
+              <i class="fa-solid fa-circle-question"></i>
+              <div>
+                <strong>2 casos pendientes por cliente</strong>
+                <p>Podrían retrasarse si no se recibe información adicional.</p>
+              </div>
+            </article>
+
+            <article class="advisor-alert info">
+              <i class="fa-solid fa-robot"></i>
+              <div>
+                <strong>IA sugiere agrupar casos similares</strong>
+                <p>Existen incidencias repetidas asociadas a internet hogar.</p>
+              </div>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <!-- IA + desempeño -->
+      <section class="dashboard-content-grid">
+        <article class="panel-card ai-panel">
+          <div class="ai-panel__content">
+            <span>Asistencia inteligente</span>
+            <h2>Resumen automático para atención</h2>
+            <p>
+              El asistente puede resumir el historial del caso, sugerir una respuesta
+              y advertir si falta información para cerrar correctamente.
+            </p>
+
+            <div class="ai-suggestions">
+              <button>Resumir caso</button>
+              <button>Sugerir respuesta</button>
+              <button>Detectar riesgo SLA</button>
+            </div>
+
+            <button class="btn btn-primary" id="openAdvisorAssistant">
+              Abrir asistente IA
+            </button>
+          </div>
+
+          <div class="ai-panel__icon">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+        </article>
+
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Desempeño diario</span>
+              <h2>Productividad</h2>
+            </div>
+          </div>
+
+          <div class="advisor-performance">
+            <div>
+              <span>Casos atendidos</span>
+              <strong>9</strong>
+            </div>
+
+            <div>
+              <span>Tiempo promedio</span>
+              <strong>36 min</strong>
+            </div>
+
+            <div>
+              <span>Cumplimiento SLA</span>
+              <strong>92%</strong>
+            </div>
+
+            <div>
+              <span>Satisfacción</span>
+              <strong>4.6/5</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="advisorBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Asistente IA Asesor</strong>
+        <span>Soporte operativo</span>
+      </div>
+
+      <button id="closeAdvisorBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a priorizar casos, resumir historial o sugerir una respuesta al cliente.
+      </div>
+
+      <button class="chat-option">Priorizar mis casos</button>
+      <button class="chat-option">Resumir caso seleccionado</button>
+      <button class="chat-option">Sugerir respuesta formal</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openAdvisorHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/dashboard-asesor.js"></script>
+</body>
+</html>

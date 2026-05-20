@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Catálogos | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel administrador</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <div>
+          <strong>Administrador</strong>
+          <span>Gestión del sistema</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-admin.html">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="usuarios.html">
+          <i class="fa-solid fa-users"></i>
+          Usuarios
+        </a>
+
+        <a href="roles-permisos.html">
+          <i class="fa-solid fa-user-lock"></i>
+          Roles y permisos
+        </a>
+
+        <a href="catalogos.html" class="active">
+          <i class="fa-solid fa-layer-group"></i>
+          Catálogos
+          <span class="sidebar-badge" id="sidebarCatalogsCount">0</span>
+        </a>
+
+        <a href="parametros-sistema.html">
+          <i class="fa-solid fa-sliders"></i>
+          Parámetros
+        </a>
+
+        <a href="auditoria.html">
+          <i class="fa-solid fa-file-shield"></i>
+          Auditoría
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Catálogos IA</h3>
+        <p>Detecta catálogos incompletos, duplicados o sin uso operativo.</p>
+
+        <button id="openCatalogBot">
+          Analizar
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Tablas maestras</span>
+          <h1>Catálogos del sistema</h1>
+          <p>
+            Administra servicios, tipos de caso, prioridades, estados, canales y motivos usados en la WebApp.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="exportCatalogs">
+            <i class="fa-solid fa-download"></i>
+            Exportar
+          </button>
+
+          <button class="btn btn-primary" id="openCreateCatalogModal">
+            <i class="fa-solid fa-plus"></i>
+            Nuevo registro
+          </button>
+        </div>
+      </header>
+
+      <section class="catalog-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-layer-group"></i>
+            Configuración maestra
+          </span>
+
+          <h2>Define los valores que ordenan la atención de casos</h2>
+
+          <p>
+            Los catálogos permiten mantener consistencia en formularios, filtros, clasificación,
+            asignación, SLA, reportes y trazabilidad.
+          </p>
+
+          <div class="client-banner__actions">
+            <button class="btn btn-primary" id="openCreateCatalogModalHero">
+              Crear registro
+            </button>
+
+            <button class="btn btn-light" id="analyzeCatalogsAi">
+              Analizar IA
+            </button>
+
+            <a href="parametros-sistema.html" class="btn btn-light">
+              Ver parámetros
+            </a>
+          </div>
+        </div>
+
+        <aside class="catalog-hero__card">
+          <i class="fa-solid fa-database"></i>
+          <strong>Estado de catálogos</strong>
+          <span id="catalogAiTip">
+            Esperando datos del backend para analizar catálogos.
+          </span>
+        </aside>
+      </section>
+
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+
+          <div>
+            <span>Total registros</span>
+            <strong id="metricTotalCatalogs">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Activos</span>
+            <strong id="metricActiveCatalogs">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-circle-pause"></i>
+          </div>
+
+          <div>
+            <span>Inactivos</span>
+            <strong id="metricInactiveCatalogs">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Requieren revisión</span>
+            <strong id="metricReviewCatalogs">0</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="catalog-filter-panel">
+        <div class="catalog-filter-panel__header">
+          <div>
+            <span>Filtros</span>
+            <h2>Buscar registros de catálogo</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearCatalogFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="catalog-filter-grid">
+          <label>
+            Buscar
+            <input
+              type="text"
+              id="catalogSearch"
+              placeholder="Código, nombre, descripción o tipo..."
+            />
+          </label>
+
+          <label>
+            Tipo de catálogo
+            <select id="filterCatalogType">
+              <option value="all">Todos</option>
+              <option value="Servicio">Servicio</option>
+              <option value="Tipo de caso">Tipo de caso</option>
+              <option value="Prioridad">Prioridad</option>
+              <option value="Estado de caso">Estado de caso</option>
+              <option value="Canal">Canal</option>
+              <option value="Motivo">Motivo</option>
+            </select>
+          </label>
+
+          <label>
+            Estado
+            <select id="filterCatalogStatus">
+              <option value="all">Todos</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </label>
+
+          <label>
+            Uso
+            <select id="filterCatalogUsage">
+              <option value="all">Todos</option>
+              <option value="Formulario cliente">Formulario cliente</option>
+              <option value="Clasificación">Clasificación</option>
+              <option value="Asignación">Asignación</option>
+              <option value="SLA">SLA</option>
+              <option value="Reportes">Reportes</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="catalog-layout">
+        <article class="panel-card catalog-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Registros maestros</span>
+              <h2>Listado de catálogos</h2>
+            </div>
+
+            <button class="small-link" id="refreshCatalogs">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="catalog-table">
+            <div class="catalog-table__head">
+              <span>Código</span>
+              <span>Nombre</span>
+              <span>Tipo</span>
+              <span>Uso</span>
+              <span>Orden</span>
+              <span>Estado</span>
+              <span>Acciones</span>
+            </div>
+
+            <div id="catalogRows"></div>
+          </div>
+
+          <div class="empty-state hidden" id="emptyCatalogs">
+            <i class="fa-solid fa-layer-group"></i>
+            <h3>No hay registros para mostrar</h3>
+            <p>Cuando el backend esté conectado, aquí aparecerán los catálogos reales.</p>
+          </div>
+        </article>
+
+        <aside class="catalog-side">
+          <article class="side-card side-card-dark">
+            <span>Análisis IA</span>
+            <h3>Calidad de catálogos</h3>
+
+            <p>
+              La IA revisa duplicados, registros inactivos, campos incompletos y valores críticos.
+            </p>
+
+            <div class="estimate-box" id="catalogSummaryBox">
+              Esperando datos del backend para generar análisis.
+            </div>
+
+            <button id="generateCatalogSummary">
+              Generar análisis
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Buenas prácticas</h3>
+
+            <ul class="recommendation-list">
+              <li>Evitar registros duplicados por nombre o código.</li>
+              <li>No eliminar catálogos usados en casos históricos.</li>
+              <li>Desactivar valores obsoletos en vez de borrarlos.</li>
+              <li>Mantener orden lógico para formularios y filtros.</li>
+            </ul>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal crear/editar catálogo -->
+  <section class="modal" id="catalogModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeCatalogModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-layer-group"></i>
+      </div>
+
+      <h2 id="catalogModalTitle">Nuevo registro de catálogo</h2>
+      <p id="catalogModalSubtitle">Completa los datos del registro maestro.</p>
+
+      <form id="catalogForm" class="modal-form-grid">
+        <input type="hidden" id="catalogId" />
+
+        <label>
+          Código *
+          <input type="text" id="catalogCode" required />
+        </label>
+
+        <label>
+          Nombre *
+          <input type="text" id="catalogName" required />
+        </label>
+
+        <label>
+          Tipo de catálogo *
+          <select id="catalogType" required>
+            <option value="">Seleccionar tipo</option>
+            <option value="Servicio">Servicio</option>
+            <option value="Tipo de caso">Tipo de caso</option>
+            <option value="Prioridad">Prioridad</option>
+            <option value="Estado de caso">Estado de caso</option>
+            <option value="Canal">Canal</option>
+            <option value="Motivo">Motivo</option>
+          </select>
+        </label>
+
+        <label>
+          Uso principal *
+          <select id="catalogUsage" required>
+            <option value="">Seleccionar uso</option>
+            <option value="Formulario cliente">Formulario cliente</option>
+            <option value="Clasificación">Clasificación</option>
+            <option value="Asignación">Asignación</option>
+            <option value="SLA">SLA</option>
+            <option value="Reportes">Reportes</option>
+          </select>
+        </label>
+
+        <label>
+          Orden *
+          <input type="number" id="catalogOrder" min="1" required />
+        </label>
+
+        <label>
+          Estado *
+          <select id="catalogStatus" required>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </label>
+
+        <label class="span-2">
+          Descripción
+          <textarea
+            id="catalogDescription"
+            rows="4"
+            placeholder="Describe para qué se utilizará este valor dentro del sistema."
+          ></textarea>
+        </label>
+
+        <label class="span-2">
+          Observación administrativa
+          <textarea
+            id="catalogObservation"
+            rows="4"
+            placeholder="Comentario interno sobre creación o modificación del catálogo."
+          ></textarea>
+        </label>
+
+        <div class="form-actions span-2">
+          <button type="button" class="btn btn-outline" id="cancelCatalogForm">
+            Cancelar
+          </button>
+
+          <button type="submit" class="btn btn-primary">
+            Guardar registro
+            <i class="fa-solid fa-save"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Modal detalle catálogo -->
+  <section class="modal" id="catalogDetailModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeCatalogDetailModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-database"></i>
+      </div>
+
+      <h2 id="catalogDetailTitle">Detalle del catálogo</h2>
+      <p id="catalogDetailSubtitle">Información del registro seleccionado.</p>
+
+      <div class="preview-content" id="catalogDetailContent"></div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="catalogBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Catálogos IA Claro</strong>
+        <span>Configuración maestra</span>
+      </div>
+
+      <button id="closeCatalogBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a detectar catálogos duplicados, inactivos o mal configurados.
+      </div>
+
+      <button class="chat-option">Detectar duplicados</button>
+      <button class="chat-option">Revisar registros inactivos</button>
+      <button class="chat-option">Sugerir catálogos mínimos</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openCatalogHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/catalogos.js"></script>
+</body>
+</html>

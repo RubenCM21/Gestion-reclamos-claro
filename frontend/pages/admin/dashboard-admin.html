@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Dashboard Administrador | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel administrador</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <div>
+          <strong>Administrador</strong>
+          <span>Gestión del sistema</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-admin.html" class="active">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="usuarios.html">
+          <i class="fa-solid fa-users"></i>
+          Usuarios
+          <span class="sidebar-badge" id="sidebarUsersCount">0</span>
+        </a>
+
+        <a href="roles-permisos.html">
+          <i class="fa-solid fa-user-lock"></i>
+          Roles y permisos
+        </a>
+
+        <a href="catalogos.html">
+          <i class="fa-solid fa-layer-group"></i>
+          Catálogos
+        </a>
+
+        <a href="parametros-sistema.html">
+          <i class="fa-solid fa-sliders"></i>
+          Parámetros
+        </a>
+
+        <a href="auditoria.html">
+          <i class="fa-solid fa-file-shield"></i>
+          Auditoría
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Admin IA</h3>
+        <p>Detecta riesgos, usuarios inactivos y configuraciones pendientes.</p>
+
+        <button id="openAdminBot">
+          Analizar
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Administración general</span>
+          <h1>Dashboard del administrador</h1>
+          <p>
+            Supervisa usuarios, roles, catálogos, parámetros del sistema y trazabilidad operativa.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <a href="usuarios.html" class="btn btn-primary">
+            <i class="fa-solid fa-user-plus"></i>
+            Gestionar usuarios
+          </a>
+
+          <a href="auditoria.html" class="btn btn-outline">
+            <i class="fa-solid fa-file-shield"></i>
+            Ver auditoría
+          </a>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="admin-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-user-shield"></i>
+            Control central del sistema
+          </span>
+
+          <h2>Administra la operación digital de reclamos e incidencias</h2>
+
+          <p>
+            Desde este panel se gestionan usuarios, permisos, catálogos, parámetros,
+            seguridad de acceso y trazabilidad general de la WebApp.
+          </p>
+
+          <div class="client-banner__actions">
+            <a href="usuarios.html" class="btn btn-primary">
+              Crear usuario
+            </a>
+
+            <a href="catalogos.html" class="btn btn-light">
+              Configurar catálogos
+            </a>
+
+            <button class="btn btn-light" id="generateAdminSummary">
+              Resumen IA
+            </button>
+          </div>
+        </div>
+
+        <aside class="admin-hero__card">
+          <i class="fa-solid fa-shield-halved"></i>
+          <strong>Estado del sistema</strong>
+          <span id="adminAiTip">
+            Esperando datos del backend para mostrar el estado general.
+          </span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-users"></i>
+          </div>
+
+          <div>
+            <span>Usuarios activos</span>
+            <strong id="metricActiveUsers">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+
+          <div>
+            <span>Roles configurados</span>
+            <strong id="metricRoles">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+
+          <div>
+            <span>Catálogos</span>
+            <strong id="metricCatalogs">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-file-shield"></i>
+          </div>
+
+          <div>
+            <span>Eventos auditoría</span>
+            <strong id="metricAuditEvents">0</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Acciones rápidas -->
+      <section class="dashboard-section">
+        <div class="dashboard-section__header">
+          <div>
+            <span>Acciones rápidas</span>
+            <h2>Administración del sistema</h2>
+          </div>
+
+          <a href="parametros-sistema.html">
+            Ver configuración
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="action-grid">
+          <a href="usuarios.html" class="action-card">
+            <i class="fa-solid fa-users"></i>
+            <h3>Gestionar usuarios</h3>
+            <p>Crea, edita, activa o desactiva usuarios del sistema.</p>
+          </a>
+
+          <a href="roles-permisos.html" class="action-card">
+            <i class="fa-solid fa-user-lock"></i>
+            <h3>Roles y permisos</h3>
+            <p>Administra accesos para clientes, asesores, supervisores y administradores.</p>
+          </a>
+
+          <a href="catalogos.html" class="action-card">
+            <i class="fa-solid fa-layer-group"></i>
+            <h3>Catálogos</h3>
+            <p>Configura tipos de caso, servicios, prioridades, estados y canales.</p>
+          </a>
+
+          <a href="auditoria.html" class="action-card">
+            <i class="fa-solid fa-file-shield"></i>
+            <h3>Auditoría</h3>
+            <p>Consulta acciones registradas, accesos, cambios y trazabilidad.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Contenido principal -->
+      <section class="dashboard-content-grid">
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Actividad reciente</span>
+              <h2>Últimos eventos del sistema</h2>
+            </div>
+
+            <button class="small-link" id="refreshAdminDashboard">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="admin-event-list" id="adminEventList">
+            <!-- Se llena con JS desde api.js -->
+          </div>
+
+          <div class="empty-state hidden" id="emptyAdminEvents">
+            <i class="fa-solid fa-file-shield"></i>
+            <h3>No hay eventos para mostrar</h3>
+            <p>Cuando el backend esté conectado, aquí aparecerá la actividad real.</p>
+          </div>
+        </article>
+
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Salud del sistema</span>
+              <h2>Indicadores técnicos</h2>
+            </div>
+
+            <button class="small-link" id="analyzeSystemHealth">
+              Analizar IA
+            </button>
+          </div>
+
+          <div class="system-health-grid">
+            <article class="system-health-card">
+              <span>Backend</span>
+              <strong id="healthBackend">Pendiente</strong>
+              <p id="healthBackendText">Esperando respuesta del servidor.</p>
+            </article>
+
+            <article class="system-health-card">
+              <span>Base de datos</span>
+              <strong id="healthDatabase">Pendiente</strong>
+              <p id="healthDatabaseText">Esperando validación de SQL Server.</p>
+            </article>
+
+            <article class="system-health-card">
+              <span>Autenticación</span>
+              <strong id="healthAuth">Pendiente</strong>
+              <p id="healthAuthText">Esperando validación de sesiones.</p>
+            </article>
+
+            <article class="system-health-card">
+              <span>Auditoría</span>
+              <strong id="healthAudit">Pendiente</strong>
+              <p id="healthAuditText">Esperando registros del sistema.</p>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <!-- IA + configuración -->
+      <section class="dashboard-content-grid">
+        <article class="panel-card ai-panel">
+          <div class="ai-panel__content">
+            <span>Asistencia administrativa</span>
+            <h2>Revisión inteligente de configuración</h2>
+            <p>
+              La IA puede revisar usuarios inactivos, roles sin permisos, catálogos incompletos
+              y eventos críticos de auditoría.
+            </p>
+
+            <div class="ai-suggestions">
+              <button id="checkInactiveUsers">Usuarios inactivos</button>
+              <button id="checkMissingCatalogs">Catálogos pendientes</button>
+              <button id="checkAuditRisks">Riesgos auditoría</button>
+            </div>
+
+            <button class="btn btn-primary" id="openAdminAssistant">
+              Abrir asistente IA
+            </button>
+          </div>
+
+          <div class="ai-panel__icon">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+        </article>
+
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Configuración</span>
+              <h2>Resumen de módulos</h2>
+            </div>
+          </div>
+
+          <div class="admin-module-list" id="adminModuleList">
+            <!-- Se llena con JS desde api.js -->
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="adminBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Admin IA Claro</strong>
+        <span>Administración del sistema</span>
+      </div>
+
+      <button id="closeAdminBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a revisar usuarios, permisos, catálogos, parámetros y eventos críticos.
+      </div>
+
+      <button class="chat-option">Detectar usuarios inactivos</button>
+      <button class="chat-option">Revisar catálogos incompletos</button>
+      <button class="chat-option">Analizar eventos de auditoría</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openAdminHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/dashboard-admin.js"></script>
+</body>
+</html>

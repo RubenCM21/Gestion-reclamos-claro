@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Desempeño de Asesores | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel supervisor</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+
+        <div>
+          <strong>Supervisor</strong>
+          <span>Gestión de casos</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-supervisor.html">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="clasificar-casos.html">
+          <i class="fa-solid fa-tags"></i>
+          Clasificar casos
+        </a>
+
+        <a href="asignar-casos.html">
+          <i class="fa-solid fa-user-check"></i>
+          Asignar casos
+        </a>
+
+        <a href="monitoreo-sla.html">
+          <i class="fa-solid fa-hourglass-half"></i>
+          Monitoreo SLA
+        </a>
+
+        <a href="desempeno-asesores.html" class="active">
+          <i class="fa-solid fa-users-gear"></i>
+          Desempeño asesores
+        </a>
+
+        <a href="reportes-supervisor.html">
+          <i class="fa-solid fa-chart-pie"></i>
+          Reportes
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Analítica IA</h3>
+        <p>Detecta sobrecarga, bajo desempeño y oportunidades de mejora.</p>
+
+        <button id="openPerformanceBot">
+          Analizar
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Gestión del equipo</span>
+          <h1>Desempeño de asesores</h1>
+          <p>
+            Evalúa productividad, carga, cumplimiento de SLA, satisfacción y eficiencia del equipo.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="exportPerformance">
+            <i class="fa-solid fa-download"></i>
+            Exportar
+          </button>
+
+          <button class="btn btn-primary" id="refreshPerformance">
+            <i class="fa-solid fa-rotate"></i>
+            Actualizar
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="performance-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-users-gear"></i>
+            Analítica del equipo
+          </span>
+
+          <h2>Evalúa la operación y balancea la carga de atención</h2>
+
+          <p>
+            Esta vista ayuda a identificar asesores con alta carga, bajo cumplimiento,
+            tiempos elevados o baja satisfacción para tomar acciones correctivas.
+          </p>
+
+          <div class="client-banner__actions">
+            <button class="btn btn-primary" id="showHighLoad">
+              Ver sobrecarga
+            </button>
+
+            <button class="btn btn-light" id="generatePerformancePlan">
+              Plan IA
+            </button>
+          </div>
+        </div>
+
+        <aside class="performance-hero__card">
+          <i class="fa-solid fa-chart-line"></i>
+          <strong>Resumen IA</strong>
+          <span id="performanceAiTip">
+            Hay 1 asesor con carga alta y 1 asesor con cumplimiento SLA por debajo del promedio.
+          </span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-users"></i>
+          </div>
+
+          <div>
+            <span>Asesores activos</span>
+            <strong id="metricActiveAdvisors">6</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-layer-group"></i>
+          </div>
+
+          <div>
+            <span>Carga promedio</span>
+            <strong id="metricAvgLoad">8</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+
+          <div>
+            <span>Cumplimiento SLA</span>
+            <strong id="metricTeamSla">91%</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-star"></i>
+          </div>
+
+          <div>
+            <span>Satisfacción</span>
+            <strong id="metricTeamRating">4.5</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Filtros -->
+      <section class="performance-filter-panel">
+        <div class="performance-filter-panel__header">
+          <div>
+            <span>Filtros</span>
+            <h2>Buscar desempeño por asesor</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearPerformanceFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="performance-filter-grid">
+          <label>
+            Buscar
+            <input
+              type="text"
+              id="performanceSearch"
+              placeholder="Nombre, especialidad o nivel..."
+            />
+          </label>
+
+          <label>
+            Especialidad
+            <select id="filterSpecialty">
+              <option value="all">Todas</option>
+              <option value="Internet hogar">Internet hogar</option>
+              <option value="Telefonía móvil">Telefonía móvil</option>
+              <option value="Facturación">Facturación</option>
+              <option value="Atención comercial">Atención comercial</option>
+            </select>
+          </label>
+
+          <label>
+            Carga
+            <select id="filterLoad">
+              <option value="all">Todas</option>
+              <option value="low">Baja</option>
+              <option value="medium">Media</option>
+              <option value="high">Alta</option>
+            </select>
+          </label>
+
+          <label>
+            SLA
+            <select id="filterSlaPerformance">
+              <option value="all">Todos</option>
+              <option value="excellent">95% a más</option>
+              <option value="good">85% a 94%</option>
+              <option value="risk">Menor a 85%</option>
+            </select>
+          </label>
+
+          <label>
+            Calificación
+            <select id="filterAdvisorRating">
+              <option value="all">Todas</option>
+              <option value="high">4.5 a más</option>
+              <option value="medium">4.0 a 4.4</option>
+              <option value="low">Menor a 4.0</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- Layout -->
+      <section class="performance-layout">
+        <!-- Tabla -->
+        <article class="panel-card performance-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Equipo de atención</span>
+              <h2>Indicadores por asesor</h2>
+            </div>
+
+            <button class="small-link" id="prioritizePerformanceAi">
+              <i class="fa-solid fa-robot"></i>
+              Analizar IA
+            </button>
+          </div>
+
+          <div class="performance-table">
+            <div class="performance-table__head">
+              <span>Asesor</span>
+              <span>Especialidad</span>
+              <span>Carga</span>
+              <span>Resueltos</span>
+              <span>SLA</span>
+              <span>Tiempo prom.</span>
+              <span>Satisfacción</span>
+              <span>Acciones</span>
+            </div>
+
+            <div id="performanceRows"></div>
+          </div>
+
+          <div class="empty-state hidden" id="emptyPerformance">
+            <i class="fa-solid fa-users"></i>
+            <h3>No se encontraron asesores</h3>
+            <p>Prueba cambiando los filtros aplicados.</p>
+          </div>
+        </article>
+
+        <!-- Panel lateral -->
+        <aside class="performance-side">
+          <article class="side-card side-card-dark">
+            <span>Análisis IA</span>
+            <h3>Lectura del equipo</h3>
+
+            <p>
+              La IA analiza carga, SLA, tiempos y satisfacción para sugerir acciones.
+            </p>
+
+            <div class="estimate-box" id="performanceSummaryBox">
+              Se recomienda redistribuir casos técnicos para reducir carga del asesor con mayor saturación.
+            </div>
+
+            <button id="generatePerformanceSummary">
+              Generar análisis
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-scale-balanced"></i>
+            </div>
+
+            <h3>Balance de carga</h3>
+
+            <div class="load-balance-list" id="loadBalanceList">
+              <!-- JS -->
+            </div>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Recomendaciones</h3>
+
+            <ul class="recommendation-list">
+              <li>Redistribuir casos si un asesor supera carga 10.</li>
+              <li>Revisar causas de SLA menor al 85%.</li>
+              <li>Analizar casos con baja satisfacción.</li>
+              <li>Asignar casos críticos a asesores con mejor desempeño.</li>
+            </ul>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal detalle asesor -->
+  <section class="modal" id="advisorDetailModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeAdvisorDetail">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-user-check"></i>
+      </div>
+
+      <h2 id="advisorDetailTitle">Detalle del asesor</h2>
+      <p id="advisorDetailSubtitle">Indicadores del asesor seleccionado.</p>
+
+      <div class="preview-content" id="advisorDetailContent"></div>
+
+      <div class="detail-actions">
+        <a href="asignar-casos.html" class="btn btn-primary">
+          Asignar caso
+        </a>
+
+        <a href="monitoreo-sla.html" class="btn btn-light-red">
+          Ver SLA
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="performanceBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Analítica IA Supervisor</strong>
+        <span>Desempeño de asesores</span>
+      </div>
+
+      <button id="closePerformanceBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo analizar desempeño, sobrecarga, cumplimiento SLA y satisfacción.
+      </div>
+
+      <button class="chat-option">Detectar asesores con sobrecarga</button>
+      <button class="chat-option">Analizar bajo SLA</button>
+      <button class="chat-option">Sugerir redistribución</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openPerformanceHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/desempeno-asesores.js"></script>
+</body>
+</html>

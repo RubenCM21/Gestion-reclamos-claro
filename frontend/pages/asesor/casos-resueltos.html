@@ -1,0 +1,416 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Casos Resueltos | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel interno</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-headset"></i>
+        </div>
+
+        <div>
+          <strong>Asesor de Atención</strong>
+          <span>Perfil interno</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-asesor.html">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="bandeja-casos.html">
+          <i class="fa-solid fa-inbox"></i>
+          Mi bandeja
+          <span class="sidebar-badge">12</span>
+        </a>
+
+        <a href="detalle-atencion.html">
+          <i class="fa-solid fa-folder-open"></i>
+          Detalle de atención
+        </a>
+
+        <a href="actualizar-seguimiento.html">
+          <i class="fa-solid fa-pen-to-square"></i>
+          Actualizar seguimiento
+        </a>
+
+        <a href="solicitar-informacion.html">
+          <i class="fa-solid fa-circle-question"></i>
+          Solicitar información
+        </a>
+
+        <a href="casos-resueltos.html" class="active">
+          <i class="fa-solid fa-circle-check"></i>
+          Casos resueltos
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-chart-simple"></i>
+        </div>
+
+        <h3>Análisis IA</h3>
+        <p>Evalúa soluciones, tiempos de atención y satisfacción del cliente.</p>
+
+        <button id="openResolvedBot">
+          Analizar
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Cierre de atención</span>
+          <h1>Casos resueltos</h1>
+          <p>
+            Consulta los casos finalizados, revisa soluciones, tiempos de atención y calificaciones del cliente.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="exportResolvedCases">
+            <i class="fa-solid fa-download"></i>
+            Exportar
+          </button>
+
+          <button class="icon-btn app-notification">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="resolved-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-circle-check"></i>
+            Gestión de cierre
+          </span>
+
+          <h2>Revisa la calidad de las soluciones registradas</h2>
+
+          <p>
+            Esta vista permite verificar si los casos fueron resueltos dentro del plazo,
+            qué respuesta recibió el cliente y cómo calificó la atención.
+          </p>
+        </div>
+
+        <aside class="resolved-hero__card">
+          <i class="fa-solid fa-star"></i>
+          <strong>Promedio de satisfacción</strong>
+          <span id="avgSatisfactionText">4.6 de 5 según casos calificados.</span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Resueltos hoy</span>
+            <strong id="metricResolvedToday">5</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+
+          <div>
+            <span>Tiempo promedio</span>
+            <strong id="metricAvgTime">36 min</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+
+          <div>
+            <span>Cumplimiento SLA</span>
+            <strong id="metricSlaCompliance">92%</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-star"></i>
+          </div>
+
+          <div>
+            <span>Satisfacción</span>
+            <strong id="metricSatisfaction">4.6</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Filtros -->
+      <section class="resolved-filter-panel">
+        <div class="resolved-filter-panel__header">
+          <div>
+            <span>Filtros</span>
+            <h2>Buscar casos resueltos</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearResolvedFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="resolved-filter-grid">
+          <label>
+            Buscar
+            <input
+              type="text"
+              id="resolvedSearch"
+              placeholder="Código, cliente, servicio o solución..."
+            />
+          </label>
+
+          <label>
+            Tipo
+            <select id="filterResolvedType">
+              <option value="all">Todos</option>
+              <option value="Reclamo">Reclamo</option>
+              <option value="Incidencia">Incidencia</option>
+            </select>
+          </label>
+
+          <label>
+            Servicio
+            <select id="filterResolvedService">
+              <option value="all">Todos</option>
+              <option value="Internet hogar">Internet hogar</option>
+              <option value="Telefonía móvil">Telefonía móvil</option>
+              <option value="Claro TV+">Claro TV+</option>
+              <option value="Telefonía fija">Telefonía fija</option>
+            </select>
+          </label>
+
+          <label>
+            Resultado
+            <select id="filterResolvedResult">
+              <option value="all">Todos</option>
+              <option value="Solucionado">Solucionado</option>
+              <option value="No procede">No procede</option>
+              <option value="Derivado">Derivado</option>
+            </select>
+          </label>
+
+          <label>
+            Calificación
+            <select id="filterRating">
+              <option value="all">Todas</option>
+              <option value="5">5 estrellas</option>
+              <option value="4">4 estrellas</option>
+              <option value="3">3 estrellas o menos</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- Layout -->
+      <section class="resolved-layout">
+        <!-- Tabla -->
+        <article class="panel-card resolved-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Listado finalizado</span>
+              <h2>Casos cerrados o resueltos</h2>
+            </div>
+
+            <button class="small-link" id="refreshResolvedCases">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="resolved-table">
+            <div class="resolved-table__head">
+              <span>Código</span>
+              <span>Cliente</span>
+              <span>Tipo</span>
+              <span>Servicio</span>
+              <span>Resultado</span>
+              <span>SLA</span>
+              <span>Calificación</span>
+              <span>Acciones</span>
+            </div>
+
+            <div id="resolvedRows"></div>
+          </div>
+
+          <div class="empty-state hidden" id="emptyResolved">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>No se encontraron casos resueltos</h3>
+            <p>Prueba cambiando los filtros aplicados.</p>
+          </div>
+        </article>
+
+        <!-- Panel lateral -->
+        <aside class="resolved-side">
+          <article class="side-card side-card-dark">
+            <span>Análisis IA</span>
+            <h3>Resumen de desempeño</h3>
+
+            <p>
+              La IA analiza los cierres registrados y detecta patrones de mejora.
+            </p>
+
+            <div class="estimate-box" id="resolvedAiSummary">
+              La mayoría de casos fueron resueltos dentro del SLA. Revisa los casos con baja calificación.
+            </div>
+
+            <button id="generateResolvedSummary">
+              Generar análisis
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-chart-line"></i>
+            </div>
+
+            <h3>Indicadores</h3>
+
+            <div class="history-indicators">
+              <div>
+                <span>Dentro de SLA</span>
+                <strong id="indicatorInSla">4</strong>
+              </div>
+
+              <div>
+                <span>Fuera de SLA</span>
+                <strong id="indicatorOutSla">1</strong>
+              </div>
+
+              <div>
+                <span>Baja calificación</span>
+                <strong id="indicatorLowRating">1</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Recomendaciones</h3>
+
+            <ul class="recommendation-list">
+              <li>Revisa casos con calificación menor a 4.</li>
+              <li>Evalúa cierres fuera del SLA para detectar demoras.</li>
+              <li>Verifica que la solución registrada sea clara.</li>
+              <li>Usa el historial para sustentar auditorías internas.</li>
+            </ul>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal detalle -->
+  <section class="modal" id="resolvedDetailModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeResolvedDetail">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+
+      <h2 id="resolvedDetailTitle">Detalle de caso resuelto</h2>
+      <p id="resolvedDetailSubtitle">Información de cierre del caso seleccionado.</p>
+
+      <div class="preview-content" id="resolvedDetailContent"></div>
+
+      <div class="detail-actions">
+        <a href="detalle-atencion.html" class="btn btn-primary">
+          Ver atención completa
+        </a>
+
+        <button class="btn btn-light-red" id="downloadResolvedProof">
+          Descargar constancia
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="resolvedBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Análisis IA Asesor</strong>
+        <span>Casos resueltos</span>
+      </div>
+
+      <button id="closeResolvedBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo analizar cierres, detectar casos con baja calificación o resumir soluciones registradas.
+      </div>
+
+      <button class="chat-option">Analizar satisfacción</button>
+      <button class="chat-option">Ver casos fuera de SLA</button>
+      <button class="chat-option">Detectar oportunidades de mejora</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openResolvedHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/casos-resueltos.js"></script>
+</body>
+</html>

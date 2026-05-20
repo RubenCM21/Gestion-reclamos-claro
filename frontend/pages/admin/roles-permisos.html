@@ -1,0 +1,467 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Roles y Permisos | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel administrador</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <div>
+          <strong>Administrador</strong>
+          <span>Gestión del sistema</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-admin.html">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="usuarios.html">
+          <i class="fa-solid fa-users"></i>
+          Usuarios
+        </a>
+
+        <a href="roles-permisos.html" class="active">
+          <i class="fa-solid fa-user-lock"></i>
+          Roles y permisos
+          <span class="sidebar-badge" id="sidebarRolesCount">0</span>
+        </a>
+
+        <a href="catalogos.html">
+          <i class="fa-solid fa-layer-group"></i>
+          Catálogos
+        </a>
+
+        <a href="parametros-sistema.html">
+          <i class="fa-solid fa-sliders"></i>
+          Parámetros
+        </a>
+
+        <a href="auditoria.html">
+          <i class="fa-solid fa-file-shield"></i>
+          Auditoría
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Permisos IA</h3>
+        <p>Detecta roles sensibles, permisos excesivos o módulos sin control.</p>
+
+        <button id="openRolesBot">
+          Analizar
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Control de accesos</span>
+          <h1>Roles y permisos</h1>
+          <p>
+            Configura qué puede ver, crear, editar, asignar, resolver o administrar cada perfil del sistema.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="exportRoles">
+            <i class="fa-solid fa-download"></i>
+            Exportar
+          </button>
+
+          <button class="btn btn-primary" id="openCreateRoleModal">
+            <i class="fa-solid fa-plus"></i>
+            Nuevo rol
+          </button>
+        </div>
+      </header>
+
+      <section class="roles-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-user-lock"></i>
+            Seguridad por perfil
+          </span>
+
+          <h2>Define accesos claros para cada tipo de usuario</h2>
+
+          <p>
+            Los permisos permiten controlar la operación de clientes, asesores, supervisores
+            y administradores, reduciendo errores y accesos no autorizados.
+          </p>
+
+          <div class="client-banner__actions">
+            <button class="btn btn-primary" id="openCreateRoleModalHero">
+              Crear rol
+            </button>
+
+            <button class="btn btn-light" id="analyzeRolesAi">
+              Analizar IA
+            </button>
+
+            <a href="usuarios.html" class="btn btn-light">
+              Ver usuarios
+            </a>
+          </div>
+        </div>
+
+        <aside class="roles-hero__card">
+          <i class="fa-solid fa-shield-halved"></i>
+          <strong>Estado de permisos</strong>
+          <span id="rolesAiTip">
+            Esperando datos del backend para analizar roles y permisos.
+          </span>
+        </aside>
+      </section>
+
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-user-lock"></i>
+          </div>
+
+          <div>
+            <span>Roles configurados</span>
+            <strong id="metricTotalRoles">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-shield-halved"></i>
+          </div>
+
+          <div>
+            <span>Módulos controlados</span>
+            <strong id="metricModules">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-key"></i>
+          </div>
+
+          <div>
+            <span>Permisos activos</span>
+            <strong id="metricActivePermissions">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Permisos sensibles</span>
+            <strong id="metricSensitivePermissions">0</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="roles-filter-panel">
+        <div class="roles-filter-panel__header">
+          <div>
+            <span>Filtros</span>
+            <h2>Buscar roles</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearRoleFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="roles-filter-grid">
+          <label>
+            Buscar
+            <input
+              type="text"
+              id="roleSearch"
+              placeholder="Rol, descripción o módulo..."
+            />
+          </label>
+
+          <label>
+            Estado
+            <select id="filterRoleStatus">
+              <option value="all">Todos</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </label>
+
+          <label>
+            Nivel de acceso
+            <select id="filterAccessLevel">
+              <option value="all">Todos</option>
+              <option value="Básico">Básico</option>
+              <option value="Operativo">Operativo</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Administrativo">Administrativo</option>
+            </select>
+          </label>
+
+          <label>
+            Módulo
+            <select id="filterModule">
+              <option value="all">Todos</option>
+              <option value="Cliente">Cliente</option>
+              <option value="Asesor">Asesor</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Administrador">Administrador</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="roles-layout">
+        <article class="panel-card roles-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Roles del sistema</span>
+              <h2>Listado de perfiles</h2>
+            </div>
+
+            <button class="small-link" id="refreshRoles">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="roles-table">
+            <div class="roles-table__head">
+              <span>Rol</span>
+              <span>Nivel</span>
+              <span>Estado</span>
+              <span>Módulos</span>
+              <span>Permisos</span>
+              <span>Sensibles</span>
+              <span>Acciones</span>
+            </div>
+
+            <div id="rolesRows"></div>
+          </div>
+
+          <div class="empty-state hidden" id="emptyRoles">
+            <i class="fa-solid fa-user-lock"></i>
+            <h3>No hay roles para mostrar</h3>
+            <p>Cuando el backend esté conectado, aquí aparecerán los roles reales.</p>
+          </div>
+        </article>
+
+        <aside class="roles-side">
+          <article class="side-card side-card-dark">
+            <span>Análisis IA</span>
+            <h3>Seguridad de permisos</h3>
+
+            <p>
+              La IA revisa permisos sensibles y detecta accesos excesivos por rol.
+            </p>
+
+            <div class="estimate-box" id="rolesSummaryBox">
+              Esperando datos del backend para generar análisis.
+            </div>
+
+            <button id="generateRolesSummary">
+              Generar análisis
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Buenas prácticas</h3>
+
+            <ul class="recommendation-list">
+              <li>Asignar permisos mínimos necesarios.</li>
+              <li>Separar funciones de asesor, supervisor y administrador.</li>
+              <li>Auditar permisos administrativos con frecuencia.</li>
+              <li>Evitar que roles operativos modifiquen parámetros críticos.</li>
+            </ul>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal crear/editar rol -->
+  <section class="modal" id="roleModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeRoleModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-user-lock"></i>
+      </div>
+
+      <h2 id="roleModalTitle">Nuevo rol</h2>
+      <p id="roleModalSubtitle">Completa la información y permisos del rol.</p>
+
+      <form id="roleForm" class="role-form">
+        <input type="hidden" id="roleId" />
+
+        <div class="modal-form-grid">
+          <label>
+            Nombre del rol *
+            <input type="text" id="roleName" required />
+          </label>
+
+          <label>
+            Nivel de acceso *
+            <select id="roleAccessLevel" required>
+              <option value="">Seleccionar nivel</option>
+              <option value="Básico">Básico</option>
+              <option value="Operativo">Operativo</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Administrativo">Administrativo</option>
+            </select>
+          </label>
+
+          <label>
+            Estado *
+            <select id="roleStatus" required>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </label>
+
+          <label>
+            Descripción *
+            <input type="text" id="roleDescription" required />
+          </label>
+        </div>
+
+        <div class="permissions-editor">
+          <div class="permissions-editor__header">
+            <div>
+              <span>Permisos del rol</span>
+              <h3>Módulos y acciones permitidas</h3>
+            </div>
+
+            <button type="button" id="selectRecommendedPermissions">
+              Sugerir permisos IA
+            </button>
+          </div>
+
+          <div class="permissions-grid" id="permissionsGrid">
+            <!-- JS -->
+          </div>
+        </div>
+
+        <label class="role-observation">
+          Observación administrativa
+          <textarea
+            id="roleObservation"
+            rows="4"
+            placeholder="Comentario interno sobre creación o modificación del rol."
+          ></textarea>
+        </label>
+
+        <div class="form-actions">
+          <button type="button" class="btn btn-outline" id="cancelRoleForm">
+            Cancelar
+          </button>
+
+          <button type="submit" class="btn btn-primary">
+            Guardar rol
+            <i class="fa-solid fa-save"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Modal detalle rol -->
+  <section class="modal" id="roleDetailModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeRoleDetailModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-user-lock"></i>
+      </div>
+
+      <h2 id="roleDetailTitle">Detalle del rol</h2>
+      <p id="roleDetailSubtitle">Permisos y configuración del rol seleccionado.</p>
+
+      <div class="preview-content" id="roleDetailContent"></div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="rolesBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Permisos IA Claro</strong>
+        <span>Roles y accesos</span>
+      </div>
+
+      <button id="closeRolesBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a detectar permisos sensibles, accesos excesivos o roles incompletos.
+      </div>
+
+      <button class="chat-option">Detectar permisos sensibles</button>
+      <button class="chat-option">Revisar rol administrador</button>
+      <button class="chat-option">Sugerir permisos mínimos</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openRolesHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/roles-permisos.js"></script>
+</body>
+</html>

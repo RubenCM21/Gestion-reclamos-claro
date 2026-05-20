@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Dashboard Supervisor | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel supervisor</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+
+        <div>
+          <strong>Supervisor</strong>
+          <span>Gestión de casos</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-supervisor.html" class="active">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="clasificar-casos.html">
+          <i class="fa-solid fa-tags"></i>
+          Clasificar casos
+          <span class="sidebar-badge" id="sidebarPendingCount">8</span>
+        </a>
+
+        <a href="asignar-casos.html">
+          <i class="fa-solid fa-user-check"></i>
+          Asignar casos
+        </a>
+
+        <a href="monitoreo-sla.html">
+          <i class="fa-solid fa-hourglass-half"></i>
+          Monitoreo SLA
+        </a>
+
+        <a href="desempeno-asesores.html">
+          <i class="fa-solid fa-users-gear"></i>
+          Desempeño asesores
+        </a>
+
+        <a href="reportes-supervisor.html">
+          <i class="fa-solid fa-chart-pie"></i>
+          Reportes
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Supervisor IA</h3>
+        <p>Detecta riesgos, sugiere asignaciones y prioriza casos críticos.</p>
+
+        <button id="openSupervisorBot">
+          Abrir IA
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Panel de control</span>
+          <h1>Dashboard del supervisor</h1>
+          <p>
+            Supervisa casos pendientes, asignaciones, alertas de SLA y desempeño del equipo.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <a href="clasificar-casos.html" class="btn btn-primary">
+            <i class="fa-solid fa-tags"></i>
+            Clasificar pendientes
+          </a>
+
+          <a href="asignar-casos.html" class="btn btn-outline">
+            <i class="fa-solid fa-user-check"></i>
+            Asignar casos
+          </a>
+
+          <button class="icon-btn app-notification">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="supervisor-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-user-tie"></i>
+            Gestión inteligente de atención
+          </span>
+
+          <h2>Controla la operación y evita retrasos críticos</h2>
+
+          <p>
+            El supervisor puede clasificar casos nuevos, asignarlos al asesor adecuado,
+            monitorear vencimientos de SLA y tomar decisiones basadas en indicadores.
+          </p>
+
+          <div class="client-banner__actions">
+            <a href="clasificar-casos.html" class="btn btn-primary">
+              Clasificar casos
+            </a>
+
+            <a href="monitoreo-sla.html" class="btn btn-light">
+              Ver SLA
+            </a>
+
+            <button class="btn btn-light" id="generateSupervisorPlan">
+              Plan IA
+            </button>
+          </div>
+        </div>
+
+        <aside class="supervisor-hero__card">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          <strong>Alerta operativa</strong>
+          <span id="supervisorAiTip">
+            Hay casos críticos pendientes de clasificación y asignación.
+          </span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-tags"></i>
+          </div>
+
+          <div>
+            <span>Pendientes de clasificar</span>
+            <strong id="metricPendingClassify">8</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Casos críticos</span>
+            <strong id="metricCriticalCases">5</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-hourglass-half"></i>
+          </div>
+
+          <div>
+            <span>SLA en riesgo</span>
+            <strong id="metricSlaRisk">4</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-user-check"></i>
+          </div>
+
+          <div>
+            <span>Asignados hoy</span>
+            <strong id="metricAssignedToday">15</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Acciones rápidas -->
+      <section class="dashboard-section">
+        <div class="dashboard-section__header">
+          <div>
+            <span>Acciones rápidas</span>
+            <h2>Gestión del supervisor</h2>
+          </div>
+
+          <a href="reportes-supervisor.html">
+            Ver reportes
+            <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </div>
+
+        <div class="action-grid">
+          <a href="clasificar-casos.html" class="action-card">
+            <i class="fa-solid fa-tags"></i>
+            <h3>Clasificar casos</h3>
+            <p>Define categoría, prioridad, SLA y ruta de atención.</p>
+          </a>
+
+          <a href="asignar-casos.html" class="action-card">
+            <i class="fa-solid fa-user-check"></i>
+            <h3>Asignar asesores</h3>
+            <p>Distribuye casos según carga, especialidad y urgencia.</p>
+          </a>
+
+          <a href="monitoreo-sla.html" class="action-card">
+            <i class="fa-solid fa-hourglass-half"></i>
+            <h3>Monitorear SLA</h3>
+            <p>Identifica casos próximos a vencer o fuera de plazo.</p>
+          </a>
+
+          <a href="desempeno-asesores.html" class="action-card">
+            <i class="fa-solid fa-users-gear"></i>
+            <h3>Ver desempeño</h3>
+            <p>Evalúa productividad, tiempos y cumplimiento del equipo.</p>
+          </a>
+        </div>
+      </section>
+
+      <!-- Contenido principal -->
+      <section class="dashboard-content-grid">
+        <!-- Casos críticos -->
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Priorización</span>
+              <h2>Casos críticos pendientes</h2>
+            </div>
+
+            <button class="small-link" id="refreshSupervisorCases">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="supervisor-case-list" id="supervisorCaseList">
+            <!-- JS -->
+          </div>
+        </article>
+
+        <!-- Alertas -->
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Alertas operativas</span>
+              <h2>Riesgos detectados</h2>
+            </div>
+
+            <button class="small-link" id="generateSupervisorAlerts">
+              Resumen IA
+            </button>
+          </div>
+
+          <div class="advisor-alert-list">
+            <article class="advisor-alert danger">
+              <i class="fa-solid fa-triangle-exclamation"></i>
+              <div>
+                <strong>4 casos con SLA en riesgo</strong>
+                <p>Requieren clasificación o reasignación inmediata.</p>
+              </div>
+            </article>
+
+            <article class="advisor-alert warning">
+              <i class="fa-solid fa-user-clock"></i>
+              <div>
+                <strong>2 asesores con alta carga</strong>
+                <p>Revisar distribución para evitar retrasos.</p>
+              </div>
+            </article>
+
+            <article class="advisor-alert info">
+              <i class="fa-solid fa-robot"></i>
+              <div>
+                <strong>IA sugiere reasignación</strong>
+                <p>Algunos casos técnicos pueden asignarse a asesores especializados.</p>
+              </div>
+            </article>
+          </div>
+        </article>
+      </section>
+
+      <!-- IA + desempeño -->
+      <section class="dashboard-content-grid">
+        <article class="panel-card ai-panel">
+          <div class="ai-panel__content">
+            <span>Asistencia supervisor</span>
+            <h2>Asignación inteligente de casos</h2>
+            <p>
+              La IA puede recomendar asesores considerando prioridad, SLA, especialidad,
+              carga actual y desempeño histórico.
+            </p>
+
+            <div class="ai-suggestions">
+              <button>Recomendar asignación</button>
+              <button>Detectar sobrecarga</button>
+              <button>Priorizar pendientes</button>
+            </div>
+
+            <button class="btn btn-primary" id="openSupervisorAssistant">
+              Abrir asistente IA
+            </button>
+          </div>
+
+          <div class="ai-panel__icon">
+            <i class="fa-solid fa-brain"></i>
+          </div>
+        </article>
+
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span>Equipo</span>
+              <h2>Desempeño rápido</h2>
+            </div>
+          </div>
+
+          <div class="advisor-performance">
+            <div>
+              <span>Asesores activos</span>
+              <strong id="metricActiveAdvisors">6</strong>
+            </div>
+
+            <div>
+              <span>Carga promedio</span>
+              <strong id="metricAvgLoad">9</strong>
+            </div>
+
+            <div>
+              <span>Cumplimiento SLA</span>
+              <strong id="metricTeamSla">91%</strong>
+            </div>
+
+            <div>
+              <span>Resolución diaria</span>
+              <strong id="metricDailyResolution">22</strong>
+            </div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="supervisorBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Supervisor IA Claro</strong>
+        <span>Gestión operativa</span>
+      </div>
+
+      <button id="closeSupervisorBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a priorizar casos, sugerir asignaciones o detectar riesgos de SLA.
+      </div>
+
+      <button class="chat-option">Priorizar casos críticos</button>
+      <button class="chat-option">Sugerir asignaciones</button>
+      <button class="chat-option">Detectar sobrecarga</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openSupervisorHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/dashboard-supervisor.js"></script>
+</body>
+</html>

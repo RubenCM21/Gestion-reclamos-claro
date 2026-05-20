@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Notificaciones | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Centro de Atención</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div>
+          <strong>Cliente Claro</strong>
+          <span>Perfil persona</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-cliente.html">
+          <i class="fa-solid fa-house"></i>
+          Inicio
+        </a>
+
+        <a href="registrar-reclamo.html">
+          <i class="fa-solid fa-file-circle-plus"></i>
+          Registrar reclamo
+        </a>
+
+        <a href="reportar-incidencia.html">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Reportar incidencia
+        </a>
+
+        <a href="mis-casos.html">
+          <i class="fa-solid fa-folder-open"></i>
+          Mis casos
+        </a>
+
+        <a href="historial-caso.html">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Historial
+        </a>
+
+        <a href="subir-evidencia.html">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          Subir evidencia
+        </a>
+
+        <a href="notificaciones.html" class="active">
+          <i class="fa-solid fa-bell"></i>
+          Notificaciones
+          <span class="sidebar-badge" id="sidebarNotificationCount">3</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-bell"></i>
+        </div>
+
+        <h3>Alertas inteligentes</h3>
+        <p>Recibe avisos sobre cambios de estado, vencimientos y solicitudes.</p>
+
+        <button id="openNotificationBot">
+          Ver ayuda
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Centro de alertas</span>
+          <h1>Notificaciones</h1>
+          <p>
+            Revisa los avisos relacionados con tus reclamos, incidencias, evidencias y seguimiento.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="markAllRead">
+            <i class="fa-solid fa-check-double"></i>
+            Marcar todo como leído
+          </button>
+
+          <button class="icon-btn app-notification">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="notifications-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-bell"></i>
+            Seguimiento en tiempo real
+          </span>
+
+          <h2>Mantente informado sobre el avance de tus casos</h2>
+
+          <p>
+            Aquí se muestran cambios de estado, solicitudes de información, evidencias revisadas,
+            alertas de plazo y comunicaciones importantes del equipo de atención.
+          </p>
+        </div>
+
+        <aside class="notifications-hero__card">
+          <i class="fa-solid fa-robot"></i>
+          <strong>Resumen IA</strong>
+          <span id="notificationAiSummary">
+            Tienes 3 notificaciones pendientes de lectura.
+          </span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-bell"></i>
+          </div>
+
+          <div>
+            <span>No leídas</span>
+            <strong id="metricUnread">3</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </div>
+
+          <div>
+            <span>Cambios de estado</span>
+            <strong id="metricStatus">2</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-circle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Solicitudes</span>
+            <strong id="metricRequests">1</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Resueltas</span>
+            <strong id="metricResolved">1</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Filtros -->
+      <section class="notification-filter-panel">
+        <div class="notification-filter-panel__header">
+          <div>
+            <span>Filtros</span>
+            <h2>Buscar notificaciones</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearNotificationFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="notification-filter-grid">
+          <label>
+            Buscar
+            <input
+              type="text"
+              id="notificationSearch"
+              placeholder="Buscar por caso, mensaje o tipo..."
+            />
+          </label>
+
+          <label>
+            Tipo
+            <select id="filterNotificationType">
+              <option value="all">Todos</option>
+              <option value="Cambio de estado">Cambio de estado</option>
+              <option value="Solicitud de información">Solicitud de información</option>
+              <option value="Evidencia">Evidencia</option>
+              <option value="SLA">SLA</option>
+              <option value="Resolución">Resolución</option>
+            </select>
+          </label>
+
+          <label>
+            Estado
+            <select id="filterReadStatus">
+              <option value="all">Todas</option>
+              <option value="unread">No leídas</option>
+              <option value="read">Leídas</option>
+            </select>
+          </label>
+
+          <label>
+            Caso
+            <select id="filterCaseCode">
+              <option value="all">Todos</option>
+              <option value="CL-RC-000123">CL-RC-000123</option>
+              <option value="CL-IN-000099">CL-IN-000099</option>
+              <option value="CL-IN-000074">CL-IN-000074</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <!-- Layout -->
+      <section class="notifications-layout">
+        <!-- Lista -->
+        <article class="panel-card notifications-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Alertas recientes</span>
+              <h2>Listado de notificaciones</h2>
+            </div>
+
+            <button class="small-link" id="refreshNotifications">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="notifications-list" id="notificationsList">
+            <!-- Se llena con JS preparado para backend -->
+          </div>
+
+          <div class="empty-state hidden" id="emptyNotifications">
+            <i class="fa-solid fa-bell-slash"></i>
+            <h3>No se encontraron notificaciones</h3>
+            <p>Prueba cambiando los filtros aplicados.</p>
+          </div>
+        </article>
+
+        <!-- Panel lateral -->
+        <aside class="notifications-side">
+          <article class="side-card side-card-dark">
+            <span>Asistente IA</span>
+            <h3>Resumen de alertas</h3>
+
+            <p>
+              La IA resume las notificaciones pendientes y recomienda qué revisar primero.
+            </p>
+
+            <div class="estimate-box" id="notificationSummaryBox">
+              Revisa primero la solicitud de información del caso CL-IN-000099 para evitar retrasos.
+            </div>
+
+            <button id="generateNotificationSummary">
+              Generar resumen
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-sliders"></i>
+            </div>
+
+            <h3>Preferencias</h3>
+
+            <div class="notification-preferences">
+              <label>
+                <input type="checkbox" checked />
+                <span>Recibir alertas por correo</span>
+              </label>
+
+              <label>
+                <input type="checkbox" checked />
+                <span>Recibir alertas en la WebApp</span>
+              </label>
+
+              <label>
+                <input type="checkbox" />
+                <span>Recibir SMS si el caso es crítico</span>
+              </label>
+            </div>
+
+            <button id="saveNotificationPrefs">
+              Guardar preferencias
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Recomendaciones</h3>
+
+            <ul class="recommendation-list">
+              <li>Revisa las solicitudes de información primero.</li>
+              <li>Adjunta evidencias si el asesor las solicita.</li>
+              <li>Consulta el historial si deseas ver el avance completo.</li>
+              <li>Activa alertas para no perder actualizaciones importantes.</li>
+            </ul>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal detalle notificación -->
+  <section class="modal" id="notificationDetailModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeNotificationDetail">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-bell"></i>
+      </div>
+
+      <h2 id="notificationDetailTitle">Detalle de notificación</h2>
+      <p id="notificationDetailSubtitle">Información de la alerta seleccionada.</p>
+
+      <div class="preview-content" id="notificationDetailContent"></div>
+
+      <div class="modal-actions">
+        <a href="detalle-caso.html" class="btn btn-primary btn-full">
+          Ver caso relacionado
+        </a>
+
+        <a href="subir-evidencia.html" class="btn btn-outline btn-full">
+          Adjuntar evidencia
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="notificationBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Alertas IA Claro</strong>
+        <span>Notificaciones del cliente</span>
+      </div>
+
+      <button id="closeNotificationBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a entender tus notificaciones y priorizar qué revisar primero.
+      </div>
+
+      <button class="chat-option">¿Qué notificación debo atender primero?</button>
+      <button class="chat-option">Explícame el estado de mi caso</button>
+      <button class="chat-option">Ver solicitudes pendientes</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openNotificationHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <!-- IMPORTANTE: api.js primero, luego el JS de la pantalla -->
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/notificaciones.js"></script>
+</body>
+</html>

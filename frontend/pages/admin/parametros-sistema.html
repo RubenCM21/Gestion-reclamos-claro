@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Parámetros del Sistema | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel administrador</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-shield"></i>
+        </div>
+
+        <div>
+          <strong>Administrador</strong>
+          <span>Gestión del sistema</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-admin.html">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="usuarios.html">
+          <i class="fa-solid fa-users"></i>
+          Usuarios
+        </a>
+
+        <a href="roles-permisos.html">
+          <i class="fa-solid fa-user-lock"></i>
+          Roles y permisos
+        </a>
+
+        <a href="catalogos.html">
+          <i class="fa-solid fa-layer-group"></i>
+          Catálogos
+        </a>
+
+        <a href="parametros-sistema.html" class="active">
+          <i class="fa-solid fa-sliders"></i>
+          Parámetros
+          <span class="sidebar-badge" id="sidebarParamsCount">0</span>
+        </a>
+
+        <a href="auditoria.html">
+          <i class="fa-solid fa-file-shield"></i>
+          Auditoría
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Parámetros IA</h3>
+        <p>Detecta reglas incompletas, valores riesgosos y configuraciones críticas.</p>
+
+        <button id="openParamsBot">
+          Analizar
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Configuración general</span>
+          <h1>Parámetros del sistema</h1>
+          <p>
+            Configura reglas de SLA, adjuntos, notificaciones, seguridad, canales y operación general.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <button class="btn btn-outline" id="exportParams">
+            <i class="fa-solid fa-download"></i>
+            Exportar
+          </button>
+
+          <button class="btn btn-primary" id="openCreateParamModal">
+            <i class="fa-solid fa-plus"></i>
+            Nuevo parámetro
+          </button>
+        </div>
+      </header>
+
+      <section class="params-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-sliders"></i>
+            Reglas globales de operación
+          </span>
+
+          <h2>Configura el comportamiento principal de la WebApp</h2>
+
+          <p>
+            Los parámetros permiten controlar plazos, límites, reglas de seguridad,
+            notificaciones, canales activos y condiciones generales del sistema.
+          </p>
+
+          <div class="client-banner__actions">
+            <button class="btn btn-primary" id="openCreateParamModalHero">
+              Crear parámetro
+            </button>
+
+            <button class="btn btn-light" id="analyzeParamsAi">
+              Analizar IA
+            </button>
+
+            <a href="auditoria.html" class="btn btn-light">
+              Ver auditoría
+            </a>
+          </div>
+        </div>
+
+        <aside class="params-hero__card">
+          <i class="fa-solid fa-shield-halved"></i>
+          <strong>Estado de configuración</strong>
+          <span id="paramsAiTip">
+            Esperando datos del backend para analizar parámetros.
+          </span>
+        </aside>
+      </section>
+
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-sliders"></i>
+          </div>
+
+          <div>
+            <span>Total parámetros</span>
+            <strong id="metricTotalParams">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-circle-check"></i>
+          </div>
+
+          <div>
+            <span>Activos</span>
+            <strong id="metricActiveParams">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Críticos</span>
+            <strong id="metricCriticalParams">0</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+
+          <div>
+            <span>Seguridad</span>
+            <strong id="metricSecurityParams">0</strong>
+          </div>
+        </article>
+      </section>
+
+      <section class="params-filter-panel">
+        <div class="params-filter-panel__header">
+          <div>
+            <span>Filtros</span>
+            <h2>Buscar parámetros</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearParamFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="params-filter-grid">
+          <label>
+            Buscar
+            <input
+              type="text"
+              id="paramSearch"
+              placeholder="Código, nombre, valor o descripción..."
+            />
+          </label>
+
+          <label>
+            Categoría
+            <select id="filterParamCategory">
+              <option value="all">Todas</option>
+              <option value="SLA">SLA</option>
+              <option value="Adjuntos">Adjuntos</option>
+              <option value="Notificaciones">Notificaciones</option>
+              <option value="Seguridad">Seguridad</option>
+              <option value="Canales">Canales</option>
+              <option value="Operación">Operación</option>
+            </select>
+          </label>
+
+          <label>
+            Estado
+            <select id="filterParamStatus">
+              <option value="all">Todos</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+            </select>
+          </label>
+
+          <label>
+            Criticidad
+            <select id="filterParamCriticality">
+              <option value="all">Todas</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Baja">Baja</option>
+            </select>
+          </label>
+        </div>
+      </section>
+
+      <section class="params-layout">
+        <article class="panel-card params-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Configuración registrada</span>
+              <h2>Listado de parámetros</h2>
+            </div>
+
+            <button class="small-link" id="refreshParams">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="params-table">
+            <div class="params-table__head">
+              <span>Código</span>
+              <span>Nombre</span>
+              <span>Categoría</span>
+              <span>Valor</span>
+              <span>Criticidad</span>
+              <span>Estado</span>
+              <span>Acciones</span>
+            </div>
+
+            <div id="paramsRows"></div>
+          </div>
+
+          <div class="empty-state hidden" id="emptyParams">
+            <i class="fa-solid fa-sliders"></i>
+            <h3>No hay parámetros para mostrar</h3>
+            <p>Cuando el backend esté conectado, aquí aparecerán los parámetros reales.</p>
+          </div>
+        </article>
+
+        <aside class="params-side">
+          <article class="side-card side-card-dark">
+            <span>Análisis IA</span>
+            <h3>Calidad de configuración</h3>
+
+            <p>
+              La IA revisa valores críticos, parámetros inactivos y posibles riesgos operativos.
+            </p>
+
+            <div class="estimate-box" id="paramsSummaryBox">
+              Esperando datos del backend para generar análisis.
+            </div>
+
+            <button id="generateParamsSummary">
+              Generar análisis
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-lightbulb"></i>
+            </div>
+
+            <h3>Buenas prácticas</h3>
+
+            <ul class="recommendation-list">
+              <li>Auditar cambios en parámetros críticos.</li>
+              <li>No modificar SLA sin aprobación del supervisor.</li>
+              <li>Validar límites de adjuntos para evitar saturación.</li>
+              <li>Mantener reglas de seguridad activas.</li>
+            </ul>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal crear/editar parámetro -->
+  <section class="modal" id="paramModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeParamModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-sliders"></i>
+      </div>
+
+      <h2 id="paramModalTitle">Nuevo parámetro</h2>
+      <p id="paramModalSubtitle">Completa la configuración del parámetro.</p>
+
+      <form id="paramForm" class="modal-form-grid">
+        <input type="hidden" id="paramId" />
+
+        <label>
+          Código *
+          <input type="text" id="paramCode" required />
+        </label>
+
+        <label>
+          Nombre *
+          <input type="text" id="paramName" required />
+        </label>
+
+        <label>
+          Categoría *
+          <select id="paramCategory" required>
+            <option value="">Seleccionar categoría</option>
+            <option value="SLA">SLA</option>
+            <option value="Adjuntos">Adjuntos</option>
+            <option value="Notificaciones">Notificaciones</option>
+            <option value="Seguridad">Seguridad</option>
+            <option value="Canales">Canales</option>
+            <option value="Operación">Operación</option>
+          </select>
+        </label>
+
+        <label>
+          Valor *
+          <input type="text" id="paramValue" required />
+        </label>
+
+        <label>
+          Tipo de dato *
+          <select id="paramDataType" required>
+            <option value="">Seleccionar tipo</option>
+            <option value="Número">Número</option>
+            <option value="Texto">Texto</option>
+            <option value="Booleano">Booleano</option>
+            <option value="Lista">Lista</option>
+            <option value="Tiempo">Tiempo</option>
+          </select>
+        </label>
+
+        <label>
+          Criticidad *
+          <select id="paramCriticality" required>
+            <option value="">Seleccionar criticidad</option>
+            <option value="Alta">Alta</option>
+            <option value="Media">Media</option>
+            <option value="Baja">Baja</option>
+          </select>
+        </label>
+
+        <label>
+          Estado *
+          <select id="paramStatus" required>
+            <option value="Activo">Activo</option>
+            <option value="Inactivo">Inactivo</option>
+          </select>
+        </label>
+
+        <label>
+          Requiere auditoría *
+          <select id="paramRequiresAudit" required>
+            <option value="Sí">Sí</option>
+            <option value="No">No</option>
+          </select>
+        </label>
+
+        <label class="span-2">
+          Descripción
+          <textarea
+            id="paramDescription"
+            rows="4"
+            placeholder="Describe para qué se usa este parámetro dentro del sistema."
+          ></textarea>
+        </label>
+
+        <label class="span-2">
+          Observación administrativa
+          <textarea
+            id="paramObservation"
+            rows="4"
+            placeholder="Comentario interno sobre creación, modificación o motivo del cambio."
+          ></textarea>
+        </label>
+
+        <div class="form-actions span-2">
+          <button type="button" class="btn btn-outline" id="cancelParamForm">
+            Cancelar
+          </button>
+
+          <button type="submit" class="btn btn-primary">
+            Guardar parámetro
+            <i class="fa-solid fa-save"></i>
+          </button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Modal detalle parámetro -->
+  <section class="modal" id="paramDetailModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeParamDetailModal">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-sliders"></i>
+      </div>
+
+      <h2 id="paramDetailTitle">Detalle del parámetro</h2>
+      <p id="paramDetailSubtitle">Información del parámetro seleccionado.</p>
+
+      <div class="preview-content" id="paramDetailContent"></div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="paramsBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Parámetros IA Claro</strong>
+        <span>Configuración del sistema</span>
+      </div>
+
+      <button id="closeParamsBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo ayudarte a detectar parámetros críticos, valores riesgosos o reglas incompletas.
+      </div>
+
+      <button class="chat-option">Detectar críticos</button>
+      <button class="chat-option">Revisar seguridad</button>
+      <button class="chat-option">Validar SLA</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openParamsHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/parametros-sistema.js"></script>
+</body>
+</html>

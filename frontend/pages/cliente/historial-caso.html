@@ -1,0 +1,592 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Historial del Caso | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Centro de Atención</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user"></i>
+        </div>
+
+        <div>
+          <strong>Cliente Claro</strong>
+          <span>Perfil persona</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-cliente.html">
+          <i class="fa-solid fa-house"></i>
+          Inicio
+        </a>
+
+        <a href="registrar-reclamo.html">
+          <i class="fa-solid fa-file-circle-plus"></i>
+          Registrar reclamo
+        </a>
+
+        <a href="reportar-incidencia.html">
+          <i class="fa-solid fa-triangle-exclamation"></i>
+          Reportar incidencia
+        </a>
+
+        <a href="mis-casos.html">
+          <i class="fa-solid fa-folder-open"></i>
+          Mis casos
+        </a>
+
+        <a href="historial-caso.html" class="active">
+          <i class="fa-solid fa-clock-rotate-left"></i>
+          Historial
+        </a>
+
+        <a href="subir-evidencia.html">
+          <i class="fa-solid fa-cloud-arrow-up"></i>
+          Subir evidencia
+        </a>
+
+        <a href="notificaciones.html">
+          <i class="fa-solid fa-bell"></i>
+          Notificaciones
+          <span class="sidebar-badge">3</span>
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-timeline"></i>
+        </div>
+
+        <h3>Trazabilidad</h3>
+        <p>Revisa cada acción registrada sobre tu caso.</p>
+
+        <button id="openHistoryBot">
+          Resumen IA
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Trazabilidad del caso</span>
+          <h1>Historial del caso</h1>
+          <p>
+            Consulta todas las acciones realizadas, cambios de estado, observaciones,
+            evidencias y responsables asociados al caso.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <a href="detalle-caso.html" class="topbar-search">
+            <i class="fa-solid fa-arrow-left"></i>
+            Volver al detalle
+          </a>
+
+          <button class="icon-btn app-notification">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero historial -->
+      <section class="history-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-shield-halved"></i>
+            Historial auditado
+          </span>
+
+          <h2>Seguimiento completo del caso CL-RC-000123</h2>
+
+          <p>
+            Cada movimiento queda registrado con fecha, hora, responsable, acción realizada
+            y observación. Esta vista permite revisar la trazabilidad completa del proceso.
+          </p>
+
+          <div class="history-hero__badges">
+            <span class="status-pill status-blue">En atención</span>
+            <span class="priority-pill priority-high">Prioridad alta</span>
+            <span class="sla-pill">
+              <i class="fa-solid fa-clock"></i>
+              Última actualización: hoy 10:35
+            </span>
+          </div>
+        </div>
+
+        <aside class="history-summary-card">
+          <h3>Resumen rápido</h3>
+
+          <div class="history-summary-list">
+            <div>
+              <strong>7</strong>
+              <span>movimientos</span>
+            </div>
+
+            <div>
+              <strong>2</strong>
+              <span>evidencias</span>
+            </div>
+
+            <div>
+              <strong>3</strong>
+              <span>cambios de estado</span>
+            </div>
+          </div>
+        </aside>
+      </section>
+
+      <!-- Filtros -->
+      <section class="history-filter-panel">
+        <div class="history-filter-panel__header">
+          <div>
+            <span>Filtros de trazabilidad</span>
+            <h2>Buscar movimientos del caso</h2>
+          </div>
+
+          <div class="history-filter-actions">
+            <button class="btn btn-outline" id="clearHistoryFilters">
+              Limpiar filtros
+            </button>
+
+            <button class="btn btn-primary" id="exportHistory">
+              <i class="fa-solid fa-download"></i>
+              Exportar historial
+            </button>
+          </div>
+        </div>
+
+        <div class="history-filter-grid">
+          <label>
+            Tipo de movimiento
+            <select id="filterMovement">
+              <option value="all">Todos</option>
+              <option value="Registro">Registro</option>
+              <option value="Clasificación">Clasificación</option>
+              <option value="Asignación">Asignación</option>
+              <option value="Actualización">Actualización</option>
+              <option value="Evidencia">Evidencia</option>
+              <option value="Notificación">Notificación</option>
+            </select>
+          </label>
+
+          <label>
+            Responsable
+            <select id="filterResponsible">
+              <option value="all">Todos</option>
+              <option value="Cliente">Cliente</option>
+              <option value="Sistema">Sistema</option>
+              <option value="Asesor">Asesor</option>
+              <option value="Supervisor">Supervisor</option>
+            </select>
+          </label>
+
+          <label>
+            Desde
+            <input type="date" id="filterFrom" />
+          </label>
+
+          <label>
+            Hasta
+            <input type="date" id="filterTo" />
+          </label>
+        </div>
+      </section>
+
+      <!-- Contenido principal -->
+      <section class="history-layout">
+        <!-- Timeline -->
+        <article class="panel-card history-main-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Registro cronológico</span>
+              <h2>Movimientos del caso</h2>
+            </div>
+
+            <button class="small-link" id="expandHistory">
+              Expandir todo
+            </button>
+          </div>
+
+          <div class="history-timeline" id="historyTimeline">
+            <article
+              class="history-item"
+              data-movement="Registro"
+              data-responsible="Cliente"
+              data-date="2026-05-18"
+            >
+              <div class="history-marker register">
+                <i class="fa-solid fa-file-circle-plus"></i>
+              </div>
+
+              <div class="history-content">
+                <div class="history-content__top">
+                  <div>
+                    <span>Registro</span>
+                    <h3>Caso registrado por el cliente</h3>
+                  </div>
+
+                  <time>18/05/2026 · 09:10</time>
+                </div>
+
+                <p>
+                  El cliente registró el reclamo desde la WebApp, indicando servicio afectado,
+                  categoría, descripción y evidencia inicial.
+                </p>
+
+                <div class="history-meta">
+                  <span><i class="fa-solid fa-user"></i> Cliente</span>
+                  <span><i class="fa-solid fa-globe"></i> Canal WebApp</span>
+                  <span><i class="fa-solid fa-circle-info"></i> Estado: Registrado</span>
+                </div>
+
+                <button class="history-toggle">Ver detalle técnico</button>
+
+                <div class="history-extra">
+                  <strong>Detalle:</strong> Se generó el código CL-RC-000123 y se creó la primera entrada del historial.<br>
+                  <strong>Regla aplicada:</strong> Registro mínimo obligatorio y trazabilidad inicial.<br>
+                  <strong>Resultado:</strong> Caso disponible para clasificación.
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="history-item"
+              data-movement="Evidencia"
+              data-responsible="Cliente"
+              data-date="2026-05-18"
+            >
+              <div class="history-marker evidence">
+                <i class="fa-solid fa-paperclip"></i>
+              </div>
+
+              <div class="history-content">
+                <div class="history-content__top">
+                  <div>
+                    <span>Evidencia</span>
+                    <h3>Evidencia adjuntada al caso</h3>
+                  </div>
+
+                  <time>18/05/2026 · 09:12</time>
+                </div>
+
+                <p>
+                  Se adjuntaron archivos relacionados con el recibo observado y una captura del monto reclamado.
+                </p>
+
+                <div class="history-meta">
+                  <span><i class="fa-solid fa-file-pdf"></i> recibo_mayo_2026.pdf</span>
+                  <span><i class="fa-solid fa-image"></i> captura_monto_observado.png</span>
+                </div>
+
+                <button class="history-toggle">Ver detalle técnico</button>
+
+                <div class="history-extra">
+                  <strong>Detalle:</strong> Los archivos quedaron vinculados permanentemente al caso.<br>
+                  <strong>Regla aplicada:</strong> Integridad de evidencias.<br>
+                  <strong>Resultado:</strong> Evidencia disponible para revisión del asesor.
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="history-item"
+              data-movement="Clasificación"
+              data-responsible="Supervisor"
+              data-date="2026-05-18"
+            >
+              <div class="history-marker classify">
+                <i class="fa-solid fa-tags"></i>
+              </div>
+
+              <div class="history-content">
+                <div class="history-content__top">
+                  <div>
+                    <span>Clasificación</span>
+                    <h3>Caso clasificado como reclamo de facturación</h3>
+                  </div>
+
+                  <time>18/05/2026 · 11:40</time>
+                </div>
+
+                <p>
+                  El supervisor revisó el caso, asignó categoría Facturación y prioridad Alta.
+                </p>
+
+                <div class="history-meta">
+                  <span><i class="fa-solid fa-user-tie"></i> Supervisor</span>
+                  <span><i class="fa-solid fa-flag"></i> Prioridad alta</span>
+                  <span><i class="fa-solid fa-clock"></i> SLA: 48 h</span>
+                </div>
+
+                <button class="history-toggle">Ver detalle técnico</button>
+
+                <div class="history-extra">
+                  <strong>Detalle:</strong> Se aplicó clasificación por categoría, servicio y urgencia.<br>
+                  <strong>Resultado:</strong> Caso listo para asignación al asesor.
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="history-item"
+              data-movement="Asignación"
+              data-responsible="Supervisor"
+              data-date="2026-05-18"
+            >
+              <div class="history-marker assign">
+                <i class="fa-solid fa-user-check"></i>
+              </div>
+
+              <div class="history-content">
+                <div class="history-content__top">
+                  <div>
+                    <span>Asignación</span>
+                    <h3>Caso asignado al área de atención</h3>
+                  </div>
+
+                  <time>18/05/2026 · 12:15</time>
+                </div>
+
+                <p>
+                  El caso fue asignado al área responsable para su revisión y atención.
+                </p>
+
+                <div class="history-meta">
+                  <span><i class="fa-solid fa-headset"></i> Área de Atención</span>
+                  <span><i class="fa-solid fa-bell"></i> Notificación enviada</span>
+                </div>
+
+                <button class="history-toggle">Ver detalle técnico</button>
+
+                <div class="history-extra">
+                  <strong>Detalle:</strong> Se notificó al responsable asignado.<br>
+                  <strong>Estado generado:</strong> En atención.
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="history-item"
+              data-movement="Actualización"
+              data-responsible="Asesor"
+              data-date="2026-05-19"
+            >
+              <div class="history-marker update active">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </div>
+
+              <div class="history-content">
+                <div class="history-content__top">
+                  <div>
+                    <span>Actualización</span>
+                    <h3>Revisión de información registrada</h3>
+                  </div>
+
+                  <time>19/05/2026 · 10:35</time>
+                </div>
+
+                <p>
+                  El asesor registró una observación indicando que se revisará la consistencia del monto facturado.
+                </p>
+
+                <div class="history-meta">
+                  <span><i class="fa-solid fa-headset"></i> Asesor</span>
+                  <span><i class="fa-solid fa-circle-info"></i> Estado: En atención</span>
+                  <span><i class="fa-solid fa-clock"></i> SLA restante: 18 h</span>
+                </div>
+
+                <button class="history-toggle">Ver detalle técnico</button>
+
+                <div class="history-extra">
+                  <strong>Observación:</strong> Se realizará validación del monto facturado en el recibo adjunto.<br>
+                  <strong>Siguiente paso:</strong> Emitir respuesta o solicitar información adicional.
+                </div>
+              </div>
+            </article>
+
+            <article
+              class="history-item"
+              data-movement="Notificación"
+              data-responsible="Sistema"
+              data-date="2026-05-19"
+            >
+              <div class="history-marker notify">
+                <i class="fa-solid fa-bell"></i>
+              </div>
+
+              <div class="history-content">
+                <div class="history-content__top">
+                  <div>
+                    <span>Notificación</span>
+                    <h3>Cliente notificado del cambio de estado</h3>
+                  </div>
+
+                  <time>19/05/2026 · 10:36</time>
+                </div>
+
+                <p>
+                  El sistema envió una notificación informando que el caso se encuentra en atención.
+                </p>
+
+                <div class="history-meta">
+                  <span><i class="fa-solid fa-robot"></i> Sistema</span>
+                  <span><i class="fa-solid fa-envelope"></i> Correo / WebApp</span>
+                </div>
+
+                <button class="history-toggle">Ver detalle técnico</button>
+
+                <div class="history-extra">
+                  <strong>Detalle:</strong> Notificación generada automáticamente por cambio de estado relevante.<br>
+                  <strong>Resultado:</strong> Cliente informado del avance.
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <div class="empty-state hidden" id="emptyHistory">
+            <i class="fa-solid fa-timeline"></i>
+            <h3>No se encontraron movimientos</h3>
+            <p>Prueba cambiando los filtros aplicados.</p>
+          </div>
+        </article>
+
+        <!-- Panel lateral -->
+        <aside class="history-side">
+          <article class="side-card side-card-dark">
+            <span>Resumen IA</span>
+            <h3>Lectura del historial</h3>
+
+            <p>
+              El sistema interpreta los movimientos del caso y resume el estado actual.
+            </p>
+
+            <div class="estimate-box" id="historyAiSummary">
+              El caso fue registrado, clasificado, asignado y actualmente se encuentra
+              en atención. No se requiere acción inmediata del cliente.
+            </div>
+
+            <button id="generateHistorySummary">
+              Generar resumen
+            </button>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-chart-simple"></i>
+            </div>
+
+            <h3>Indicadores del historial</h3>
+
+            <div class="history-indicators">
+              <div>
+                <span>Movimientos</span>
+                <strong id="indicatorMovements">7</strong>
+              </div>
+
+              <div>
+                <span>Responsables</span>
+                <strong>4</strong>
+              </div>
+
+              <div>
+                <span>Días transcurridos</span>
+                <strong>2</strong>
+              </div>
+            </div>
+          </article>
+
+          <article class="side-card">
+            <div class="side-card__icon">
+              <i class="fa-solid fa-file-shield"></i>
+            </div>
+
+            <h3>Exportación</h3>
+
+            <p>
+              Descarga el historial del caso como constancia de trazabilidad.
+            </p>
+
+            <div class="detail-action-list">
+              <button id="downloadPdfHistory">
+                <i class="fa-solid fa-file-pdf"></i>
+                Descargar PDF
+              </button>
+
+              <button id="downloadExcelHistory">
+                <i class="fa-solid fa-file-excel"></i>
+                Descargar Excel
+              </button>
+            </div>
+          </article>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="historyBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Historial IA Claro</strong>
+        <span>Trazabilidad del caso</span>
+      </div>
+
+      <button id="closeHistoryBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo resumir el historial, explicar un cambio de estado o indicar cuál es el siguiente paso.
+      </div>
+
+      <button class="chat-option">Resumir historial</button>
+      <button class="chat-option">Explicar estado actual</button>
+      <button class="chat-option">¿Debo hacer algo ahora?</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openHistoryHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/historial-caso.js"></script>
+</body>
+</html>

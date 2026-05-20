@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Clasificar Casos | Centro de Atención Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body class="app-body">
+  <div class="app-layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar__brand">
+        <a href="../../index.html" class="sidebar__logo">Claro</a>
+        <span>Panel supervisor</span>
+      </div>
+
+      <div class="sidebar__user">
+        <div class="user-avatar">
+          <i class="fa-solid fa-user-tie"></i>
+        </div>
+
+        <div>
+          <strong>Supervisor</strong>
+          <span>Gestión de casos</span>
+        </div>
+      </div>
+
+      <nav class="sidebar__nav">
+        <a href="dashboard-supervisor.html">
+          <i class="fa-solid fa-chart-line"></i>
+          Dashboard
+        </a>
+
+        <a href="clasificar-casos.html" class="active">
+          <i class="fa-solid fa-tags"></i>
+          Clasificar casos
+          <span class="sidebar-badge" id="sidebarClassifyCount">8</span>
+        </a>
+
+        <a href="asignar-casos.html">
+          <i class="fa-solid fa-user-check"></i>
+          Asignar casos
+        </a>
+
+        <a href="monitoreo-sla.html">
+          <i class="fa-solid fa-hourglass-half"></i>
+          Monitoreo SLA
+        </a>
+
+        <a href="desempeno-asesores.html">
+          <i class="fa-solid fa-users-gear"></i>
+          Desempeño asesores
+        </a>
+
+        <a href="reportes-supervisor.html">
+          <i class="fa-solid fa-chart-pie"></i>
+          Reportes
+        </a>
+      </nav>
+
+      <div class="sidebar__support">
+        <div class="support-icon">
+          <i class="fa-solid fa-robot"></i>
+        </div>
+
+        <h3>Clasificador IA</h3>
+        <p>Sugiere categoría, prioridad y SLA según el contenido del caso.</p>
+
+        <button id="openClassifyBot">
+          Usar IA
+        </button>
+      </div>
+
+      <a href="../../login.html" class="sidebar__logout">
+        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+        Cerrar sesión
+      </a>
+    </aside>
+
+    <!-- Main -->
+    <main class="app-main">
+      <header class="app-topbar">
+        <div>
+          <span class="page-kicker">Clasificación operativa</span>
+          <h1>Clasificar casos</h1>
+          <p>
+            Revisa los casos nuevos, asigna categoría, prioridad, SLA y ruta de atención.
+          </p>
+        </div>
+
+        <div class="topbar-actions">
+          <a href="asignar-casos.html" class="btn btn-primary">
+            <i class="fa-solid fa-user-check"></i>
+            Ir a asignación
+          </a>
+
+          <button class="icon-btn app-notification">
+            <i class="fa-regular fa-bell"></i>
+            <span class="notification-dot"></span>
+          </button>
+        </div>
+      </header>
+
+      <!-- Hero -->
+      <section class="classify-hero">
+        <div>
+          <span>
+            <i class="fa-solid fa-tags"></i>
+            Clasificación inteligente
+          </span>
+
+          <h2>Define la ruta correcta para cada caso</h2>
+
+          <p>
+            La clasificación permite ordenar la atención, asignar responsables y calcular
+            el plazo esperado según criticidad, servicio afectado y tipo de caso.
+          </p>
+
+          <div class="client-banner__actions">
+            <button class="btn btn-primary" id="classifyRecommended">
+              Clasificar recomendado
+            </button>
+
+            <button class="btn btn-light" id="autoSuggestClassify">
+              Sugerir con IA
+            </button>
+          </div>
+        </div>
+
+        <aside class="classify-hero__card">
+          <i class="fa-solid fa-brain"></i>
+          <strong>Sugerencia IA</strong>
+          <span id="classifyAiTip">
+            Prioriza incidencias sin servicio y reclamos de facturación con SLA menor a 12 horas.
+          </span>
+        </aside>
+      </section>
+
+      <!-- Métricas -->
+      <section class="metric-grid">
+        <article class="metric-card">
+          <div class="metric-card__icon red">
+            <i class="fa-solid fa-folder-open"></i>
+          </div>
+
+          <div>
+            <span>Pendientes</span>
+            <strong id="metricPendingClassify">8</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon orange">
+            <i class="fa-solid fa-triangle-exclamation"></i>
+          </div>
+
+          <div>
+            <span>Alta criticidad</span>
+            <strong id="metricHighCriticality">5</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon blue">
+            <i class="fa-solid fa-clock"></i>
+          </div>
+
+          <div>
+            <span>SLA sugerido promedio</span>
+            <strong id="metricAvgSla">24 h</strong>
+          </div>
+        </article>
+
+        <article class="metric-card">
+          <div class="metric-card__icon green">
+            <i class="fa-solid fa-check-double"></i>
+          </div>
+
+          <div>
+            <span>Clasificados hoy</span>
+            <strong id="metricClassifiedToday">12</strong>
+          </div>
+        </article>
+      </section>
+
+      <!-- Layout -->
+      <section class="classify-layout">
+        <!-- Lista de casos pendientes -->
+        <article class="panel-card classify-list-panel">
+          <div class="panel-card__header">
+            <div>
+              <span>Casos nuevos</span>
+              <h2>Pendientes de clasificación</h2>
+            </div>
+
+            <button class="small-link" id="refreshClassifyCases">
+              <i class="fa-solid fa-rotate"></i>
+              Actualizar
+            </button>
+          </div>
+
+          <div class="classify-filter-grid">
+            <label>
+              Buscar
+              <input type="text" id="classifySearch" placeholder="Código, servicio o categoría..." />
+            </label>
+
+            <label>
+              Tipo
+              <select id="filterClassifyType">
+                <option value="all">Todos</option>
+                <option value="Reclamo">Reclamo</option>
+                <option value="Incidencia">Incidencia</option>
+              </select>
+            </label>
+
+            <label>
+              Servicio
+              <select id="filterClassifyService">
+                <option value="all">Todos</option>
+                <option value="Internet hogar">Internet hogar</option>
+                <option value="Telefonía móvil">Telefonía móvil</option>
+                <option value="Claro TV+">Claro TV+</option>
+                <option value="Telefonía fija">Telefonía fija</option>
+              </select>
+            </label>
+          </div>
+
+          <div class="classify-case-list" id="classifyCaseList">
+            <!-- JS -->
+          </div>
+
+          <div class="empty-state hidden" id="emptyClassify">
+            <i class="fa-solid fa-folder-open"></i>
+            <h3>No se encontraron casos</h3>
+            <p>Prueba cambiando los filtros aplicados.</p>
+          </div>
+        </article>
+
+        <!-- Formulario de clasificación -->
+        <form class="classify-form" id="classifyForm">
+          <article class="form-section">
+            <div class="form-section__header">
+              <div>
+                <span>Sección 1</span>
+                <h2>Caso seleccionado</h2>
+              </div>
+
+              <i class="fa-solid fa-ticket"></i>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                Código de caso *
+                <input type="text" id="selectedCaseCode" required readonly />
+              </label>
+
+              <label>
+                Tipo de caso
+                <input type="text" id="selectedCaseType" readonly />
+              </label>
+
+              <label>
+                Servicio
+                <input type="text" id="selectedService" readonly />
+              </label>
+
+              <label>
+                Estado actual
+                <input type="text" id="selectedStatus" readonly />
+              </label>
+
+              <label class="span-2">
+                Resumen del caso
+                <textarea id="selectedSummary" rows="4" readonly></textarea>
+              </label>
+            </div>
+          </article>
+
+          <article class="form-section">
+            <div class="form-section__header">
+              <div>
+                <span>Sección 2</span>
+                <h2>Clasificación</h2>
+              </div>
+
+              <i class="fa-solid fa-tags"></i>
+            </div>
+
+            <div class="form-grid">
+              <label>
+                Categoría *
+                <select id="classificationCategory" required>
+                  <option value="">Seleccionar categoría</option>
+                  <option value="Facturación">Facturación</option>
+                  <option value="Cobro no reconocido">Cobro no reconocido</option>
+                  <option value="Sin servicio">Sin servicio</option>
+                  <option value="Intermitencia">Intermitencia</option>
+                  <option value="Atención recibida">Atención recibida</option>
+                  <option value="Contrato o plan">Contrato o plan</option>
+                  <option value="Instalación">Instalación</option>
+                  <option value="Otro">Otro</option>
+                </select>
+              </label>
+
+              <label>
+                Prioridad *
+                <select id="classificationPriority" required>
+                  <option value="">Seleccionar prioridad</option>
+                  <option value="Crítica">Crítica</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Media">Media</option>
+                  <option value="Baja">Baja</option>
+                </select>
+              </label>
+
+              <label>
+                SLA asignado *
+                <select id="classificationSla" required>
+                  <option value="">Seleccionar SLA</option>
+                  <option value="6">6 horas</option>
+                  <option value="12">12 horas</option>
+                  <option value="24">24 horas</option>
+                  <option value="48">48 horas</option>
+                  <option value="72">72 horas</option>
+                </select>
+              </label>
+
+              <label>
+                Ruta de atención *
+                <select id="classificationRoute" required>
+                  <option value="">Seleccionar ruta</option>
+                  <option value="Atención comercial">Atención comercial</option>
+                  <option value="Soporte técnico móvil">Soporte técnico móvil</option>
+                  <option value="Soporte técnico hogar">Soporte técnico hogar</option>
+                  <option value="Facturación y cobranza">Facturación y cobranza</option>
+                  <option value="Backoffice">Backoffice</option>
+                  <option value="Área especializada">Área especializada</option>
+                </select>
+              </label>
+
+              <label class="span-2">
+                Observación de clasificación *
+                <textarea
+                  id="classificationObservation"
+                  rows="5"
+                  maxlength="700"
+                  placeholder="Explica brevemente el criterio usado para clasificar el caso."
+                  required
+                ></textarea>
+
+                <div class="textarea-info">
+                  <span id="classificationCounter">0/700 caracteres</span>
+                  <button type="button" id="improveClassificationObservation">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    Mejorar con IA
+                  </button>
+                </div>
+              </label>
+            </div>
+          </article>
+
+          <article class="form-section">
+            <div class="form-section__header">
+              <div>
+                <span>Sección 3</span>
+                <h2>Confirmación</h2>
+              </div>
+
+              <i class="fa-solid fa-circle-check"></i>
+            </div>
+
+            <div class="confirmation-box">
+              <label class="checkbox-line">
+                <input type="checkbox" id="confirmClassification" required />
+                <span>
+                  Confirmo que la clasificación será registrada en la trazabilidad del caso.
+                </span>
+              </label>
+
+              <label class="checkbox-line">
+                <input type="checkbox" id="sendToAssignment" checked />
+                <span>
+                  Enviar el caso a la bandeja de asignación luego de clasificar.
+                </span>
+              </label>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn-outline" id="previewClassification">
+                Vista previa
+              </button>
+
+              <button type="submit" class="btn btn-primary">
+                Registrar clasificación
+                <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+          </article>
+        </form>
+      </section>
+    </main>
+  </div>
+
+  <!-- Modal vista previa -->
+  <section class="modal" id="classificationPreviewModal">
+    <div class="modal-card modal-card-large">
+      <button class="modal-close" id="closeClassificationPreview">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <div class="modal-icon">
+        <i class="fa-solid fa-tags"></i>
+      </div>
+
+      <h2>Vista previa de clasificación</h2>
+      <p>Revisa la información antes de registrar la clasificación.</p>
+
+      <div class="preview-content" id="classificationPreviewContent"></div>
+
+      <button class="btn btn-primary btn-full" id="confirmClassificationFromPreview">
+        Confirmar y clasificar
+      </button>
+    </div>
+  </section>
+
+  <!-- Modal éxito -->
+  <section class="modal" id="classificationSuccessModal">
+    <div class="modal-card success-card">
+      <div class="success-icon">
+        <i class="fa-solid fa-circle-check"></i>
+      </div>
+
+      <h2>Caso clasificado correctamente</h2>
+
+      <p>La clasificación fue registrada para el caso:</p>
+
+      <div class="generated-code" id="classificationSuccessCode">
+        CL-IN-000140
+      </div>
+
+      <p>El caso quedó listo para asignación.</p>
+
+      <div class="modal-actions">
+        <a href="asignar-casos.html" class="btn btn-primary btn-full">
+          Ir a asignar casos
+        </a>
+
+        <a href="dashboard-supervisor.html" class="btn btn-outline btn-full">
+          Volver al dashboard
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Chatbot -->
+  <aside class="chatbot" id="classifyBot">
+    <div class="chatbot__header">
+      <div>
+        <strong>Clasificador IA Claro</strong>
+        <span>Supervisor</span>
+      </div>
+
+      <button id="closeClassifyBot">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="chatbot__body">
+      <div class="bot-message">
+        Puedo sugerir categoría, prioridad, SLA y ruta según el caso seleccionado.
+      </div>
+
+      <button class="chat-option" data-template="sin-servicio">Incidencia sin servicio</button>
+      <button class="chat-option" data-template="facturacion">Reclamo de facturación</button>
+      <button class="chat-option" data-template="atencion">Atención recibida</button>
+    </div>
+
+    <div class="chatbot__input">
+      <input type="text" placeholder="Escribe tu consulta..." />
+      <button>
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </div>
+  </aside>
+
+  <button class="floating-help" id="openClassifyHelp">
+    <i class="fa-solid fa-robot"></i>
+    IA
+  </button>
+
+  <script src="../../assets/js/api.js"></script>
+  <script src="../../assets/js/clasificar-casos.js"></script>
+</body>
+</html>

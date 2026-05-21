@@ -147,8 +147,8 @@ document.addEventListener("DOMContentLoaded", () => {
     resultProgressText.textContent = `${progress}%`;
     resultProgressBar.style.width = `${Math.min(progress, 100)}%`;
 
-    uploadEvidenceLink.href = `../pages/cliente/subir-evidencia.html?codigo=${encodeURIComponent(item.codigoCaso || "")}`;
-    historyLink.href = `../pages/cliente/historial-caso.html?codigo=${encodeURIComponent(item.codigoCaso || "")}`;
+    uploadEvidenceLink.href = `../cliente/subir-evidencia.html?codigo=${encodeURIComponent(item.codigoCaso || "")}`;
+    historyLink.href = `../cliente/historial-caso.html?codigo=${encodeURIComponent(item.codigoCaso || "")}`;
 
     renderTimeline(item.historial || []);
 
@@ -237,7 +237,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       if (action === "evidencia") {
-        window.location.href = "../pages/cliente/subir-evidencia.html";
+        window.location.href = "../cliente/subir-evidencia.html";
       }
     });
   });

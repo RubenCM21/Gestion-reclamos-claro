@@ -33,6 +33,10 @@ a {
   text-decoration: none;
 }
 
+.hidden {
+  display: none !important;
+}
+
 button,
 input,
 select {
@@ -10751,7 +10755,7 @@ button {
 }
 
 .public-hero {
-  min-height: calc(100vh - 86px);
+  min-height: 560px;
   padding: 70px 10%;
   background:
     linear-gradient(110deg, rgba(0, 0, 0, 0.88), rgba(80, 0, 10, 0.55), rgba(227, 6, 19, 0.18)),

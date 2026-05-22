@@ -23,12 +23,12 @@ document.addEventListener("DOMContentLoaded", () => {
   const routes = {
     reclamo: "pages/cliente/registrar-reclamo.html",
     incidencia: "pages/cliente/reportar-incidencia.html",
-    seguimiento: "public/consulta-rapida.html",
+    seguimiento: "pages/public/consulta-rapida.html",
     evidencia: "pages/cliente/subir-evidencia.html",
-    asesor: "public/centro-ayuda.html",
-    empresas: "public/atencion-empresas.html",
-    asistente: "public/asistente-ia.html",
-    ayuda: "public/centro-ayuda.html",
+    asesor: "pages/public/centro-ayuda.html",
+    empresas: "pages/public/atencion-empresas.html",
+    asistente: "pages/public/asistente-ia.html",
+    ayuda: "pages/public/centro-ayuda.html",
     historial: "pages/cliente/historial-caso.html"
   };
 

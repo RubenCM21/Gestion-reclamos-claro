@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Reportes | Claro Atención 360</title>
+
+  <link rel="stylesheet" href="../assets/css/supervisor.css" />
+</head>
+
+<body data-page="supervisor-reportes">
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <a href="../index.html" class="brand">
+        <span class="brand__name">Claro</span>
+        <span class="brand__spark">✦</span>
+      </a>
+      <span class="brand__tag">Atención 360</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="dashboard.html" class="sidebar-link">
+        <span>🏠</span> Dashboard
+      </a>
+
+      <a href="clasificar-casos.html" class="sidebar-link">
+        <span>🏷️</span> Clasificar casos
+        <small id="sidebarPendingCount"></small>
+      </a>
+
+      <a href="asignar-caso.html" class="sidebar-link">
+        <span>👥</span> Asignar caso
+      </a>
+
+      <a href="indicadores.html" class="sidebar-link">
+        <span>📊</span> Indicadores
+      </a>
+
+      <a href="reportes.html" class="sidebar-link active">
+        <span>📄</span> Reportes
+      </a>
+
+      <a href="../centro-ayuda.html" class="sidebar-link">
+        <span>❓</span> Centro de ayuda
+      </a>
+    </nav>
+
+    <div class="sidebar__bottom">
+      <button type="button" class="sidebar-ai-btn" id="openBotSidebar">
+        <span>🤖</span> IA Supervisor
+      </button>
+
+      <button type="button" class="logout-btn" id="logoutBtn">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar__left">
+        <button type="button" class="menu-btn" id="menuBtn">☰</button>
+
+        <div>
+          <span class="eyebrow">Generación documental</span>
+          <h1>Reportes</h1>
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <button type="button" class="icon-btn" id="globalSearchBtn">🔎</button>
+        <button type="button" class="icon-btn" id="themeToggle">◐</button>
+
+        <button type="button" class="notification-btn" id="notificationBtn">
+          🔔
+          <span id="notificationBadge"></span>
+        </button>
+
+        <div class="user-menu">
+          <button type="button" class="user-menu__button" id="userMenuButton">
+            <span class="user-avatar" id="userAvatar">SD</span>
+            <div>
+              <strong id="userNameTop">Supervisor Demo</strong>
+              <small id="userRoleTop">Supervisor de Atención</small>
+            </div>
+          </button>
+
+          <div class="user-menu__dropdown" id="userMenuDropdown">
+            <a href="#">Mi perfil</a>
+            <a href="#">Preferencias</a>
+            <a href="../seleccionar-rol.html">Cambiar perfil</a>
+            <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="supervisor-page">
+      <section class="welcome-card">
+        <div class="welcome-card__copy">
+          <span class="eyebrow eyebrow--red">Reportería ejecutiva</span>
+          <h2>Genera reportes de atención</h2>
+          <p>
+            Configura reportes operativos, ejecutivos o detallados para analizar casos,
+            cumplimiento SLA, desempeño de asesores, tiempos de respuesta y tendencias.
+          </p>
+
+          <div class="welcome-actions">
+            <button type="button" class="btn btn--primary" id="reportGenerateBtn">
+              Generar reporte
+            </button>
+
+            <button type="button" class="btn btn--soft" id="reportScheduleBtn">
+              Programar envío
+            </button>
+
+            <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
+              Consultar IA
+            </button>
+          </div>
+        </div>
+
+        <div class="welcome-card__status">
+          <div class="status-orb">
+            <span></span>
+          </div>
+
+          <div>
+            <strong id="reportSummaryStatus">Reportes disponibles</strong>
+            <small id="reportSummaryText">Preparado para backend</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="report-layout">
+        <article class="panel-card form-panel">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Configuración</span>
+              <h2>Nuevo reporte</h2>
+            </div>
+
+            <span class="status-pill status-pill--info">Borrador</span>
+          </div>
+
+          <form id="reportForm" class="supervisor-form" novalidate>
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="reportType">Tipo de reporte</label>
+                <select id="reportType">
+                  <option value="">Seleccionar</option>
+                  <option value="operativo">Operativo diario</option>
+                  <option value="ejecutivo">Ejecutivo gerencial</option>
+                  <option value="sla">Cumplimiento SLA</option>
+                  <option value="asesores">Desempeño por asesor</option>
+                  <option value="detalle">Detalle de casos</option>
+                </select>
+                <small class="form-error" id="reportTypeError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="reportFormat">Formato</label>
+                <select id="reportFormat">
+                  <option value="">Seleccionar</option>
+                  <option value="PDF">PDF</option>
+                  <option value="Excel">Excel</option>
+                  <option value="CSV">CSV</option>
+                  <option value="Power BI">Power BI Dataset</option>
+                </select>
+                <small class="form-error" id="reportFormatError"></small>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="reportDateFrom">Fecha inicio</label>
+                <input id="reportDateFrom" type="date" />
+                <small class="form-error" id="reportDateFromError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="reportDateTo">Fecha fin</label>
+                <input id="reportDateTo" type="date" />
+                <small class="form-error" id="reportDateToError"></small>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="reportTeam">Equipo</label>
+                <select id="reportTeam">
+                  <option value="todos">Todos</option>
+                  <option value="Empresas">Empresas</option>
+                  <option value="Técnico Hogar">Técnico Hogar</option>
+                  <option value="Facturación">Facturación</option>
+                  <option value="Atención General">Atención General</option>
+                </select>
+              </div>
+
+              <div class="form-group">
+                <label for="reportPriority">Prioridad</label>
+                <select id="reportPriority">
+                  <option value="todos">Todas</option>
+                  <option value="Baja">Baja</option>
+                  <option value="Media">Media</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Crítica">Crítica</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="reportName">Nombre del reporte</label>
+              <input
+                id="reportName"
+                type="text"
+                placeholder="Ejemplo: Reporte mensual de cumplimiento SLA"
+              />
+              <small class="form-error" id="reportNameError"></small>
+            </div>
+
+            <div class="report-options">
+              <article>
+                <span>📊</span>
+                <div>
+                  <strong>Incluir gráficos</strong>
+                  <small>Agrega visualizaciones y tendencias.</small>
+                </div>
+                <input type="checkbox" id="reportIncludeCharts" checked />
+              </article>
+
+              <article>
+                <span>🤖</span>
+                <div>
+                  <strong>Incluir resumen IA</strong>
+                  <small>Agrega lectura ejecutiva automática.</small>
+                </div>
+                <input type="checkbox" id="reportIncludeAi" checked />
+              </article>
+
+              <article>
+                <span>📎</span>
+                <div>
+                  <strong>Incluir anexos</strong>
+                  <small>Agrega detalle de casos y evidencias.</small>
+                </div>
+                <input type="checkbox" id="reportIncludeAnnexes" />
+              </article>
+            </div>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn--ghost-dark" id="reportPreviewBtn">
+                Vista previa
+              </button>
+
+              <button type="submit" class="btn btn--primary" id="reportSubmitBtn">
+                <span class="btn-text">Generar reporte</span>
+                <span class="btn-loader"></span>
+              </button>
+            </div>
+          </form>
+        </article>
+
+        <aside class="panel-card ai-panel sticky-panel">
+          <div class="ai-panel__header">
+            <span>🤖</span>
+            <div>
+              <h2>Asistente IA</h2>
+              <p>Sugerencias para reportes.</p>
+            </div>
+          </div>
+
+          <div class="ai-summary" id="reportAiSummary"></div>
+
+          <button type="button" class="btn btn--primary btn--full" id="reportSuggestBtn">
+            Sugerir configuración
+          </button>
+        </aside>
+      </section>
+
+      <section class="dashboard-grid dashboard-grid--secondary">
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Historial</span>
+              <h2>Reportes generados</h2>
+            </div>
+
+            <button type="button" class="panel-action" id="refreshReportsBtn">
+              Actualizar
+            </button>
+          </div>
+
+          <div class="report-history-list" id="reportHistoryList"></div>
+        </article>
+
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Programados</span>
+              <h2>Envíos automáticos</h2>
+            </div>
+          </div>
+
+          <div class="report-history-list" id="scheduledReportsList"></div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
+    <div class="bot-drawer__header">
+      <div>
+        <span>🤖</span>
+        <strong>IA Supervisor</strong>
+        <small>Reportería</small>
+      </div>
+
+      <button type="button" id="closeBotDrawer">×</button>
+    </div>
+
+    <div class="bot-drawer__messages" id="botMessages">
+      <div class="message message--bot">
+        Hola. Puedo sugerir qué reporte generar, qué indicadores incluir y cómo resumir resultados.
+      </div>
+    </div>
+
+    <div class="bot-drawer__quick">
+      <button type="button" data-bot-prompt="Qué reporte debo generar">Sugerir reporte</button>
+      <button type="button" data-bot-prompt="Qué métricas incluir">Métricas</button>
+      <button type="button" data-bot-prompt="Resume resultados para gerencia">Resumen gerencial</button>
+    </div>
+
+    <form class="bot-drawer__form" id="botForm">
+      <input id="botInput" type="text" placeholder="Escribe tu consulta..." autocomplete="off" />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <section class="search-modal" id="searchModal" aria-hidden="true">
+    <div class="search-modal__content">
+      <div class="search-modal__bar">
+        <span>🔎</span>
+        <input type="text" id="globalSearchInput" placeholder="Buscar reporte, indicador o equipo..." />
+        <button type="button" id="closeSearchBtn">Esc</button>
+      </div>
+
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <section class="modal" id="reportPreviewModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+      <div class="modal__icon">📄</div>
+      <h3>Vista previa del reporte</h3>
+      <p id="reportPreviewText">Resumen de configuración del reporte.</p>
+      <div class="case-modal-summary" id="reportPreviewSummary"></div>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>Entendido</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+      <div class="modal__icon" id="genericModalIcon">ℹ</div>
+      <h3 id="genericModalTitle">Información</h3>
+      <p id="genericModalText">Mensaje del sistema.</p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>Entendido</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="../assets/js/supervisor.js"></script>
+</body>
+</html>

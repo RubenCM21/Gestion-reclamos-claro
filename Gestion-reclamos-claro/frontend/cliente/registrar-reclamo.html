@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Registrar reclamo | Claro Atención 360</title>
+  <link rel="stylesheet" href="../assets/css/cliente.css" />
+</head>
+
+<body data-page="registrar-reclamo">
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <a href="../index.html" class="brand">
+        <span class="brand__name">Claro</span>
+        <span class="brand__spark">✦</span>
+      </a>
+      <span class="brand__tag">Atención 360</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="dashboard.html" class="sidebar-link">
+        <span>🏠</span> Dashboard
+      </a>
+      <a href="registrar-reclamo.html" class="sidebar-link active">
+        <span>📝</span> Registrar reclamo
+      </a>
+      <a href="registrar-incidencia.html" class="sidebar-link">
+        <span>⚠️</span> Registrar incidencia
+      </a>
+      <a href="mis-casos.html" class="sidebar-link">
+        <span>🎫</span> Mis casos
+      </a>
+      <a href="detalle-caso.html" class="sidebar-link">
+        <span>🔎</span> Seguimiento
+      </a>
+      <a href="notificaciones.html" class="sidebar-link">
+        <span>🔔</span> Notificaciones
+        <small id="sidebarNotificationCount"></small>
+      </a>
+      <a href="../centro-ayuda.html" class="sidebar-link">
+        <span>❓</span> Centro de ayuda
+      </a>
+    </nav>
+
+    <div class="sidebar__bottom">
+      <button type="button" class="sidebar-ai-btn" id="openBotSidebar">
+        <span>🤖</span> ClaroBot IA
+      </button>
+      <button type="button" class="logout-btn" id="logoutBtn">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar__left">
+        <button type="button" class="menu-btn" id="menuBtn">☰</button>
+        <div>
+          <span class="eyebrow">Gestión de reclamos</span>
+          <h1 id="pageTitle">Registrar reclamo</h1>
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <button type="button" class="icon-btn" id="globalSearchBtn">🔎</button>
+        <button type="button" class="icon-btn" id="themeToggle">◐</button>
+        <button type="button" class="notification-btn" id="notificationBtn">
+          🔔 <span id="notificationBadge"></span>
+        </button>
+
+        <div class="user-menu">
+          <button type="button" class="user-menu__button" id="userMenuButton">
+            <span class="user-avatar" id="userAvatar">CD</span>
+            <div>
+              <strong id="userNameTop">Cliente Demo</strong>
+              <small id="userTypeTop">Cliente Persona</small>
+            </div>
+          </button>
+
+          <div class="user-menu__dropdown" id="userMenuDropdown">
+            <a href="#">Mi perfil</a>
+            <a href="#">Preferencias</a>
+            <a href="../seleccionar-rol.html">Cambiar perfil</a>
+            <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="dashboard-page">
+      <section class="welcome-card">
+        <div class="welcome-card__copy">
+          <span class="eyebrow eyebrow--red">Nuevo caso</span>
+          <h2>Registra un reclamo formal</h2>
+          <p>
+            Usa este formulario cuando exista una disconformidad relacionada con cobros,
+            facturación, atención, calidad del servicio o condiciones ofrecidas.
+          </p>
+
+          <div class="welcome-actions">
+            <button type="button" class="btn btn--primary" id="openBotWelcome">
+              Recibir ayuda IA
+            </button>
+            <a href="../centro-ayuda.html" class="btn btn--soft">
+              Ver guía de reclamos
+            </a>
+          </div>
+        </div>
+
+        <div class="welcome-card__status">
+          <div class="status-orb"><span></span></div>
+          <div>
+            <strong>Formulario seguro</strong>
+            <small>Registro preparado para backend</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="form-layout">
+        <article class="panel-card form-panel">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Formulario</span>
+              <h2>Datos del reclamo</h2>
+            </div>
+            <span class="status-pill status-pill--info">Borrador</span>
+          </div>
+
+          <form
+            id="claimForm"
+            class="case-form"
+            data-endpoint="/api/cliente/reclamos"
+            data-method="POST"
+            novalidate
+          >
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="claimService">Servicio asociado</label>
+                <select id="claimService" name="service">
+                  <option value="">Seleccionar</option>
+                  <option value="movil">Línea móvil</option>
+                  <option value="internet">Internet hogar</option>
+                  <option value="tv">Claro TV+</option>
+                  <option value="facturacion">Facturación</option>
+                  <option value="empresa">Servicio empresa</option>
+                </select>
+                <small class="form-error" id="claimServiceError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="claimCategory">Categoría del reclamo</label>
+                <select id="claimCategory" name="category">
+                  <option value="">Seleccionar</option>
+                  <option value="cobro">Cobro no reconocido</option>
+                  <option value="facturacion">Error de facturación</option>
+                  <option value="atencion">Disconformidad por atención</option>
+                  <option value="servicio">Calidad del servicio</option>
+                  <option value="contrato">Condiciones contratadas</option>
+                </select>
+                <small class="form-error" id="claimCategoryError"></small>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="claimPriority">Prioridad percibida</label>
+                <select id="claimPriority" name="priority">
+                  <option value="">Seleccionar</option>
+                  <option value="baja">Baja</option>
+                  <option value="media">Media</option>
+                  <option value="alta">Alta</option>
+                </select>
+                <small class="form-error" id="claimPriorityError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="claimContact">Medio de contacto preferido</label>
+                <select id="claimContact" name="contact">
+                  <option value="">Seleccionar</option>
+                  <option value="correo">Correo electrónico</option>
+                  <option value="sms">SMS</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="llamada">Llamada</option>
+                </select>
+                <small class="form-error" id="claimContactError"></small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="claimTitle">Título del reclamo</label>
+              <input
+                id="claimTitle"
+                name="title"
+                type="text"
+                placeholder="Ejemplo: Cobro no reconocido en mi recibo"
+              />
+              <small class="form-error" id="claimTitleError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="claimDescription">Descripción detallada</label>
+              <textarea
+                id="claimDescription"
+                name="description"
+                placeholder="Describe qué ocurrió, desde cuándo, qué servicio está involucrado y qué solución esperas..."
+              ></textarea>
+              <small class="form-error" id="claimDescriptionError"></small>
+            </div>
+
+            <div class="upload-box">
+              <div>
+                <span>📎</span>
+                <strong>Adjuntar evidencia</strong>
+                <p>Recibos, capturas, fotos, documentos o comprobantes.</p>
+              </div>
+
+              <label for="claimEvidence" class="btn btn--soft">
+                Seleccionar archivo
+              </label>
+
+              <input id="claimEvidence" name="evidence" type="file" hidden multiple />
+            </div>
+
+            <div class="file-list" id="claimFileList"></div>
+
+            <div class="form-check">
+              <input type="checkbox" id="claimDeclaration" name="declaration" />
+              <label for="claimDeclaration">
+                Declaro que la información registrada es verdadera y autorizo su uso para la atención del reclamo.
+              </label>
+            </div>
+            <small class="form-error" id="claimDeclarationError"></small>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn--ghost-dark" id="claimSaveDraft">
+                Guardar borrador
+              </button>
+
+              <button type="submit" class="btn btn--primary" id="claimSubmitBtn">
+                <span class="btn-text">Registrar reclamo</span>
+                <span class="btn-loader"></span>
+              </button>
+            </div>
+          </form>
+        </article>
+
+        <aside class="panel-card assist-panel">
+          <div class="ai-panel__header">
+            <span>🤖</span>
+            <div>
+              <h2>Asistente IA</h2>
+              <p>Te ayuda a completar mejor tu reclamo.</p>
+            </div>
+          </div>
+
+          <div class="ai-summary">
+            <div class="ai-summary-item">
+              <strong>Recomendación</strong>
+              <p>Incluye fecha, monto, servicio afectado y evidencia para evitar observaciones.</p>
+            </div>
+
+            <div class="ai-summary-item">
+              <strong>Validación previa</strong>
+              <p>Antes de enviar, revisaremos si faltan campos clave para la atención.</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn--primary btn--full" id="claimAnalyzeBtn">
+            Analizar reclamo
+          </button>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
+    <div class="bot-drawer__header">
+      <div>
+        <span>🤖</span>
+        <strong>ClaroBot IA</strong>
+        <small>Asistente del cliente</small>
+      </div>
+      <button type="button" id="closeBotDrawer">×</button>
+    </div>
+
+    <div class="bot-drawer__messages" id="botMessages">
+      <div class="message message--bot">
+        Hola. Puedo ayudarte a redactar tu reclamo, sugerir evidencias o explicar categorías.
+      </div>
+    </div>
+
+    <div class="bot-drawer__quick">
+      <button type="button" data-bot-prompt="Qué evidencia debo adjuntar">Evidencias</button>
+      <button type="button" data-bot-prompt="Ayúdame a redactar mi reclamo">Redactar reclamo</button>
+      <button type="button" data-bot-prompt="Qué categoría debo elegir">Categoría</button>
+    </div>
+
+    <form class="bot-drawer__form" id="botForm">
+      <input id="botInput" type="text" placeholder="Escribe tu consulta..." autocomplete="off" />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <section class="modal" id="successCaseModal" aria-hidden="true">
+    <div class="modal__content">
+      <div class="modal__icon">✓</div>
+      <h3>Reclamo registrado</h3>
+      <p id="successCaseText">
+        Tu reclamo fue registrado correctamente.
+      </p>
+
+      <div class="case-modal-summary" id="successCaseSummary"></div>
+
+      <div class="modal__actions">
+        <a href="mis-casos.html" class="btn btn--primary">Ver mis casos</a>
+        <button type="button" class="btn btn--ghost-dark" data-close-modal>Cerrar</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="search-modal" id="searchModal" aria-hidden="true">
+    <div class="search-modal__content">
+      <div class="search-modal__bar">
+        <span>🔎</span>
+        <input type="text" id="globalSearchInput" placeholder="Buscar..." />
+        <button type="button" id="closeSearchBtn">Esc</button>
+      </div>
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </section>
+
+  <section class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+      <div class="modal__icon" id="genericModalIcon">ℹ</div>
+      <h3 id="genericModalTitle">Información</h3>
+      <p id="genericModalText">Mensaje del sistema.</p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>Entendido</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="../assets/js/cliente.js"></script>
+</body>
+</html>

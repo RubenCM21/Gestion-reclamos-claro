@@ -1,0 +1,503 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Atención Empresas | Claro</title>
+
+  <link rel="stylesheet" href="../../assets/css/claro-theme.css" />
+
+  <link
+    rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  />
+</head>
+
+<body>
+  <header class="top-bar">
+    <div class="top-bar__left">
+      <a href="../../index.html" class="top-link">Personas</a>
+      <a href="atencion-empresas.html" class="top-link active">Empresas</a>
+    </div>
+
+    <div class="top-bar__right">
+      <a href="#" class="top-link">Información a Empresas y Negocios</a>
+
+      <div class="dropdown">
+        <button class="top-link dropdown-toggle">
+          Más de Claro <i class="fa-solid fa-chevron-down"></i>
+        </button>
+
+        <div class="dropdown-menu">
+          <a href="#fibra">Internet dedicado</a>
+          <a href="#cloud">Cloud</a>
+          <a href="#seguridad">Ciberseguridad</a>
+          <a href="#ti">Soluciones TI</a>
+        </div>
+      </div>
+
+      <button class="top-link">
+        <i class="fa-solid fa-globe"></i> Perú
+      </button>
+    </div>
+  </header>
+
+  <nav class="main-nav">
+    <div class="brand">
+      <a href="../../index.html" class="brand__logo">Claro</a>
+      <span class="brand__module">Empresas</span>
+    </div>
+
+    <ul class="main-nav__links">
+      <li><a href="../../index.html">Inicio</a></li>
+      <li><a href="centro-ayuda.html">Ayuda</a></li>
+      <li><a href="../cliente/registrar-reclamo.html">Centro de Reclamos</a></li>
+      <li><a href="consulta-rapida.html">Seguimiento</a></li>
+      <li><a href="asistente-ia.html">Asistente IA</a></li>
+    </ul>
+
+    <div class="main-nav__actions">
+      <a href="../../login.html" class="btn btn-outline">
+        <i class="fa-regular fa-user"></i>
+        Portal Empresas
+      </a>
+    </div>
+  </nav>
+
+  <main>
+    <section class="enterprise-hero">
+      <div class="container enterprise-hero__content">
+        <div>
+          <span class="eyebrow eyebrow-red">
+            <i class="fa-solid fa-network-wired"></i>
+            Telecomunicaciones para empresas
+          </span>
+
+          <h1>Conectividad, nube y seguridad para mantener tu operación siempre activa</h1>
+
+          <p>
+            Gestiona servicios corporativos de internet dedicado, fibra óptica,
+            movilidad empresarial, cloud, ciberseguridad y soluciones TI desde
+            un solo centro de atención.
+          </p>
+
+          <div class="enterprise-hero__actions">
+            <a href="#servicios" class="btn btn-primary">
+              Ver servicios
+            </a>
+
+            <a href="../cliente/reportar-incidencia.html?servicio=empresa" class="btn btn-outline-white">
+              Reportar incidencia B2B
+            </a>
+
+            <a href="consulta-rapida.html" class="btn btn-outline-white">
+              Consultar ticket
+            </a>
+          </div>
+        </div>
+
+        <aside class="enterprise-command-card">
+          <div class="enterprise-command-card__top">
+            <i class="fa-solid fa-tower-cell"></i>
+            <div>
+              <span>Centro de operación</span>
+              <strong>Atención empresarial 24/7</strong>
+            </div>
+          </div>
+
+          <div class="enterprise-status-list">
+            <div>
+              <span>Red corporativa</span>
+              <strong>Monitoreo activo</strong>
+            </div>
+            <div>
+              <span>SLA crítico</span>
+              <strong>Priorización automática</strong>
+            </div>
+            <div>
+              <span>Soporte técnico</span>
+              <strong>Escalamiento especializado</strong>
+            </div>
+          </div>
+
+          <button class="btn btn-primary btn-full" id="openEnterpriseAssistant">
+            Diagnosticar necesidad
+          </button>
+        </aside>
+      </div>
+    </section>
+
+    <section class="container help-filters" id="servicios">
+      <div class="filter-panel">
+        <div class="filter-panel__header">
+          <div>
+            <span>Servicios empresariales</span>
+            <h2>Filtra por necesidad de negocio</h2>
+          </div>
+
+          <button class="btn btn-outline" id="clearEnterpriseFilters">
+            Limpiar filtros
+          </button>
+        </div>
+
+        <div class="filter-grid">
+          <label>
+            Necesidad
+            <select id="enterpriseNeed">
+              <option value="all">Todas</option>
+              <option value="conectividad">Conectividad</option>
+              <option value="nube">Nube y datos</option>
+              <option value="seguridad">Seguridad</option>
+              <option value="movilidad">Movilidad</option>
+              <option value="ti">Soluciones TI</option>
+            </select>
+          </label>
+
+          <label>
+            Tamaño de empresa
+            <select id="enterpriseSize">
+              <option value="all">Todos</option>
+              <option value="pyme">Pyme</option>
+              <option value="mediana">Mediana empresa</option>
+              <option value="corporativa">Corporativa</option>
+            </select>
+          </label>
+
+          <label>
+            Prioridad
+            <select id="enterprisePriority">
+              <option value="all">Todas</option>
+              <option value="continuidad">Continuidad operativa</option>
+              <option value="crecimiento">Crecimiento</option>
+              <option value="proteccion">Protección</option>
+              <option value="productividad">Productividad</option>
+            </select>
+          </label>
+        </div>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section-heading">
+        <span>Portafolio B2B</span>
+        <h2>Servicios para telecomunicaciones empresariales</h2>
+        <p>
+          Soluciones pensadas para oficinas, sedes, sucursales, equipos móviles,
+          centros de datos, operaciones críticas y atención a clientes.
+        </p>
+      </div>
+
+      <div class="service-grid enterprise-service-grid" id="enterpriseServiceGrid">
+        <article class="service-card enterprise-service-card" id="fibra" data-need="conectividad" data-size="all" data-priority="continuidad">
+          <div class="service-card__top">
+            <i class="fa-solid fa-ethernet"></i>
+            <span>Fibra óptica</span>
+          </div>
+          <h3>Internet dedicado empresarial</h3>
+          <p>
+            Enlace simétrico para sedes que necesitan baja latencia, estabilidad
+            y ancho de banda garantizado para operaciones críticas.
+          </p>
+          <ul>
+            <li>Velocidades escalables por sede</li>
+            <li>IP pública y opciones de redundancia</li>
+            <li>SLA y soporte técnico especializado</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=fibra-optica">
+            Gestionar fibra <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="service-card enterprise-service-card" data-need="conectividad" data-size="corporativa" data-priority="continuidad">
+          <div class="service-card__top">
+            <i class="fa-solid fa-diagram-project"></i>
+            <span>Redes privadas</span>
+          </div>
+          <h3>MPLS y SD-WAN</h3>
+          <p>
+            Interconecta sucursales, almacenes y oficinas con políticas de
+            tráfico, priorización de aplicaciones y administración centralizada.
+          </p>
+          <ul>
+            <li>Priorización de voz, video y ERP</li>
+            <li>Visibilidad del tráfico entre sedes</li>
+            <li>Continuidad con enlaces de respaldo</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=redes-privadas">
+            Revisar red <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="service-card enterprise-service-card" data-need="movilidad" data-size="all" data-priority="productividad">
+          <div class="service-card__top">
+            <i class="fa-solid fa-mobile-screen-button"></i>
+            <span>Movilidad</span>
+          </div>
+          <h3>Planes móviles corporativos</h3>
+          <p>
+            Líneas móviles para equipos comerciales, técnicos y administrativos
+            con control de consumo, bolsas de datos y gestión centralizada.
+          </p>
+          <ul>
+            <li>Administración por usuario o área</li>
+            <li>Roaming y paquetes internacionales</li>
+            <li>Reportes de consumo corporativo</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=movilidad-empresarial">
+            Gestionar líneas <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="service-card enterprise-service-card" id="cloud" data-need="nube" data-size="all" data-priority="crecimiento">
+          <div class="service-card__top">
+            <i class="fa-solid fa-cloud"></i>
+            <span>Cloud</span>
+          </div>
+          <h3>Nube y centro de datos</h3>
+          <p>
+            Infraestructura para respaldos, servidores virtuales, continuidad,
+            almacenamiento y cargas empresariales con alta disponibilidad.
+          </p>
+          <ul>
+            <li>Servidores virtuales y backup</li>
+            <li>Escalamiento según demanda</li>
+            <li>Soporte para migraciones</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=cloud">
+            Gestionar cloud <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="service-card enterprise-service-card" id="seguridad" data-need="seguridad" data-size="all" data-priority="proteccion">
+          <div class="service-card__top">
+            <i class="fa-solid fa-shield-halved"></i>
+            <span>Ciberseguridad</span>
+          </div>
+          <h3>Protección de red y datos</h3>
+          <p>
+            Soluciones para reducir riesgos de accesos no autorizados,
+            indisponibilidad, fuga de información y ataques a servicios expuestos.
+          </p>
+          <ul>
+            <li>Firewall, filtrado y navegación segura</li>
+            <li>Protección DDoS y monitoreo</li>
+            <li>Respuesta ante incidentes</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=ciberseguridad">
+            Reportar seguridad <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="service-card enterprise-service-card" id="ti" data-need="ti" data-size="mediana" data-priority="productividad">
+          <div class="service-card__top">
+            <i class="fa-solid fa-laptop-code"></i>
+            <span>Soluciones TI</span>
+          </div>
+          <h3>Servicios administrados TI</h3>
+          <p>
+            Soporte para equipos, plataformas, comunicaciones internas y
+            operación tecnológica diaria de empresas con equipos distribuidos.
+          </p>
+          <ul>
+            <li>Mesa de ayuda y soporte remoto</li>
+            <li>Gestión de activos tecnológicos</li>
+            <li>Continuidad para usuarios críticos</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=soluciones-ti">
+            Solicitar soporte <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="service-card enterprise-service-card" data-need="conectividad" data-size="pyme" data-priority="crecimiento">
+          <div class="service-card__top">
+            <i class="fa-solid fa-wifi"></i>
+            <span>WiFi negocios</span>
+          </div>
+          <h3>WiFi gestionado para clientes y equipos</h3>
+          <p>
+            Red inalámbrica para tiendas, oficinas, restaurantes y sedes de
+            atención con control de acceso y segmentación.
+          </p>
+          <ul>
+            <li>Red para invitados y red interna</li>
+            <li>Mejor cobertura por zonas</li>
+            <li>Soporte para puntos de acceso</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=wifi-negocios">
+            Gestionar WiFi <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+
+        <article class="service-card enterprise-service-card" data-need="ti" data-size="corporativa" data-priority="continuidad">
+          <div class="service-card__top">
+            <i class="fa-solid fa-microchip"></i>
+            <span>IoT</span>
+          </div>
+          <h3>IoT y conectividad M2M</h3>
+          <p>
+            Conecta dispositivos, sensores, POS, flotas y equipos remotos con
+            planes de datos y monitoreo para operaciones distribuidas.
+          </p>
+          <ul>
+            <li>Conectividad para dispositivos</li>
+            <li>Gestión por volumen y ubicación</li>
+            <li>Aplicaciones para logística y campo</li>
+          </ul>
+          <a href="../cliente/reportar-incidencia.html?servicio=iot">
+            Gestionar IoT <i class="fa-solid fa-arrow-right"></i>
+          </a>
+        </article>
+      </div>
+
+      <div class="empty-public-state hidden" id="emptyEnterpriseServices">
+        <i class="fa-solid fa-filter-circle-xmark"></i>
+        <h2>No encontramos servicios con esos filtros</h2>
+        <p>
+          Cambia la necesidad, prioridad o tamaño de empresa para ver más
+          alternativas del portafolio empresarial.
+        </p>
+      </div>
+    </section>
+
+    <section class="section section-soft">
+      <div class="container enterprise-solution-layout">
+        <div>
+          <div class="section-heading enterprise-heading-left">
+            <span>Operación y continuidad</span>
+            <h2>Soluciones según el escenario de tu empresa</h2>
+            <p>
+              Elige el camino de atención adecuado según el impacto en ventas,
+              atención al cliente, sedes conectadas o seguridad.
+            </p>
+          </div>
+
+          <div class="enterprise-scenario-list">
+            <article>
+              <i class="fa-solid fa-store"></i>
+              <div>
+                <strong>Tiendas y puntos de venta</strong>
+                <span>Internet estable, POS, WiFi para clientes y respaldo móvil.</span>
+              </div>
+            </article>
+
+            <article>
+              <i class="fa-solid fa-headset"></i>
+              <div>
+                <strong>Contact center y atención digital</strong>
+                <span>Enlaces dedicados, voz corporativa, redundancia y monitoreo.</span>
+              </div>
+            </article>
+
+            <article>
+              <i class="fa-solid fa-truck-fast"></i>
+              <div>
+                <strong>Operación en campo y logística</strong>
+                <span>Movilidad, IoT, seguimiento de equipos y comunicación móvil.</span>
+              </div>
+            </article>
+
+            <article>
+              <i class="fa-solid fa-building-shield"></i>
+              <div>
+                <strong>Sedes críticas y datos sensibles</strong>
+                <span>Ciberseguridad, backup, cloud y planes de continuidad.</span>
+              </div>
+            </article>
+          </div>
+        </div>
+
+        <aside class="enterprise-sla-card" id="diagnostico">
+          <span>Simulador de atención B2B</span>
+          <h3>Estima prioridad y ruta</h3>
+
+          <label>
+            Servicio afectado
+            <select id="slaService">
+              <option value="fibra">Fibra / internet dedicado</option>
+              <option value="cloud">Cloud / servidores</option>
+              <option value="seguridad">Ciberseguridad</option>
+              <option value="movilidad">Líneas móviles</option>
+            </select>
+          </label>
+
+          <label>
+            Impacto en el negocio
+            <select id="slaImpact">
+              <option value="bajo">Bajo: usuarios puntuales</option>
+              <option value="medio">Medio: equipo o sede parcial</option>
+              <option value="alto">Alto: sede sin operación</option>
+              <option value="critico">Crítico: ventas o seguridad detenidas</option>
+            </select>
+          </label>
+
+          <button class="btn btn-primary btn-full" id="calculateEnterpriseSla">
+            Calcular atención
+          </button>
+
+          <div class="enterprise-sla-result" id="enterpriseSlaResult">
+            Selecciona el impacto para obtener una recomendación.
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="container section">
+      <div class="section-heading">
+        <span>Canales de soporte</span>
+        <h2>Gestiona tus tickets empresariales</h2>
+        <p>
+          Centraliza incidencias, reclamos, evidencias y seguimiento para mantener
+          trazabilidad con tu empresa.
+        </p>
+      </div>
+
+      <div class="guide-grid">
+        <article class="guide-card">
+          <div class="guide-card__media guide-card__media--red">
+            <i class="fa-solid fa-ticket"></i>
+          </div>
+          <div class="guide-card__body">
+            <h3>Registrar ticket B2B</h3>
+            <p>Informa fallas, degradación o solicitudes sobre servicios empresariales.</p>
+            <a href="../cliente/reportar-incidencia.html?servicio=empresa" class="btn btn-primary btn-full">Reportar incidencia</a>
+          </div>
+        </article>
+
+        <article class="guide-card">
+          <div class="guide-card__media guide-card__media--dark">
+            <i class="fa-solid fa-clock-rotate-left"></i>
+          </div>
+          <div class="guide-card__body">
+            <h3>Seguimiento por código</h3>
+            <p>Consulta estado, responsable, historial y próxima acción de atención.</p>
+            <a href="consulta-rapida.html" class="btn btn-primary btn-full">Consultar ticket</a>
+          </div>
+        </article>
+
+        <article class="guide-card">
+          <div class="guide-card__media guide-card__media--ai">
+            <i class="fa-solid fa-robot"></i>
+          </div>
+          <div class="guide-card__body">
+            <h3>Diagnóstico IA</h3>
+            <p>Identifica si tu caso es técnico, comercial, seguridad o continuidad.</p>
+            <a href="asistente-ia.html" class="btn btn-primary btn-full">Usar asistente</a>
+          </div>
+        </article>
+      </div>
+    </section>
+  </main>
+
+  <button class="floating-help" id="enterpriseHelp">
+    <i class="fa-solid fa-headset"></i>
+    Soporte B2B
+  </button>
+
+  <button class="accessibility-btn" aria-label="Accesibilidad">
+    <i class="fa-solid fa-universal-access"></i>
+  </button>
+
+  <script src="../../assets/js/atencion-empresas.js"></script>
+</body>
+</html>

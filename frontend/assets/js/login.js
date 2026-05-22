@@ -1,160 +1,528 @@
-document.addEventListener("DOMContentLoaded", () => {
-  const profileCards = document.querySelectorAll(".profile-card");
-  const selectedRoleInput = document.getElementById("selectedRole");
-  const selectedProfileText = document.getElementById("selectedProfileText");
+"use strict";
 
-  const togglePassword = document.getElementById("togglePassword");
-  const passwordInput = document.getElementById("passwordInput");
+/* =========================================================
+   CLARO ATENCIÓN 360 - LOGIN JS
+   Preparado para integración backend
+========================================================= */
 
-  const loginForm = document.getElementById("loginForm");
-  const userInput = document.getElementById("userInput");
+const LoginState = {
+  role: "cliente-persona",
+  theme: localStorage.getItem("claro360-theme") || "light",
+  isLoading: false
+};
 
-  const openQuickCase = document.getElementById("openQuickCase");
-  const openOtp = document.getElementById("openOtp");
+const RoleConfig = {
+  "cliente-persona": {
+    title: "Acceso Cliente Persona",
+    description: "Consulta tus reclamos, incidencias, servicios y notificaciones.",
+    badge: "Personas",
+    usernameLabel: "Correo, DNI o número de servicio",
+    placeholder: "Ejemplo: usuario@correo.com",
+    redirect: "cliente/dashboard.html",
+    demoUser: "cliente.persona@demo.com"
+  },
 
-  const quickCaseModal = document.getElementById("quickCaseModal");
-  const otpModal = document.getElementById("otpModal");
-  const closeButtons = document.querySelectorAll(".modal-close");
+  "cliente-empresa": {
+    title: "Acceso Cliente Empresa",
+    description: "Gestiona tickets, incidencias empresariales, SLA y soporte especializado.",
+    badge: "Empresas",
+    usernameLabel: "Correo corporativo, RUC o código de cliente",
+    placeholder: "Ejemplo: empresa@correo.com",
+    redirect: "cliente/dashboard.html",
+    demoUser: "cliente.empresa@demo.com"
+  },
 
-  const roleNames = {
-    cliente: "Cliente persona",
-    empresa: "Cliente empresa",
-    asesor: "Asesor de atención",
-    supervisor: "Supervisor",
-    admin: "Administrador"
-  };
+  asesor: {
+    title: "Acceso Asesor de Atención",
+    description: "Consulta tu bandeja, atiende casos, registra avances y solicita información.",
+    badge: "Asesor",
+    usernameLabel: "Usuario interno o correo corporativo",
+    placeholder: "Ejemplo: asesor@claro.com.pe",
+    redirect: "asesor/dashboard.html",
+    demoUser: "asesor@demo.com"
+  },
 
-  const roleRedirects = {
-    cliente: "pages/cliente/dashboard-cliente.html",
-    empresa: "pages/public/atencion-empresas.html",
-    asesor: "pages/asesor/dashboard-asesor.html",
-    supervisor: "pages/supervisor/dashboard-supervisor.html",
-    admin: "pages/admin/dashboard-admin.html"
-  };
+  supervisor: {
+    title: "Acceso Supervisor",
+    description: "Clasifica casos, asigna responsables, controla SLA y supervisa indicadores.",
+    badge: "Supervisor",
+    usernameLabel: "Usuario interno o correo corporativo",
+    placeholder: "Ejemplo: supervisor@claro.com.pe",
+    redirect: "supervisor/dashboard.html",
+    demoUser: "supervisor@demo.com"
+  },
 
-  profileCards.forEach((card) => {
-    card.addEventListener("click", () => {
-      profileCards.forEach((item) => item.classList.remove("active"));
-      card.classList.add("active");
-
-      const selectedRole = card.dataset.role;
-
-      selectedRoleInput.value = selectedRole;
-      selectedProfileText.textContent = roleNames[selectedRole];
-
-      updatePlaceholderByRole(selectedRole);
-    });
-  });
-
-  function updatePlaceholderByRole(role) {
-    if (!userInput) return;
-
-    const placeholders = {
-      cliente: "Ingresa tu DNI o correo",
-      empresa: "Ingresa tu RUC o correo corporativo",
-      asesor: "Ingresa tu usuario interno",
-      supervisor: "Ingresa tu usuario supervisor",
-      admin: "Ingresa tu usuario administrador"
-    };
-
-    userInput.placeholder = placeholders[role] || "Ingresa tu usuario";
+  admin: {
+    title: "Acceso Administrador",
+    description: "Administra usuarios, roles, catálogos, SLA, auditoría e integraciones.",
+    badge: "Admin",
+    usernameLabel: "Usuario administrador",
+    placeholder: "Ejemplo: admin@claro.com.pe",
+    redirect: "admin/dashboard.html",
+    demoUser: "admin@demo.com"
   }
+};
 
-  if (togglePassword && passwordInput) {
-    togglePassword.addEventListener("click", () => {
-      const isPassword = passwordInput.type === "password";
+const AuthApi = {
+  async login(payload) {
+    await delay(900);
 
-      passwordInput.type = isPassword ? "text" : "password";
-      togglePassword.innerHTML = isPassword
-        ? '<i class="fa-regular fa-eye-slash"></i>'
-        : '<i class="fa-regular fa-eye"></i>';
-    });
-  }
-
-  if (loginForm) {
-    loginForm.addEventListener("submit", (event) => {
-      event.preventDefault();
-
-      const role = selectedRoleInput.value;
-      const user = userInput.value.trim();
-      const password = passwordInput.value.trim();
-
-      if (!user || !password) {
-        showLoginToast("Completa tu usuario y contraseña para continuar.", "error");
-        return;
-      }
-
-      showLoginToast("Acceso validado. Redirigiendo al panel...", "success");
-
-      setTimeout(() => {
-        window.location.href = roleRedirects[role] || "index.html";
-      }, 900);
-    });
-  }
-
-  if (openQuickCase && quickCaseModal) {
-    openQuickCase.addEventListener("click", () => {
-      quickCaseModal.classList.add("active");
-    });
-  }
-
-  if (openOtp && otpModal) {
-    openOtp.addEventListener("click", () => {
-      otpModal.classList.add("active");
-    });
-  }
-
-  closeButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const modalId = button.dataset.close;
-      const modal = document.getElementById(modalId);
-
-      if (modal) {
-        modal.classList.remove("active");
-      }
-    });
-  });
-
-  [quickCaseModal, otpModal].forEach((modal) => {
-    if (!modal) return;
-
-    modal.addEventListener("click", (event) => {
-      if (event.target === modal) {
-        modal.classList.remove("active");
-      }
-    });
-  });
-
-  function showLoginToast(message, type = "success") {
-    const existingToast = document.querySelector(".login-toast");
-
-    if (existingToast) {
-      existingToast.remove();
+    if (!payload.username || !payload.password || !payload.role) {
+      return {
+        ok: false,
+        message: "Completa todos los campos obligatorios."
+      };
     }
 
-    const toast = document.createElement("div");
-    toast.className = "login-toast";
-    toast.textContent = message;
+    if (payload.password.length < 4) {
+      return {
+        ok: false,
+        message: "La contraseña ingresada no cumple el mínimo requerido."
+      };
+    }
 
-    const background = type === "error" ? "#b6000c" : "#171717";
+    return {
+      ok: true,
+      token: "mock-token-claro-360",
+      user: {
+        id: 1,
+        name: getRoleUserName(payload.role),
+        role: payload.role,
+        username: payload.username
+      },
+      redirect: RoleConfig[payload.role].redirect
+    };
+  }
+};
 
-    Object.assign(toast.style, {
-      position: "fixed",
-      top: "24px",
-      right: "24px",
-      padding: "14px 18px",
-      background,
-      color: "#ffffff",
-      borderRadius: "14px",
-      boxShadow: "0 14px 35px rgba(0,0,0,.18)",
-      zIndex: "999",
-      fontWeight: "800"
+document.addEventListener("DOMContentLoaded", () => {
+  applyTheme(LoginState.theme);
+  bindRoleTabs();
+  loadSelectedRoleFromStorage();
+  bindPasswordToggle();
+  bindLoginForm();
+  bindDemoAccess();
+  bindThemeToggle();
+  bindAssistant();
+  bindModals();
+});
+
+function $(selector, parent = document) {
+  return parent.querySelector(selector);
+}
+
+function $all(selector, parent = document) {
+  return Array.from(parent.querySelectorAll(selector));
+}
+
+function delay(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+function setText(selector, value) {
+  const element = $(selector);
+  if (element) element.textContent = value;
+}
+
+function showToast({ title, message, type = "info" }) {
+  const container = $("#toastContainer");
+  if (!container) return;
+
+  const toast = document.createElement("div");
+  toast.className = `toast toast--${type}`;
+  toast.innerHTML = `
+    <span>${type === "success" ? "✓" : type === "warning" ? "!" : type === "danger" ? "×" : "ℹ"}</span>
+    <div>
+      <strong>${title}</strong>
+      <p>${message}</p>
+    </div>
+  `;
+
+  container.appendChild(toast);
+
+  setTimeout(() => {
+    toast.style.opacity = "0";
+    toast.style.transform = "translateX(24px)";
+    setTimeout(() => toast.remove(), 260);
+  }, 4200);
+}
+
+function bindThemeToggle() {
+  $("#themeToggle")?.addEventListener("click", () => {
+    const next = LoginState.theme === "light" ? "dark" : "light";
+    applyTheme(next);
+
+    showToast({
+      title: "Tema actualizado",
+      message: `Se activó el modo ${next === "dark" ? "oscuro" : "claro"}.`,
+      type: "success"
     });
+  });
+}
 
-    document.body.appendChild(toast);
+function applyTheme(theme) {
+  LoginState.theme = theme;
+  document.documentElement.setAttribute("data-theme", theme);
+  localStorage.setItem("claro360-theme", theme);
+}
+
+function bindRoleTabs() {
+  $all(".role-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const role = tab.dataset.role;
+      if (!role) return;
+
+      setRole(role);
+    });
+  });
+}
+
+function setRole(role) {
+  LoginState.role = role;
+
+  $all(".role-tab").forEach((tab) => {
+    tab.classList.toggle("active", tab.dataset.role === role);
+  });
+
+  const config = RoleConfig[role];
+
+  $("#selectedRole").value = role;
+  setText("#usernameLabel", config.usernameLabel);
+
+  const username = $("#username");
+  if (username) {
+    username.placeholder = config.placeholder;
+  }
+
+  const context = $("#roleContext");
+  if (context) {
+    context.innerHTML = `
+      <div>
+        <strong>${config.title}</strong>
+        <span>${config.description}</span>
+      </div>
+      <span class="context-badge">${config.badge}</span>
+    `;
+  }
+
+  clearErrors();
+
+  showToast({
+    title: config.badge,
+    message: config.description,
+    type: "info"
+  });
+}
+
+function loadSelectedRoleFromStorage() {
+  const params = new URLSearchParams(window.location.search);
+  const roleFromUrl = params.get("role");
+  const roleFromStorage = localStorage.getItem("claro360-selected-role");
+
+  const role = roleFromUrl || roleFromStorage;
+
+  if (role && RoleConfig[role]) {
+    setRole(role);
+  }
+}
+
+function bindPasswordToggle() {
+  $("#passwordToggle")?.addEventListener("click", () => {
+    const password = $("#password");
+    const button = $("#passwordToggle");
+
+    if (!password || !button) return;
+
+    const isPassword = password.type === "password";
+    password.type = isPassword ? "text" : "password";
+    button.textContent = isPassword ? "Ocultar" : "Ver";
+  });
+}
+
+function bindLoginForm() {
+  const form = $("#loginForm");
+
+  form?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    if (LoginState.isLoading) return;
+
+    const payload = getLoginPayload(form);
+    const validation = validateLogin(payload);
+
+    if (!validation.ok) {
+      showValidationErrors(validation.errors);
+      openLoginError(validation.firstMessage);
+      return;
+    }
+
+    setLoading(true);
+
+    const result = await AuthApi.login(payload);
+
+    setLoading(false);
+
+    if (!result.ok) {
+      openLoginError(result.message);
+      return;
+    }
+
+    localStorage.setItem("claro360-session", JSON.stringify(result.user));
+    localStorage.setItem("claro360-token", result.token);
+
+    setText(
+      "#sessionModalText",
+      `Bienvenido, ${result.user.name}. Estamos preparando tu panel.`
+    );
+
+    openModal("#sessionModal");
 
     setTimeout(() => {
-      toast.remove();
-    }, 3000);
+      window.location.href = result.redirect;
+    }, 1250);
+  });
+}
+
+function getLoginPayload(form) {
+  const formData = new FormData(form);
+
+  return {
+    username: String(formData.get("username") || "").trim(),
+    password: String(formData.get("password") || "").trim(),
+    role: String(formData.get("role") || "").trim(),
+    rememberMe: Boolean(formData.get("rememberMe"))
+  };
+}
+
+function validateLogin(payload) {
+  const errors = {};
+
+  if (!payload.username) {
+    errors.username = "Ingresa tu usuario, correo, DNI, RUC o código de cliente.";
   }
-});
+
+  if (!payload.password) {
+    errors.password = "Ingresa tu contraseña.";
+  } else if (payload.password.length < 4) {
+    errors.password = "La contraseña debe tener al menos 4 caracteres.";
+  }
+
+  const messages = Object.values(errors);
+
+  return {
+    ok: messages.length === 0,
+    errors,
+    firstMessage: messages[0] || ""
+  };
+}
+
+function showValidationErrors(errors) {
+  clearErrors();
+
+  if (errors.username) {
+    setText("#usernameError", errors.username);
+  }
+
+  if (errors.password) {
+    setText("#passwordError", errors.password);
+  }
+}
+
+function clearErrors() {
+  setText("#usernameError", "");
+  setText("#passwordError", "");
+}
+
+function openLoginError(message) {
+  setText("#loginErrorText", message || "Verifica tus credenciales e inténtalo nuevamente.");
+  openModal("#loginErrorModal");
+}
+
+function setLoading(value) {
+  LoginState.isLoading = value;
+
+  const button = $("#loginButton");
+  if (!button) return;
+
+  button.classList.toggle("loading", value);
+  button.disabled = value;
+}
+
+function bindDemoAccess() {
+  $all(".demo-user").forEach((button) => {
+    button.addEventListener("click", () => {
+      const role = button.dataset.demoRole;
+      if (!role || !RoleConfig[role]) return;
+
+      setRole(role);
+
+      const username = $("#username");
+      const password = $("#password");
+
+      if (username) username.value = RoleConfig[role].demoUser;
+      if (password) password.value = "1234";
+
+      showToast({
+        title: "Credenciales demo cargadas",
+        message: `Se cargó el acceso para ${RoleConfig[role].badge}.`,
+        type: "success"
+      });
+    });
+  });
+}
+
+function getRoleUserName(role) {
+  const names = {
+    "cliente-persona": "Cliente Persona",
+    "cliente-empresa": "Cliente Empresa",
+    asesor: "Asesor de Atención",
+    supervisor: "Supervisor de Atención",
+    admin: "Administrador del Sistema"
+  };
+
+  return names[role] || "Usuario";
+}
+
+function bindAssistant() {
+  $("#openAssistant")?.addEventListener("click", openAssistant);
+  $("#closeAssistant")?.addEventListener("click", closeAssistant);
+  $("#drawerBackdrop")?.addEventListener("click", closeAssistant);
+
+  $("#assistantForm")?.addEventListener("submit", async (event) => {
+    event.preventDefault();
+
+    const input = $("#assistantInput");
+    const prompt = input?.value.trim();
+
+    if (!prompt) return;
+
+    addAssistantMessage(prompt, "user");
+    input.value = "";
+
+    const typing = addTypingMessage();
+    await delay(500);
+    typing.remove();
+
+    addAssistantMessage(generateAssistantResponse(prompt), "bot");
+  });
+
+  $all("[data-ai-prompt]").forEach((button) => {
+    button.addEventListener("click", async () => {
+      const prompt = button.dataset.aiPrompt || "";
+
+      addAssistantMessage(prompt, "user");
+
+      const typing = addTypingMessage();
+      await delay(500);
+      typing.remove();
+
+      addAssistantMessage(generateAssistantResponse(prompt), "bot");
+    });
+  });
+}
+
+function openAssistant() {
+  $("#aiAssistant")?.classList.add("open");
+  $("#drawerBackdrop")?.classList.add("show");
+  document.body.classList.add("drawer-open");
+}
+
+function closeAssistant() {
+  $("#aiAssistant")?.classList.remove("open");
+  $("#drawerBackdrop")?.classList.remove("show");
+  document.body.classList.remove("drawer-open");
+}
+
+function addAssistantMessage(text, sender) {
+  const container = $("#assistantMessages");
+  if (!container) return;
+
+  const message = document.createElement("div");
+  message.className = `message message--${sender}`;
+  message.textContent = text;
+
+  container.appendChild(message);
+  container.scrollTop = container.scrollHeight;
+}
+
+function addTypingMessage() {
+  const container = $("#assistantMessages");
+
+  const message = document.createElement("div");
+  message.className = "message message--bot";
+  message.textContent = "ClaroBot está analizando tu consulta...";
+
+  container?.appendChild(message);
+
+  if (container) {
+    container.scrollTop = container.scrollHeight;
+  }
+
+  return message;
+}
+
+function generateAssistantResponse(prompt) {
+  const text = prompt.toLowerCase();
+
+  if (text.includes("rol")) {
+    return "Elige Cliente Persona si deseas consultar o registrar reclamos personales. Elige Cliente Empresa si gestionas servicios corporativos. Asesor, Supervisor y Admin son perfiles internos.";
+  }
+
+  if (text.includes("empresa")) {
+    setRole("cliente-empresa");
+    return "Activé el acceso Cliente Empresa. Puedes ingresar con correo corporativo, RUC o código de cliente.";
+  }
+
+  if (text.includes("contraseña") || text.includes("olvide") || text.includes("olvidé")) {
+    return "Puedes usar la opción “¿Olvidaste tu contraseña?”. Se abrirá el flujo de recuperación con validación por correo u OTP.";
+  }
+
+  if (text.includes("asesor")) {
+    setRole("asesor");
+    return "Activé el perfil Asesor. Este acceso permite revisar bandeja, actualizar seguimiento y atender casos.";
+  }
+
+  if (text.includes("supervisor")) {
+    setRole("supervisor");
+    return "Activé el perfil Supervisor. Este acceso permite clasificar casos, asignar responsables y monitorear SLA.";
+  }
+
+  return "Puedo ayudarte a elegir perfil, recuperar contraseña o explicar para qué sirve cada acceso.";
+}
+
+function bindModals() {
+  $all("[data-close-modal]").forEach((button) => {
+    button.addEventListener("click", closeAllModals);
+  });
+
+  $("#modalBackdrop")?.addEventListener("click", closeAllModals);
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      closeAllModals();
+      closeAssistant();
+    }
+  });
+}
+
+function openModal(selector) {
+  const modal = $(selector);
+  const backdrop = $("#modalBackdrop");
+
+  if (!modal || !backdrop) return;
+
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+  backdrop.classList.add("show");
+  document.body.classList.add("modal-open");
+}
+
+function closeAllModals() {
+  $all(".modal").forEach((modal) => {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+  });
+
+  $("#modalBackdrop")?.classList.remove("show");
+  document.body.classList.remove("modal-open");
+}

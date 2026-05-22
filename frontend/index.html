@@ -1,433 +1,874 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="es" data-theme="light">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Centro de Atención Claro | Reclamos e Incidencias</title>
+  <title>Claro Atención 360 | Reclamos, incidencias y seguimiento</title>
 
-  <link rel="stylesheet" href="assets/css/claro-theme.css" />
-
-  <!-- Íconos desde Font Awesome CDN -->
-  <link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+  <meta
+    name="description"
+    content="Plataforma inteligente para registrar, consultar y hacer seguimiento de reclamos e incidencias para clientes Personas y Empresas."
   />
+
+  <link rel="stylesheet" href="assets/css/index.css" />
+
+  <link rel="preconnect" href="https://images.unsplash.com" />
+  <link rel="preconnect" href="https://plus.unsplash.com" />
 </head>
 
 <body>
-  <!-- Barra superior institucional -->
-  <header class="top-bar">
-    <div class="top-bar__left">
-      <a href="index.html" class="top-link active">Personas</a>
-      <a href="public/atencion-empresas.html" class="top-link">Empresas</a>
-    </div>
+  <!-- =========================================================
+       TOAST CONTAINER
+  ========================================================== -->
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
-    <div class="top-bar__right">
-      <a href="#" class="top-link">Información a Abonados y Usuarios</a>
-
-      <div class="dropdown">
-        <button class="top-link dropdown-toggle">
-          Más de Claro <i class="fa-solid fa-chevron-down"></i>
+  <!-- =========================================================
+       TOPBAR
+  ========================================================== -->
+  <header class="topbar">
+    <div class="topbar__inner container">
+      <div class="topbar__segment">
+        <button class="segment-tab active" data-segment="personas" type="button">
+          Personas
         </button>
-
-        <div class="dropdown-menu">
-          <a href="#">Claro Música</a>
-          <a href="#">Claro Video</a>
-          <a href="#">Beneficios Claro</a>
-          <a href="#">Promociones</a>
-          <a href="#">Canales de atención</a>
-        </div>
+        <button class="segment-tab" data-segment="empresas" type="button">
+          Empresas
+        </button>
       </div>
 
-      <div class="dropdown">
-        <button class="top-link dropdown-toggle">
-          <i class="fa-solid fa-globe"></i> Perú
-          <i class="fa-solid fa-chevron-down"></i>
+      <nav class="topbar__links" aria-label="Enlaces superiores">
+        <a href="#ayuda">Información a Abonados y Usuarios</a>
+        <a href="#modulos">Más de Claro</a>
+        <button class="topbar__country" type="button" id="countryButton">
+          <span class="icon-globe"></span>
+          Perú
+          <span class="chevron">⌄</span>
         </button>
-
-        <div class="dropdown-menu dropdown-menu--right">
-          <a href="#">Perú</a>
-          <a href="#">Argentina</a>
-          <a href="#">Chile</a>
-          <a href="#">Colombia</a>
-          <a href="#">Ecuador</a>
-        </div>
-      </div>
+      </nav>
     </div>
   </header>
 
-  <!-- Navegación principal -->
-  <nav class="main-nav">
-    <div class="brand">
-      <div class="brand__logo">Claro</div>
-      <span class="brand__module">Centro de Atención</span>
-    </div>
-
-    <ul class="main-nav__links">
-      <li class="nav-item has-mega">
-        <button>Servicios <i class="fa-solid fa-chevron-down"></i></button>
-
-        <div class="mega-menu">
-            <div>
-              <h4>Servicios móviles</h4>
-              <a href="pages/cliente/reportar-incidencia.html?servicio=postpago">Postpago</a>
-              <a href="pages/cliente/reportar-incidencia.html?servicio=prepago">Prepago</a>
-              <a href="public/centro-ayuda.html">Cámbiate a Claro</a>
-              <a href="public/centro-ayuda.html">Roaming</a>
-            </div>
-
-            <div>
-              <h4>Servicios hogar</h4>
-              <a href="pages/cliente/reportar-incidencia.html?servicio=internet-hogar">Internet hogar</a>
-              <a href="pages/cliente/reportar-incidencia.html?servicio=claro-tv">Claro TV+</a>
-              <a href="pages/cliente/reportar-incidencia.html?servicio=telefonia-fija">Telefonía fija</a>
-              <a href="public/centro-ayuda.html">Cobertura</a>
-            </div>
-
-            <div>
-              <h4>Empresas</h4>
-              <a href="public/atencion-empresas.html">Fibra óptica</a>
-              <a href="public/atencion-empresas.html">Cloud</a>
-              <a href="public/atencion-empresas.html">Ciberseguridad</a>
-              <a href="public/atencion-empresas.html">Soluciones TI</a>
-            </div>
-        </div>
-      </li>
-
-      <li><a href="public/centro-ayuda.html">Ayuda</a></li>
-      <li><a href="#centro-reclamos" class="nav-active">Centro de Reclamos</a></li>
-      <li><a href="public/consulta-rapida.html">Seguimiento</a></li>
-      <li><a href="#herramientas">Hablando Claro</a></li>
-    </ul>
-
-    <div class="main-nav__actions">
-      <button class="icon-btn" id="openSearch" aria-label="Buscar">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </button>
-
-      <button class="icon-btn" aria-label="Notificaciones">
-        <i class="fa-regular fa-bell"></i>
-        <span class="notification-dot"></span>
-      </button>
-
-      <a href="login.html" class="btn btn-outline">
-        <i class="fa-regular fa-user"></i>
-        Mi Claro
+  <!-- =========================================================
+       MAIN NAVBAR
+  ========================================================== -->
+  <nav class="main-nav" id="mainNav">
+    <div class="main-nav__inner container">
+      <a href="index.html" class="brand" aria-label="Inicio Claro Atención 360">
+        <span class="brand__name">Claro</span>
+        <span class="brand__spark">✦</span>
+        <span class="brand__tag">Atención 360</span>
       </a>
+
+      <button class="mobile-menu-btn" id="mobileMenuBtn" type="button" aria-label="Abrir menú">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <div class="main-nav__menu" id="mainMenu">
+        <div class="nav-item nav-item--dropdown">
+          <button class="nav-link active" type="button">
+            Servicios
+            <span class="chevron">⌄</span>
+          </button>
+
+          <div class="mega-menu">
+            <div class="mega-menu__grid" data-menu-content="personas">
+              <div class="mega-menu__col">
+                <h4>Servicios móviles</h4>
+                <a href="#">Postpago</a>
+                <a href="#">Prepago</a>
+                <a href="#">Cámbiate a Claro</a>
+                <a href="#">Roaming</a>
+              </div>
+              <div class="mega-menu__col">
+                <h4>Servicios hogar</h4>
+                <a href="#">Internet hogar</a>
+                <a href="#">Claro TV+</a>
+                <a href="#">Full Claro</a>
+                <a href="#">Cobertura</a>
+              </div>
+              <div class="mega-menu__col">
+                <h4>Gestiones rápidas</h4>
+                <a href="cliente/registrar-reclamo.html">Registrar reclamo</a>
+                <a href="cliente/registrar-incidencia.html">Registrar incidencia</a>
+                <a href="consulta-rapida.html">Consultar caso</a>
+                <a href="centro-ayuda.html">Centro de ayuda</a>
+              </div>
+            </div>
+
+            <div class="mega-menu__grid hidden" data-menu-content="empresas">
+              <div class="mega-menu__col">
+                <h4>Comunicación</h4>
+                <a href="#">Planes móviles empresa</a>
+                <a href="#">Fibra óptica</a>
+                <a href="#">Telefonía fija</a>
+                <a href="#">Roaming corporativo</a>
+              </div>
+              <div class="mega-menu__col">
+                <h4>Cloud y productividad</h4>
+                <a href="#">Microsoft 365</a>
+                <a href="#">Google Workspace</a>
+                <a href="#">Claro Drive Negocio</a>
+                <a href="#">Correo empresas</a>
+              </div>
+              <div class="mega-menu__col">
+                <h4>Soporte empresarial</h4>
+                <a href="cliente/registrar-incidencia.html">Reportar incidencia</a>
+                <a href="consulta-rapida.html">Consultar ticket</a>
+                <a href="centro-ayuda.html">Mesa de ayuda</a>
+                <a href="#">Solicitar asesoría</a>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a href="#soluciones" class="nav-link" data-label-personas="Tienda" data-label-empresas="Cloud">
+          Tienda
+        </a>
+
+        <a href="#ayuda" class="nav-link">
+          Ayuda
+        </a>
+
+        <a href="#modulos" class="nav-link">
+          Hablando Claro
+        </a>
+
+        <a href="#reclamos" class="nav-link nav-link--important">
+          Reclamos e incidencias
+        </a>
+      </div>
+
+      <div class="main-nav__actions">
+        <button class="icon-btn" id="globalSearchBtn" type="button" aria-label="Buscar">
+          🔎
+        </button>
+
+        <button class="icon-btn" id="themeToggle" type="button" aria-label="Cambiar tema">
+          ◐
+        </button>
+
+        <a href="login.html" class="mi-claro-btn">
+          <span class="mi-claro-btn__icon">👤</span>
+          Mi Claro
+        </a>
+      </div>
     </div>
   </nav>
 
-  <!-- Buscador flotante -->
-  <section class="search-overlay" id="searchOverlay">
-    <div class="search-box">
-      <button class="close-search" id="closeSearch">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <h2>Hola, aquí busca lo que necesites</h2>
-
-      <div class="search-input">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Buscar reclamos, seguimiento, ayuda, servicios..." />
-      </div>
-
-      <div class="trend-tags">
-        <span>No tengo internet</span>
-        <span>Problemas con mi recibo</span>
-        <span>Consultar reclamo</span>
-        <span>Centro de ayuda</span>
-      </div>
-    </div>
-  </section>
-
-  <!-- Hero principal -->
+  <!-- =========================================================
+       HERO
+  ========================================================== -->
   <main>
-    <section class="hero">
-      <div class="hero__overlay"></div>
+    <section class="hero" id="inicio">
+      <div class="hero__background">
+        <div class="hero__slide active" data-slide="personas">
+          <img
+            src="https://images.unsplash.com/photo-1556740738-b6a63e27c4df?auto=format&fit=crop&w=1800&q=80"
+            alt="Atención digital para clientes personas"
+          />
+        </div>
 
-      <div class="hero__content">
-        <div class="hero__text">
-          <span class="eyebrow">
-            <i class="fa-solid fa-shield-halved"></i>
-            Plataforma digital de atención
-          </span>
+        <div class="hero__slide" data-slide="empresas">
+          <img
+            src="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=80"
+            alt="Soluciones digitales para empresas"
+          />
+        </div>
 
-          <h1>Centro de Atención, Reclamos e Incidencias</h1>
+        <div class="hero__overlay"></div>
+        <div class="hero__grid-lines"></div>
+      </div>
 
-          <p>
-            Registra, consulta y realiza seguimiento a tus casos de forma rápida,
-            segura y transparente desde un solo lugar.
+      <div class="hero__content container">
+        <div class="hero__copy">
+          <span class="eyebrow" id="heroEyebrow">Personas | Atención inteligente</span>
+
+          <h1 id="heroTitle">
+            Gestiona tus reclamos e incidencias en tiempo real
+          </h1>
+
+          <p id="heroDescription">
+            Registra, consulta y haz seguimiento de tus casos desde una plataforma moderna,
+            rápida y transparente, con asistencia inteligente en cada paso.
           </p>
 
           <div class="hero__actions">
-            <a href="pages/cliente/registrar-reclamo.html" class="btn btn-primary">
-              <i class="fa-solid fa-file-circle-plus"></i>
+            <a href="cliente/registrar-reclamo.html" class="btn btn--primary" id="heroPrimaryBtn">
               Registrar reclamo
             </a>
-
-            <a href="pages/cliente/reportar-incidencia.html" class="btn btn-light">
-              <i class="fa-solid fa-triangle-exclamation"></i>
-              Reportar incidencia
+            <a href="consulta-rapida.html" class="btn btn--ghost">
+              Consultar caso
             </a>
-
-            <a href="pages/public/consulta-rapida.html" class="btn btn-light">
-              <i class="fa-solid fa-magnifying-glass-chart"></i>
-              Consultar mi caso
-            </a>
+            <button class="btn btn--soft" type="button" id="openBotFromHero">
+              Preguntar a ClaroBot IA
+            </button>
           </div>
 
-          <button class="ai-link" id="openChatbot">
-            <i class="fa-solid fa-wand-magic-sparkles"></i>
-            Hablar con asistente IA
-          </button>
+          <div class="hero__trust">
+            <div>
+              <strong>24/7</strong>
+              <span>seguimiento disponible</span>
+            </div>
+            <div>
+              <strong>IA</strong>
+              <span>orientación inteligente</span>
+            </div>
+            <div>
+              <strong>SLA</strong>
+              <span>control de plazos</span>
+            </div>
+          </div>
         </div>
 
-        <aside class="hero-card">
-          <div class="hero-card__header">
-            <h2>¿Qué deseas hacer hoy?</h2>
-            <p>Elige una opción y continúa con tu atención.</p>
+        <aside class="hero-panel glass-card">
+          <div class="hero-panel__header">
+            <span class="panel-dot"></span>
+            <strong id="panelTitle">Centro de atención rápida</strong>
           </div>
 
-          <div class="segment">
-            <button class="segment-btn active" data-segment="personas">
-              <i class="fa-solid fa-user"></i>
-              Personas
+          <div class="service-toggle" id="serviceToggle">
+            <button class="service-toggle__item active" type="button" data-service="movil">
+              📱 Móvil
             </button>
-
-            <button class="segment-btn" data-segment="empresas">
-              <i class="fa-solid fa-building"></i>
-              Empresas
+            <button class="service-toggle__item" type="button" data-service="hogar">
+              🏠 Hogar
+            </button>
+            <button class="service-toggle__item" type="button" data-service="empresa">
+              🏢 Empresa
             </button>
           </div>
 
-          <form class="quick-form" id="quickForm">
-            <label>
-              Código de caso
-              <div class="input-group">
-                <i class="fa-solid fa-ticket"></i>
-                <input type="text" placeholder="Ej.: CL-RC-000123" id="caseCode" />
-              </div>
-            </label>
+          <label class="form-label" for="heroActionSelect">Selecciona lo que necesitas</label>
+          <select id="heroActionSelect" class="form-control">
+            <option value="registrar-reclamo">Registrar un reclamo</option>
+            <option value="registrar-incidencia">Registrar una incidencia</option>
+            <option value="consultar-caso">Consultar estado de caso</option>
+            <option value="centro-ayuda">Recibir ayuda guiada</option>
+          </select>
 
-            <label>
-              Tipo de servicio
-              <div class="input-group">
-                <i class="fa-solid fa-signal"></i>
-                <select id="serviceType">
-                  <option value="">Seleccionar servicio</option>
-                  <option>Telefonía móvil</option>
-                  <option>Internet hogar</option>
-                  <option>Claro TV+</option>
-                  <option>Telefonía fija</option>
-                  <option>Servicios empresas</option>
-                  <option>Cloud / Soluciones digitales</option>
-                </select>
-              </div>
-            </label>
+          <div class="mini-status-card">
+            <div>
+              <span class="mini-status-card__label">Estado estimado</span>
+              <strong id="heroStatusText">Atención disponible</strong>
+            </div>
+            <span class="status-pill status-pill--ok">Operativo</span>
+          </div>
 
-            <label>
-              Acción
-              <div class="input-group">
-                <i class="fa-solid fa-list-check"></i>
-                <select id="actionType">
-                  <option value="">Seleccionar acción</option>
-                  <option>Registrar reclamo</option>
-                  <option>Reportar incidencia</option>
-                  <option>Consultar seguimiento</option>
-                  <option>Subir evidencia</option>
-                  <option>Hablar con asesor</option>
-                </select>
-              </div>
-            </label>
-
-            <button type="submit" class="btn btn-primary btn-full">
-              Continuar
-              <i class="fa-solid fa-arrow-right"></i>
-            </button>
-          </form>
+          <button class="btn btn--primary btn--full" id="heroPanelAction" type="button">
+            Continuar
+          </button>
         </aside>
       </div>
-    </section>
 
-    <!-- Accesos rápidos -->
-    <section class="section container">
-      <div class="section-heading">
-        <span>Accesos principales</span>
-        <h2>¿Qué quieres hacer?</h2>
-        <p>
-          Encuentra rápidamente las opciones más usadas para gestionar tu atención.
-        </p>
-      </div>
+      <div class="hero__slider-controls container">
+        <button type="button" id="prevSlide" aria-label="Anterior">‹</button>
+        <button type="button" id="nextSlide" aria-label="Siguiente">›</button>
 
-      <div class="quick-grid">
-        <a href="pages/cliente/registrar-reclamo.html" class="quick-card">
-          <i class="fa-solid fa-file-pen"></i>
-          <h3>Registrar reclamo</h3>
-          <p>Presenta una disconformidad sobre facturación, servicio o atención.</p>
-        </a>
-
-        <a href="pages/cliente/reportar-incidencia.html" class="quick-card">
-          <i class="fa-solid fa-wifi"></i>
-          <h3>Reportar falla técnica</h3>
-          <p>Informa problemas de internet, móvil, TV o servicios empresariales.</p>
-        </a>
-
-        <a href="pages/public/consulta-rapida.html" class="quick-card">
-          <i class="fa-solid fa-magnifying-glass"></i>
-          <h3>Consultar estado</h3>
-          <p>Revisa el avance de tu caso con tu código de seguimiento.</p>
-        </a>
-
-        <a href="pages/cliente/historial-caso.html" class="quick-card">
-          <i class="fa-solid fa-clock-rotate-left"></i>
-          <h3>Ver historial</h3>
-          <p>Consulta todas las acciones y actualizaciones de tu caso.</p>
-        </a>
-
-        <a href="pages/cliente/subir-evidencia.html" class="quick-card">
-          <i class="fa-solid fa-cloud-arrow-up"></i>
-          <h3>Subir evidencia</h3>
-          <p>Adjunta imágenes, documentos, recibos o capturas del problema.</p>
-        </a>
-
-        <a href="pages/public/centro-ayuda.html" class="quick-card">
-          <i class="fa-regular fa-circle-question"></i>
-          <h3>Centro de ayuda</h3>
-          <p>Encuentra guías rápidas, preguntas frecuentes y canales de atención.</p>
-        </a>
-
-        <a href="pages/public/asistente-ia.html" class="quick-card">
-          <i class="fa-solid fa-robot"></i>
-          <h3>Asistente IA</h3>
-          <p>Recibe orientación automática antes de registrar tu caso.</p>
-        </a>
-
-        <a href="pages/public/atencion-empresas.html" class="quick-card">
-          <i class="fa-solid fa-briefcase"></i>
-          <h3>Atención empresas</h3>
-          <p>Gestiona reclamos e incidencias de servicios corporativos.</p>
-        </a>
+        <div class="hero__dots">
+          <span class="dot active"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
       </div>
     </section>
 
-    <!-- Herramientas inteligentes -->
-    <section class="section section-soft">
+    <!-- =========================================================
+         AI SEARCH
+    ========================================================== -->
+    <section class="ai-search-section" id="buscador">
       <div class="container">
-        <div class="section-heading">
-          <span>Innovación aplicada</span>
-          <h2>Herramientas inteligentes</h2>
+        <div class="section-heading section-heading--center">
+          <span class="eyebrow eyebrow--red">Nuevo buscador IA</span>
+          <h2>Hola, soy ClaroBot IA. ¿En qué puedo ayudarte hoy?</h2>
           <p>
-            Funciones digitales que ayudan a clasificar, orientar y agilizar la atención.
+            Describe tu problema o consulta. Te orientaré para registrar un reclamo,
+            consultar un caso, revisar cobertura o encontrar ayuda.
           </p>
         </div>
 
-        <div class="smart-grid">
-          <article class="smart-card">
-            <div class="smart-icon">
-              <i class="fa-solid fa-comments"></i>
+        <div class="ai-search-box">
+          <input
+            type="text"
+            id="aiSearchInput"
+            placeholder="Ejemplo: mi internet está lento, quiero consultar mi reclamo, necesito reportar una incidencia..."
+            autocomplete="off"
+          />
+
+          <button type="button" id="aiVoiceBtn" class="ai-search-box__voice" aria-label="Consulta por voz">
+            🎙️
+          </button>
+
+          <button type="button" id="aiSearchBtn" class="ai-search-box__submit">
+            Consultar IA
+          </button>
+        </div>
+
+        <div class="quick-prompts">
+          <button type="button" class="quick-prompt" data-prompt="Quiero registrar un reclamo">
+            Registrar reclamo
+          </button>
+          <button type="button" class="quick-prompt" data-prompt="Deseo consultar el estado de mi caso">
+            Consultar caso
+          </button>
+          <button type="button" class="quick-prompt" data-prompt="Mi internet está lento">
+            Internet lento
+          </button>
+          <button type="button" class="quick-prompt" data-prompt="Necesito soporte para mi empresa">
+            Soporte empresa
+          </button>
+          <button type="button" class="quick-prompt" data-prompt="No entiendo el estado pendiente por cliente">
+            Explicar estado
+          </button>
+        </div>
+
+        <p class="ai-disclaimer">
+          Respuestas generadas por IA simulada para el prototipo. Verifica la información antes de continuar.
+        </p>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         QUICK ACTIONS
+    ========================================================== -->
+    <section class="quick-actions-section" id="acciones">
+      <div class="container">
+        <div class="section-heading section-heading--center">
+          <h2 id="quickActionsTitle">¿Qué necesitas hacer hoy?</h2>
+          <p id="quickActionsSubtitle">
+            Accesos rápidos para gestionar tus servicios, reclamos e incidencias.
+          </p>
+        </div>
+
+        <div class="quick-actions-grid" id="quickActionsGrid">
+          <!-- Render JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         SOLUTIONS
+    ========================================================== -->
+    <section class="solutions-section" id="soluciones">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow eyebrow--red" id="solutionsEyebrow">Soluciones para personas</span>
+          <h2 id="solutionsTitle">Tenemos lo que estás buscando</h2>
+          <p id="solutionsSubtitle">
+            Explora servicios, gestiones digitales y herramientas para resolver tus necesidades.
+          </p>
+        </div>
+
+        <div class="solutions-grid" id="solutionsGrid">
+          <!-- Render JS -->
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         CLAIMS CENTER
+    ========================================================== -->
+    <section class="claims-section" id="reclamos">
+      <div class="container claims-layout">
+        <div class="claims-copy">
+          <span class="eyebrow eyebrow--red">Reclamos e incidencias</span>
+          <h2>Gestiona tus casos con trazabilidad, seguimiento e IA</h2>
+          <p>
+            Consulta el estado de tus solicitudes, adjunta evidencias, revisa el historial
+            y recibe alertas sobre cambios o vencimientos.
+          </p>
+
+          <div class="claims-features">
+            <div>
+              <span>✓</span>
+              Registro guiado por pasos
             </div>
             <div>
-              <h3>Chatbot IA 24/7</h3>
-              <p>
-                Orienta al cliente, responde preguntas frecuentes y recomienda la mejor ruta de atención.
-              </p>
+              <span>✓</span>
+              Código único de seguimiento
             </div>
-            <i class="fa-solid fa-arrow-right smart-arrow"></i>
+            <div>
+              <span>✓</span>
+              Historial y línea de tiempo
+            </div>
+            <div>
+              <span>✓</span>
+              Notificaciones inteligentes
+            </div>
+          </div>
+        </div>
+
+        <div class="claims-dashboard">
+          <div class="claims-card claims-card--query">
+            <div class="claims-card__header">
+              <h3>Consulta rápida de caso</h3>
+              <span class="status-dot status-dot--live"></span>
+            </div>
+
+            <form id="quickCaseForm" data-endpoint="/api/public/cases/lookup" data-method="GET">
+              <label for="caseCode">Código de caso</label>
+              <input
+                id="caseCode"
+                name="caseCode"
+                type="text"
+                placeholder="CAS-2026-000123"
+              />
+
+              <label for="documentNumber">DNI / RUC</label>
+              <input
+                id="documentNumber"
+                name="documentNumber"
+                type="text"
+                placeholder="76543210"
+              />
+
+              <button class="btn btn--primary btn--full" type="submit">
+                Consultar estado
+              </button>
+            </form>
+          </div>
+
+          <div class="claims-card claims-card--timeline">
+            <h3>Seguimiento en vivo</h3>
+
+            <div class="progress-timeline">
+              <div class="progress-step done">
+                <span></span>
+                Registrado
+              </div>
+              <div class="progress-step done">
+                <span></span>
+                Clasificado
+              </div>
+              <div class="progress-step active">
+                <span></span>
+                En atención
+              </div>
+              <div class="progress-step">
+                <span></span>
+                Resuelto
+              </div>
+            </div>
+
+            <div class="sla-box">
+              <span>SLA restante</span>
+              <strong>05h 42m</strong>
+            </div>
+          </div>
+
+          <div class="claims-card claims-card--ai">
+            <h3>ClaroBot recomienda</h3>
+            <p>
+              Adjunta evidencia adicional para agilizar la revisión del caso y evitar observaciones.
+            </p>
+            <button class="btn btn--soft btn--full" id="openEvidenceAdvice" type="button">
+              Ver recomendación IA
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         TECHNOLOGY PANEL
+    ========================================================== -->
+    <section class="tech-panel-section" id="estado-servicios">
+      <div class="container">
+        <div class="section-heading section-heading--center">
+          <span class="eyebrow eyebrow--red">Plataforma inteligente</span>
+          <h2>Estado de servicios y operación</h2>
+          <p>
+            Visualiza disponibilidad, alertas y métricas simuladas de atención en tiempo real.
+          </p>
+        </div>
+
+        <div class="tech-grid">
+          <article class="status-card">
+            <div class="status-card__top">
+              <span class="status-card__icon">📶</span>
+              <span class="status-pill status-pill--ok">Operativo</span>
+            </div>
+            <h3>Red móvil</h3>
+            <p>Disponibilidad estable en servicios móviles.</p>
+            <div class="health-bar">
+              <span style="width: 96%"></span>
+            </div>
           </article>
 
-          <article class="smart-card">
-            <div class="smart-icon">
-              <i class="fa-solid fa-hourglass-half"></i>
+          <article class="status-card">
+            <div class="status-card__top">
+              <span class="status-card__icon">🏠</span>
+              <span class="status-pill status-pill--warn">Intermitencia</span>
             </div>
-            <div>
-              <h3>Simulador de plazo</h3>
-              <p>
-                Estima el tiempo de atención según servicio, tipo de caso y prioridad.
-              </p>
+            <h3>Internet hogar</h3>
+            <p>Algunas zonas presentan lentitud temporal.</p>
+            <div class="health-bar health-bar--warn">
+              <span style="width: 78%"></span>
             </div>
-            <i class="fa-solid fa-arrow-right smart-arrow"></i>
           </article>
 
-          <article class="smart-card">
-            <div class="smart-icon">
-              <i class="fa-solid fa-brain"></i>
+          <article class="status-card">
+            <div class="status-card__top">
+              <span class="status-card__icon">☁️</span>
+              <span class="status-pill status-pill--ok">Operativo</span>
             </div>
-            <div>
-              <h3>Diagnóstico inteligente</h3>
-              <p>
-                Ayuda a identificar si el problema corresponde a reclamo, incidencia o consulta.
-              </p>
+            <h3>Servicios cloud</h3>
+            <p>Servicios empresariales activos y monitoreados.</p>
+            <div class="health-bar">
+              <span style="width: 98%"></span>
             </div>
-            <i class="fa-solid fa-arrow-right smart-arrow"></i>
+          </article>
+
+          <article class="status-card status-card--dark">
+            <div class="status-card__top">
+              <span class="status-card__icon">🤖</span>
+              <span class="status-pill status-pill--info">IA activa</span>
+            </div>
+            <h3>Asistencia inteligente</h3>
+            <p>Resúmenes, recomendaciones y consultas rápidas.</p>
+            <button class="btn btn--light btn--full" id="openBotFromStatus" type="button">
+              Abrir ClaroBot IA
+            </button>
           </article>
         </div>
       </div>
     </section>
 
-    <!-- Consulta rápida -->
-    <section class="quick-search container">
-      <div>
-        <span>Consulta rápida</span>
-        <h2>¿En qué podemos ayudarte hoy?</h2>
-      </div>
+    <!-- =========================================================
+         METRICS
+    ========================================================== -->
+    <section class="metrics-section" id="indicadores">
+      <div class="container">
+        <div class="metrics-grid">
+          <article class="metric-card">
+            <span class="metric-card__label">Casos gestionados</span>
+            <strong class="counter" data-target="15420">0</strong>
+            <small>Histórico simulado</small>
+          </article>
 
-      <div class="quick-search__box">
-        <i class="fa-solid fa-magnifying-glass"></i>
-        <input type="text" placeholder="Escribe tu consulta o selecciona una opción..." />
-      </div>
+          <article class="metric-card">
+            <span class="metric-card__label">Cumplimiento SLA</span>
+            <strong class="counter" data-target="92">0</strong>
+            <small>% de atención dentro de plazo</small>
+          </article>
 
-      <div class="chips">
-        <button>No tengo internet</button>
-        <button>Problemas con mi recibo</button>
-        <button>Seguimiento de reclamo</button>
-        <button>Hablar con asesor</button>
+          <article class="metric-card">
+            <span class="metric-card__label">Satisfacción</span>
+            <strong class="counter" data-target="46" data-decimal="true">0</strong>
+            <small>Promedio sobre 5</small>
+          </article>
+
+          <article class="metric-card">
+            <span class="metric-card__label">Tiempo promedio</span>
+            <strong class="counter" data-target="8">0</strong>
+            <small>minutos primera respuesta</small>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         MODULES
+    ========================================================== -->
+    <section class="modules-section" id="modulos">
+      <div class="container">
+        <div class="section-heading">
+          <span class="eyebrow eyebrow--red">Módulos principales</span>
+          <h2>Todo el ciclo de atención en una sola plataforma</h2>
+          <p>
+            Desde el registro del caso hasta la resolución, con trazabilidad, control de SLA,
+            notificaciones, reportes e IA.
+          </p>
+        </div>
+
+        <div class="modules-grid">
+          <article class="module-card">
+            <span>📝</span>
+            <h3>Registro inteligente</h3>
+            <p>Formularios guiados, validaciones y carga de evidencias.</p>
+          </article>
+
+          <article class="module-card">
+            <span>🧭</span>
+            <h3>Seguimiento en tiempo real</h3>
+            <p>Línea de tiempo, estado actual y avance del caso.</p>
+          </article>
+
+          <article class="module-card">
+            <span>🔔</span>
+            <h3>Notificaciones</h3>
+            <p>Alertas por cambios de estado, solicitudes y vencimientos.</p>
+          </article>
+
+          <article class="module-card">
+            <span>📊</span>
+            <h3>Reportes</h3>
+            <p>Indicadores, filtros, exportaciones y análisis ejecutivo.</p>
+          </article>
+
+          <article class="module-card">
+            <span>🛡️</span>
+            <h3>Auditoría</h3>
+            <p>Registro de acciones críticas, usuarios y cambios de estado.</p>
+          </article>
+
+          <article class="module-card">
+            <span>🤖</span>
+            <h3>IA operativa</h3>
+            <p>Resumen de casos, sugerencias de prioridad y acciones recomendadas.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         HELP CENTER
+    ========================================================== -->
+    <section class="help-section" id="ayuda">
+      <div class="container help-layout">
+        <div class="help-copy">
+          <span class="eyebrow eyebrow--red">Centro de ayuda</span>
+          <h2>Encuentra respuestas antes de registrar un caso</h2>
+          <p>
+            Revisa preguntas frecuentes, guías rápidas y sugerencias inteligentes
+            para resolver tu consulta.
+          </p>
+
+          <div class="help-search">
+            <input id="helpSearchInput" type="text" placeholder="Buscar en el centro de ayuda..." />
+            <button id="helpSearchBtn" type="button">Buscar</button>
+          </div>
+        </div>
+
+        <div class="faq-list" id="faqList">
+          <button class="faq-item" type="button">
+            <span>¿Cómo registro un reclamo?</span>
+            <strong>+</strong>
+          </button>
+
+          <button class="faq-item" type="button">
+            <span>¿Qué significa “Pendiente por cliente”?</span>
+            <strong>+</strong>
+          </button>
+
+          <button class="faq-item" type="button">
+            <span>¿Puedo adjuntar evidencias después?</span>
+            <strong>+</strong>
+          </button>
+
+          <button class="faq-item" type="button">
+            <span>¿Cómo consulto el estado de mi caso?</span>
+            <strong>+</strong>
+          </button>
+        </div>
       </div>
     </section>
   </main>
 
-  <!-- Chatbot flotante -->
-  <aside class="chatbot" id="chatbot">
-    <div class="chatbot__header">
+  <!-- =========================================================
+       FOOTER
+  ========================================================== -->
+  <footer class="footer">
+    <div class="container footer__grid">
       <div>
-        <strong>Asistente IA Claro</strong>
-        <span>En línea</span>
+        <a href="index.html" class="brand brand--footer">
+          <span class="brand__name">Claro</span>
+          <span class="brand__spark">✦</span>
+          <span class="brand__tag">Atención 360</span>
+        </a>
+        <p>
+          Plataforma académica para la gestión inteligente de reclamos, incidencias
+          y seguimiento de atención al cliente.
+        </p>
       </div>
 
-      <button id="closeChatbot">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div class="chatbot__body">
-      <div class="bot-message">
-        Hola, soy tu asistente virtual. Puedo ayudarte a registrar un reclamo,
-        reportar una incidencia o consultar el seguimiento de tu caso.
+      <div>
+        <h4>Personas</h4>
+        <a href="#">Servicios móviles</a>
+        <a href="#">Internet hogar</a>
+        <a href="#">Claro TV+</a>
+        <a href="cliente/registrar-reclamo.html">Registrar reclamo</a>
       </div>
 
-      <button class="chat-option">Quiero registrar un reclamo</button>
-      <button class="chat-option">Tengo una falla técnica</button>
-      <button class="chat-option">Consultar estado de mi caso</button>
+      <div>
+        <h4>Empresas</h4>
+        <a href="#">Soluciones digitales</a>
+        <a href="#">Cloud</a>
+        <a href="#">Seguridad</a>
+        <a href="cliente/registrar-incidencia.html">Reportar incidencia</a>
+      </div>
+
+      <div>
+        <h4>Ayuda</h4>
+        <a href="consulta-rapida.html">Consulta rápida</a>
+        <a href="centro-ayuda.html">Centro de ayuda</a>
+        <a href="#estado-servicios">Estado de servicios</a>
+        <a href="#">Política de privacidad</a>
+      </div>
     </div>
 
-    <div class="chatbot__input">
-      <input type="text" placeholder="Escribe tu mensaje..." />
-      <button>
-        <i class="fa-solid fa-paper-plane"></i>
-      </button>
+    <div class="footer__bottom container">
+      <span>© 2026 Claro Atención 360. Prototipo académico.</span>
+      <span>Frontend preparado para integración backend.</span>
     </div>
-  </aside>
+  </footer>
 
-  <!-- Botones flotantes -->
-  <button class="floating-help" id="floatingHelp">
-    <i class="fa-solid fa-headset"></i>
+  <!-- =========================================================
+       FLOATING HELP
+  ========================================================== -->
+  <button class="accessibility-btn" type="button" aria-label="Accesibilidad">
+    ♿
+  </button>
+
+  <button class="floating-help" type="button" id="floatingHelp">
+    <span>💬</span>
     Ayuda
   </button>
 
-  <button class="accessibility-btn" aria-label="Accesibilidad">
-    <i class="fa-solid fa-universal-access"></i>
+  <button class="floating-bot" type="button" id="floatingBot">
+    <span>🤖</span>
+    ClaroBot IA
   </button>
 
-  <script src="assets/js/main.js"></script>
+  <!-- =========================================================
+       CHATBOT DRAWER
+  ========================================================== -->
+  <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
+    <div class="bot-drawer__header">
+      <div>
+        <span class="bot-avatar">🤖</span>
+        <strong>ClaroBot IA</strong>
+        <small>Asistente inteligente</small>
+      </div>
+
+      <button type="button" id="closeBotDrawer" aria-label="Cerrar asistente">
+        ×
+      </button>
+    </div>
+
+    <div class="bot-drawer__messages" id="botMessages">
+      <div class="bot-message bot-message--bot">
+        Hola, puedo ayudarte a registrar reclamos, consultar casos o explicarte estados de atención.
+      </div>
+    </div>
+
+    <div class="bot-drawer__quick">
+      <button type="button" data-bot-prompt="Quiero registrar un reclamo">
+        Registrar reclamo
+      </button>
+      <button type="button" data-bot-prompt="Consultar estado de caso">
+        Consultar caso
+      </button>
+      <button type="button" data-bot-prompt="Explica pendiente por cliente">
+        Explicar estado
+      </button>
+    </div>
+
+    <form class="bot-drawer__form" id="botForm">
+      <input
+        type="text"
+        id="botInput"
+        placeholder="Escribe tu consulta..."
+        autocomplete="off"
+      />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <!-- =========================================================
+       MODALS
+  ========================================================== -->
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <section class="modal" id="caseResultModal" aria-hidden="true">
+    <div class="modal__content">
+      <button class="modal__close" type="button" data-close-modal>×</button>
+
+      <div class="modal__icon modal__icon--success">✓</div>
+      <h3>Caso encontrado</h3>
+      <p>Se encontró información asociada al código ingresado.</p>
+
+      <div class="case-result-card">
+        <div>
+          <span>Código</span>
+          <strong id="resultCaseCode">CAS-2026-000123</strong>
+        </div>
+
+        <div>
+          <span>Tipo</span>
+          <strong>Reclamo</strong>
+        </div>
+
+        <div>
+          <span>Servicio</span>
+          <strong>Internet hogar</strong>
+        </div>
+
+        <div>
+          <span>Estado</span>
+          <strong class="status-text">En atención</strong>
+        </div>
+
+        <div>
+          <span>Última actualización</span>
+          <strong>21/05/2026 09:30</strong>
+        </div>
+      </div>
+
+      <div class="modal__actions">
+        <a href="cliente/detalle-caso.html" class="btn btn--primary">
+          Ver seguimiento completo
+        </a>
+        <button class="btn btn--ghost-dark" type="button" data-close-modal>
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal__content">
+      <button class="modal__close" type="button" data-close-modal>×</button>
+
+      <div class="modal__icon" id="genericModalIcon">ℹ</div>
+      <h3 id="genericModalTitle">Información</h3>
+      <p id="genericModalText">Mensaje del sistema.</p>
+
+      <div class="modal__actions">
+        <button class="btn btn--primary" type="button" data-close-modal>
+          Entendido
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- =========================================================
+       GLOBAL SEARCH MODAL
+  ========================================================== -->
+  <section class="search-modal" id="searchModal" aria-hidden="true">
+    <div class="search-modal__content">
+      <div class="search-modal__bar">
+        <span>🔎</span>
+        <input
+          type="text"
+          id="globalSearchInput"
+          placeholder="Buscar caso, cliente, reclamo, servicio o ayuda..."
+        />
+        <button type="button" data-close-search>Esc</button>
+      </div>
+
+      <div class="search-modal__results" id="globalSearchResults">
+        <p class="muted">Prueba buscando: reclamo, incidencia, SLA, internet, empresa.</p>
+      </div>
+    </div>
+  </section>
+
+  <script src="assets/js/index.js"></script>
 </body>
 </html>

@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Confirmación de actualización | Claro Atención 360</title>
+  <link rel="stylesheet" href="../assets/css/cliente.css" />
+</head>
+
+<body data-page="confirmacion-actualizacion">
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <main class="confirmation-page">
+    <section class="confirmation-card">
+      <div class="confirmation-icon">✓</div>
+
+      <span class="eyebrow eyebrow--red">Actualización completada</span>
+      <h1 id="confirmationTitle">Tu información fue actualizada</h1>
+      <p id="confirmationText">
+        La operación se registró correctamente en la plataforma.
+      </p>
+
+      <div class="confirmation-summary" id="confirmationSummary"></div>
+
+      <div class="confirmation-actions">
+        <a href="dashboard.html" class="btn btn--primary">Ir al dashboard</a>
+        <a href="mis-casos.html" class="btn btn--soft">Ver mis casos</a>
+        <a href="detalle-caso.html" class="btn btn--ghost-dark">Ver seguimiento</a>
+      </div>
+
+      <button type="button" class="confirmation-ai" id="confirmationBotBtn">
+        🤖 Consultar a ClaroBot IA
+      </button>
+    </section>
+  </main>
+
+  <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
+    <div class="bot-drawer__header">
+      <div>
+        <span>🤖</span>
+        <strong>ClaroBot IA</strong>
+        <small>Asistente de confirmación</small>
+      </div>
+      <button type="button" id="closeBotDrawer">×</button>
+    </div>
+
+    <div class="bot-drawer__messages" id="botMessages">
+      <div class="message message--bot">
+        La actualización fue completada. Puedo ayudarte a revisar el siguiente paso.
+      </div>
+    </div>
+
+    <div class="bot-drawer__quick">
+      <button type="button" data-bot-prompt="Qué hago ahora">Siguiente paso</button>
+      <button type="button" data-bot-prompt="Cómo veo mi caso">Ver caso</button>
+    </div>
+
+    <form class="bot-drawer__form" id="botForm">
+      <input id="botInput" type="text" placeholder="Escribe tu consulta..." autocomplete="off" />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <script src="../assets/js/cliente.js"></script>
+</body>
+</html>

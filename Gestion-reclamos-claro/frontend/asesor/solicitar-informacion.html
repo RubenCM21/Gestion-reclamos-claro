@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Solicitar información | Claro Atención 360</title>
+
+  <link rel="stylesheet" href="../assets/css/asesor.css" />
+</head>
+
+<body data-page="asesor-solicitar-informacion">
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <a href="../index.html" class="brand">
+        <span class="brand__name">Claro</span>
+        <span class="brand__spark">✦</span>
+      </a>
+      <span class="brand__tag">Atención 360</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="dashboard.html" class="sidebar-link">
+        <span>🏠</span> Dashboard
+      </a>
+
+      <a href="bandeja.html" class="sidebar-link">
+        <span>📥</span> Bandeja asignada
+        <small id="sidebarAssignedCount"></small>
+      </a>
+
+      <a href="detalle-atencion.html" class="sidebar-link">
+        <span>🎫</span> Detalle de atención
+      </a>
+
+      <a href="actualizar-caso.html" class="sidebar-link">
+        <span>✍️</span> Actualizar caso
+      </a>
+
+      <a href="solicitar-informacion.html" class="sidebar-link active">
+        <span>💬</span> Solicitar información
+      </a>
+
+      <a href="../centro-ayuda.html" class="sidebar-link">
+        <span>❓</span> Centro de ayuda
+      </a>
+    </nav>
+
+    <div class="sidebar__bottom">
+      <button type="button" class="sidebar-ai-btn" id="openBotSidebar">
+        <span>🤖</span> Asistente IA
+      </button>
+
+      <button type="button" class="logout-btn" id="logoutBtn">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar__left">
+        <button type="button" class="menu-btn" id="menuBtn">☰</button>
+
+        <div>
+          <span class="eyebrow">Comunicación con cliente</span>
+          <h1>Solicitar información</h1>
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <button type="button" class="icon-btn" id="globalSearchBtn">🔎</button>
+        <button type="button" class="icon-btn" id="themeToggle">◐</button>
+
+        <button type="button" class="notification-btn" id="notificationBtn">
+          🔔
+          <span id="notificationBadge"></span>
+        </button>
+
+        <div class="user-menu">
+          <button type="button" class="user-menu__button" id="userMenuButton">
+            <span class="user-avatar" id="userAvatar">AD</span>
+            <div>
+              <strong id="userNameTop">Asesor Demo</strong>
+              <small id="userRoleTop">Asesor de Atención</small>
+            </div>
+          </button>
+
+          <div class="user-menu__dropdown" id="userMenuDropdown">
+            <a href="#">Mi perfil</a>
+            <a href="#">Preferencias</a>
+            <a href="../seleccionar-rol.html">Cambiar perfil</a>
+            <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="advisor-page">
+      <section class="welcome-card">
+        <div class="welcome-card__copy">
+          <span class="eyebrow eyebrow--red">Solicitud al cliente</span>
+          <h2>Solicita evidencia o datos adicionales</h2>
+          <p>
+            Usa esta pantalla cuando el caso no pueda continuar por falta de información,
+            evidencia técnica, confirmación del cliente o datos necesarios para validar el reclamo.
+          </p>
+
+          <div class="welcome-actions">
+            <button type="button" class="btn btn--primary" id="requestGenerateTextBtn">
+              Generar mensaje IA
+            </button>
+
+            <a href="detalle-atencion.html" class="btn btn--soft">
+              Ver detalle del caso
+            </a>
+
+            <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
+              Consultar IA
+            </button>
+          </div>
+        </div>
+
+        <div class="welcome-card__status">
+          <div class="status-orb">
+            <span></span>
+          </div>
+
+          <div>
+            <strong>Mensaje trazable</strong>
+            <small>Quedará registrado en el historial</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="update-layout">
+        <article class="panel-card form-panel">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Formulario</span>
+              <h2>Datos de la solicitud</h2>
+            </div>
+
+            <span class="status-pill status-pill--purple">Pendiente cliente</span>
+          </div>
+
+          <form
+            id="advisorRequestForm"
+            class="advisor-form"
+            data-endpoint="/api/asesor/casos/{id}/solicitudes"
+            data-method="POST"
+            novalidate
+          >
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="requestCaseCode">Código del caso</label>
+                <input
+                  id="requestCaseCode"
+                  name="caseCode"
+                  type="text"
+                  placeholder="CAS-2026-000245"
+                />
+                <small class="form-error" id="requestCaseCodeError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="requestChannel">Canal de envío</label>
+                <select id="requestChannel" name="channel">
+                  <option value="">Seleccionar</option>
+                  <option value="portal">Portal cliente</option>
+                  <option value="correo">Correo electrónico</option>
+                  <option value="sms">SMS</option>
+                  <option value="whatsapp">WhatsApp</option>
+                  <option value="todos">Todos los canales disponibles</option>
+                </select>
+                <small class="form-error" id="requestChannelError"></small>
+              </div>
+            </div>
+
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="requestType">Tipo de información requerida</label>
+                <select id="requestType" name="type">
+                  <option value="">Seleccionar</option>
+                  <option value="evidencia">Evidencia adicional</option>
+                  <option value="datos">Datos del servicio</option>
+                  <option value="confirmacion">Confirmación del cliente</option>
+                  <option value="documento">Documento o comprobante</option>
+                  <option value="prueba">Prueba técnica</option>
+                </select>
+                <small class="form-error" id="requestTypeError"></small>
+              </div>
+
+              <div class="form-group">
+                <label for="requestDeadline">Plazo de respuesta</label>
+                <select id="requestDeadline" name="deadline">
+                  <option value="">Seleccionar</option>
+                  <option value="24h">24 horas</option>
+                  <option value="48h">48 horas</option>
+                  <option value="72h">72 horas</option>
+                  <option value="5d">5 días</option>
+                </select>
+                <small class="form-error" id="requestDeadlineError"></small>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <label for="requestSubject">Asunto de la solicitud</label>
+              <input
+                id="requestSubject"
+                name="subject"
+                type="text"
+                placeholder="Ejemplo: Solicitud de evidencia adicional para continuar la atención"
+              />
+              <small class="form-error" id="requestSubjectError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="requestMessage">Mensaje para el cliente</label>
+              <textarea
+                id="requestMessage"
+                name="message"
+                placeholder="Estimado cliente, para continuar con la atención de su caso necesitamos que nos envíe..."
+              ></textarea>
+              <small class="form-error" id="requestMessageError"></small>
+            </div>
+
+            <div class="request-options">
+              <article>
+                <span>📎</span>
+                <div>
+                  <strong>Permitir adjuntos</strong>
+                  <small>El cliente podrá subir archivos desde su portal.</small>
+                </div>
+                <input type="checkbox" id="requestAllowFiles" checked />
+              </article>
+
+              <article>
+                <span>🔔</span>
+                <div>
+                  <strong>Enviar recordatorio</strong>
+                  <small>La plataforma recordará si no hay respuesta.</small>
+                </div>
+                <input type="checkbox" id="requestReminder" checked />
+              </article>
+
+              <article>
+                <span>⏱️</span>
+                <div>
+                  <strong>Pausar flujo interno</strong>
+                  <small>El caso queda como pendiente por cliente.</small>
+                </div>
+                <input type="checkbox" id="requestPauseFlow" checked />
+              </article>
+            </div>
+
+            <div class="form-check">
+              <input type="checkbox" id="requestDeclaration" name="declaration" />
+              <label for="requestDeclaration">
+                Confirmo que la solicitud es necesaria para continuar la atención del caso.
+              </label>
+            </div>
+            <small class="form-error" id="requestDeclarationError"></small>
+
+            <div class="form-actions">
+              <button type="button" class="btn btn--ghost-dark" id="requestPreviewBtn">
+                Vista previa
+              </button>
+
+              <button type="submit" class="btn btn--primary" id="requestSubmitBtn">
+                <span class="btn-text">Enviar solicitud</span>
+                <span class="btn-loader"></span>
+              </button>
+            </div>
+          </form>
+        </article>
+
+        <aside class="panel-card ai-panel sticky-panel">
+          <div class="ai-panel__header">
+            <span>🤖</span>
+            <div>
+              <h2>Asistente IA</h2>
+              <p>Redacción clara para el cliente.</p>
+            </div>
+          </div>
+
+          <div class="ai-summary">
+            <div class="ai-summary-item">
+              <strong>Mensaje recomendado</strong>
+              <p>Indica exactamente qué falta, por qué se necesita y hasta cuándo puede responder.</p>
+            </div>
+
+            <div class="ai-summary-item">
+              <strong>Evitar ambigüedad</strong>
+              <p>No solicites “más información” de forma general. Pide evidencia concreta.</p>
+            </div>
+
+            <div class="ai-summary-item">
+              <strong>Tono sugerido</strong>
+              <p>Formal, claro, breve y orientado a facilitar la continuidad del caso.</p>
+            </div>
+          </div>
+
+          <button type="button" class="btn btn--primary btn--full" id="requestImproveTextBtn">
+            Mejorar mensaje
+          </button>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
+    <div class="bot-drawer__header">
+      <div>
+        <span>🤖</span>
+        <strong>Asistente IA</strong>
+        <small>Solicitud de información</small>
+      </div>
+
+      <button type="button" id="closeBotDrawer">×</button>
+    </div>
+
+    <div class="bot-drawer__messages" id="botMessages">
+      <div class="message message--bot">
+        Hola. Puedo ayudarte a redactar una solicitud clara, concreta y profesional para el cliente.
+      </div>
+    </div>
+
+    <div class="bot-drawer__quick">
+      <button type="button" data-bot-prompt="Redacta solicitud de evidencia">Solicitar evidencia</button>
+      <button type="button" data-bot-prompt="Qué plazo debo usar">Plazo</button>
+      <button type="button" data-bot-prompt="Cómo pedir una prueba técnica">Prueba técnica</button>
+    </div>
+
+    <form class="bot-drawer__form" id="botForm">
+      <input id="botInput" type="text" placeholder="Escribe tu consulta..." autocomplete="off" />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <section class="search-modal" id="searchModal" aria-hidden="true">
+    <div class="search-modal__content">
+      <div class="search-modal__bar">
+        <span>🔎</span>
+        <input type="text" id="globalSearchInput" placeholder="Buscar caso, cliente o servicio..." />
+        <button type="button" id="closeSearchBtn">Esc</button>
+      </div>
+
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <section class="modal" id="requestPreviewModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+
+      <div class="modal__icon">💬</div>
+      <h3>Vista previa de solicitud</h3>
+      <p id="requestPreviewText"></p>
+
+      <div class="case-modal-summary" id="requestPreviewSummary"></div>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>
+          Entendido
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+
+      <div class="modal__icon" id="genericModalIcon">ℹ</div>
+      <h3 id="genericModalTitle">Información</h3>
+      <p id="genericModalText">Mensaje del sistema.</p>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>
+          Entendido
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <script src="../assets/js/asesor.js"></script>
+</body>
+</html>

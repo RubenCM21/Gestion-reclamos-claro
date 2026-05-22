@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Bandeja asignada | Claro Atención 360</title>
+
+  <link rel="stylesheet" href="../assets/css/asesor.css" />
+</head>
+
+<body data-page="asesor-bandeja">
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <a href="../index.html" class="brand">
+        <span class="brand__name">Claro</span>
+        <span class="brand__spark">✦</span>
+      </a>
+      <span class="brand__tag">Atención 360</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="dashboard.html" class="sidebar-link">
+        <span>🏠</span> Dashboard
+      </a>
+
+      <a href="bandeja.html" class="sidebar-link active">
+        <span>📥</span> Bandeja asignada
+        <small id="sidebarAssignedCount"></small>
+      </a>
+
+      <a href="detalle-atencion.html" class="sidebar-link">
+        <span>🎫</span> Detalle de atención
+      </a>
+
+      <a href="actualizar-caso.html" class="sidebar-link">
+        <span>✍️</span> Actualizar caso
+      </a>
+
+      <a href="solicitar-informacion.html" class="sidebar-link">
+        <span>💬</span> Solicitar información
+      </a>
+
+      <a href="../centro-ayuda.html" class="sidebar-link">
+        <span>❓</span> Centro de ayuda
+      </a>
+    </nav>
+
+    <div class="sidebar__bottom">
+      <button type="button" class="sidebar-ai-btn" id="openBotSidebar">
+        <span>🤖</span> Asistente IA
+      </button>
+
+      <button type="button" class="logout-btn" id="logoutBtn">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar__left">
+        <button type="button" class="menu-btn" id="menuBtn">☰</button>
+
+        <div>
+          <span class="eyebrow">Atención operativa</span>
+          <h1>Bandeja asignada</h1>
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <button type="button" class="icon-btn" id="globalSearchBtn">🔎</button>
+        <button type="button" class="icon-btn" id="themeToggle">◐</button>
+
+        <button type="button" class="notification-btn" id="notificationBtn">
+          🔔
+          <span id="notificationBadge"></span>
+        </button>
+
+        <div class="user-menu">
+          <button type="button" class="user-menu__button" id="userMenuButton">
+            <span class="user-avatar" id="userAvatar">AD</span>
+            <div>
+              <strong id="userNameTop">Asesor Demo</strong>
+              <small id="userRoleTop">Asesor de Atención</small>
+            </div>
+          </button>
+
+          <div class="user-menu__dropdown" id="userMenuDropdown">
+            <a href="#">Mi perfil</a>
+            <a href="#">Preferencias</a>
+            <a href="../seleccionar-rol.html">Cambiar perfil</a>
+            <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="advisor-page">
+      <section class="welcome-card">
+        <div class="welcome-card__copy">
+          <span class="eyebrow eyebrow--red">Bandeja de trabajo</span>
+          <h2>Gestiona tus casos asignados</h2>
+          <p>
+            Filtra por prioridad, SLA, tipo, estado o canal. Desde esta bandeja podrás abrir
+            la atención, solicitar información, actualizar avances o preparar el cierre del caso.
+          </p>
+
+          <div class="welcome-actions">
+            <button type="button" class="btn btn--primary" id="prioritizeQueueBtn">
+              Priorizar con IA
+            </button>
+
+            <a href="actualizar-caso.html" class="btn btn--soft">
+              Actualizar caso
+            </a>
+
+            <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
+              Consultar IA
+            </button>
+          </div>
+        </div>
+
+        <div class="welcome-card__status">
+          <div class="status-orb">
+            <span></span>
+          </div>
+
+          <div>
+            <strong id="queueSummaryStatus">Bandeja activa</strong>
+            <small id="queueSummaryText">Vista dinámica preparada para backend</small>
+          </div>
+        </div>
+      </section>
+
+      <section class="advisor-toolbar panel-card">
+        <div class="search-box-large">
+          <span>🔎</span>
+          <input
+            id="advisorQueueSearch"
+            type="text"
+            placeholder="Buscar por código, cliente, servicio, estado o prioridad..."
+          />
+        </div>
+
+        <div class="case-filters">
+          <button type="button" class="filter-chip active" data-advisor-filter="todos">
+            Todos
+          </button>
+          <button type="button" class="filter-chip" data-advisor-filter="Crítica">
+            Críticos
+          </button>
+          <button type="button" class="filter-chip" data-advisor-filter="Alta">
+            Alta prioridad
+          </button>
+          <button type="button" class="filter-chip" data-advisor-filter="En atención">
+            En atención
+          </button>
+          <button type="button" class="filter-chip" data-advisor-filter="Pendiente por cliente">
+            Pendiente cliente
+          </button>
+          <button type="button" class="filter-chip" data-advisor-filter="Listo para cierre">
+            Listos para cierre
+          </button>
+        </div>
+      </section>
+
+      <section class="bandeja-layout">
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Listado operativo</span>
+              <h2>Casos asignados</h2>
+            </div>
+
+            <div class="panel-header-actions">
+              <button type="button" class="panel-action" id="refreshQueueBtn">
+                Actualizar
+              </button>
+              <button type="button" class="panel-action" id="exportQueueBtn">
+                Exportar
+              </button>
+            </div>
+          </div>
+
+          <div class="case-list" id="advisorQueueList"></div>
+
+          <div class="empty-state hidden" id="emptyAdvisorQueueState">
+            <span>📥</span>
+            <h3>No se encontraron casos</h3>
+            <p>Cambia los filtros o actualiza la bandeja.</p>
+          </div>
+        </article>
+
+        <aside class="panel-card ai-panel">
+          <div class="ai-panel__header">
+            <span>🤖</span>
+            <div>
+              <h2>Priorización IA</h2>
+              <p>Análisis de carga y riesgo.</p>
+            </div>
+          </div>
+
+          <div class="ai-summary" id="queueAiSummary"></div>
+
+          <button type="button" class="btn btn--primary btn--full" id="analyzeQueueBtn">
+            Analizar bandeja
+          </button>
+        </aside>
+      </section>
+    </main>
+  </div>
+
+  <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
+    <div class="bot-drawer__header">
+      <div>
+        <span>🤖</span>
+        <strong>Asistente IA</strong>
+        <small>Soporte de bandeja</small>
+      </div>
+
+      <button type="button" id="closeBotDrawer">×</button>
+    </div>
+
+    <div class="bot-drawer__messages" id="botMessages">
+      <div class="message message--bot">
+        Hola. Puedo priorizar tu bandeja, explicar riesgos SLA o ayudarte a decidir la siguiente acción.
+      </div>
+    </div>
+
+    <div class="bot-drawer__quick">
+      <button type="button" data-bot-prompt="Prioriza mi bandeja">Priorizar</button>
+      <button type="button" data-bot-prompt="Qué caso tiene más riesgo SLA">Riesgo SLA</button>
+      <button type="button" data-bot-prompt="Qué casos puedo cerrar">Cierres</button>
+    </div>
+
+    <form class="bot-drawer__form" id="botForm">
+      <input id="botInput" type="text" placeholder="Escribe tu consulta..." autocomplete="off" />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <section class="search-modal" id="searchModal" aria-hidden="true">
+    <div class="search-modal__content">
+      <div class="search-modal__bar">
+        <span>🔎</span>
+        <input type="text" id="globalSearchInput" placeholder="Buscar caso, cliente o servicio..." />
+        <button type="button" id="closeSearchBtn">Esc</button>
+      </div>
+
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <section class="modal" id="caseModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+
+      <div class="modal__icon" id="caseModalIcon">🎫</div>
+      <h3 id="caseModalTitle"></h3>
+      <p id="caseModalText"></p>
+
+      <div class="case-modal-summary" id="caseModalSummary"></div>
+
+      <div class="modal__actions">
+        <a href="detalle-atencion.html" class="btn btn--primary">
+          Abrir atención
+        </a>
+        <a href="actualizar-caso.html" class="btn btn--soft">
+          Actualizar
+        </a>
+        <button type="button" class="btn btn--ghost-dark" data-close-modal>
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+
+      <div class="modal__icon" id="genericModalIcon">ℹ</div>
+      <h3 id="genericModalTitle">Información</h3>
+      <p id="genericModalText">Mensaje del sistema.</p>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>
+          Entendido
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <script src="../assets/js/asesor.js"></script>
+</body>
+</html>

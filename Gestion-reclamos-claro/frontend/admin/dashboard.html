@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="es" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Dashboard Administrador | Claro Atención 360</title>
+
+  <link rel="stylesheet" href="../assets/css/admin.css" />
+</head>
+
+<body data-page="admin-dashboard">
+  <div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar__brand">
+      <a href="../index.html" class="brand">
+        <span class="brand__name">Claro</span>
+        <span class="brand__spark">✦</span>
+      </a>
+      <span class="brand__tag">Atención 360</span>
+    </div>
+
+    <nav class="sidebar__nav">
+      <a href="dashboard.html" class="sidebar-link active">
+        <span>🏠</span> Dashboard
+      </a>
+
+      <a href="usuarios.html" class="sidebar-link">
+        <span>👤</span> Usuarios
+        <small id="sidebarUsersCount"></small>
+      </a>
+
+      <a href="configuracion.html" class="sidebar-link">
+        <span>⚙️</span> Configuración
+      </a>
+
+      <a href="auditoria.html" class="sidebar-link">
+        <span>🛡️</span> Auditoría
+      </a>
+
+      <a href="integraciones.html" class="sidebar-link">
+        <span>🔌</span> Integraciones
+      </a>
+
+      <a href="../centro-ayuda.html" class="sidebar-link">
+        <span>❓</span> Centro de ayuda
+      </a>
+    </nav>
+
+    <div class="sidebar__bottom">
+      <button type="button" class="sidebar-ai-btn" id="openBotSidebar">
+        <span>🤖</span> IA Admin
+      </button>
+
+      <button type="button" class="logout-btn" id="logoutBtn">
+        <span>🚪</span> Cerrar sesión
+      </button>
+    </div>
+  </aside>
+
+  <div class="app-shell">
+    <header class="topbar">
+      <div class="topbar__left">
+        <button type="button" class="menu-btn" id="menuBtn">☰</button>
+
+        <div>
+          <span class="eyebrow">Administración general</span>
+          <h1>Dashboard administrador</h1>
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <button type="button" class="icon-btn" id="globalSearchBtn">🔎</button>
+        <button type="button" class="icon-btn" id="themeToggle">◐</button>
+
+        <button type="button" class="notification-btn" id="notificationBtn">
+          🔔
+          <span id="notificationBadge"></span>
+        </button>
+
+        <div class="user-menu">
+          <button type="button" class="user-menu__button" id="userMenuButton">
+            <span class="user-avatar" id="userAvatar"></span>
+            <div>
+              <strong id="userNameTop"></strong>
+              <small id="userRoleTop"></small>
+            </div>
+          </button>
+
+          <div class="user-menu__dropdown" id="userMenuDropdown">
+            <a href="#">Mi perfil</a>
+            <a href="#">Preferencias</a>
+            <a href="../seleccionar-rol.html">Cambiar perfil</a>
+            <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <main class="admin-page">
+      <section class="welcome-card">
+        <div class="welcome-card__copy">
+          <span class="eyebrow eyebrow--red" id="adminScope"></span>
+          <h2 id="welcomeTitle"></h2>
+          <p id="welcomeMessage"></p>
+
+          <div class="welcome-actions">
+            <a href="usuarios.html" class="btn btn--primary">
+              Gestionar usuarios
+            </a>
+
+            <a href="configuracion.html" class="btn btn--soft">
+              Configurar plataforma
+            </a>
+
+            <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
+              Consultar IA
+            </button>
+          </div>
+        </div>
+
+        <div class="welcome-card__status">
+          <div class="status-orb">
+            <span></span>
+          </div>
+
+          <div>
+            <strong id="adminStatus"></strong>
+            <small id="adminLastAccess"></small>
+          </div>
+        </div>
+      </section>
+
+      <section class="kpi-grid" id="adminKpiGrid"></section>
+
+      <section class="dashboard-grid">
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Sistema</span>
+              <h2>Estado de módulos</h2>
+            </div>
+
+            <button type="button" class="panel-action" id="refreshModulesBtn">
+              Actualizar
+            </button>
+          </div>
+
+          <div class="module-status-list" id="moduleStatusList"></div>
+        </article>
+
+        <aside class="panel-card ai-panel">
+          <div class="ai-panel__header">
+            <span>🤖</span>
+            <div>
+              <h2>Resumen IA</h2>
+              <p>Lectura de administración.</p>
+            </div>
+          </div>
+
+          <div class="ai-summary" id="adminAiSummary"></div>
+
+          <button type="button" class="btn btn--primary btn--full" id="analyzeAdminBtn">
+            Analizar plataforma
+          </button>
+        </aside>
+      </section>
+
+      <section class="dashboard-grid dashboard-grid--secondary">
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Actividad</span>
+              <h2>Últimos eventos del sistema</h2>
+            </div>
+
+            <a href="auditoria.html" class="panel-link">Ver auditoría</a>
+          </div>
+
+          <div class="activity-timeline" id="adminActivityTimeline"></div>
+        </article>
+
+        <article class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow eyebrow--red">Riesgos</span>
+              <h2>Alertas administrativas</h2>
+            </div>
+
+            <button type="button" class="panel-action" id="refreshAdminAlertsBtn">
+              Refrescar
+            </button>
+          </div>
+
+          <div class="admin-alert-list" id="adminAlertList"></div>
+        </article>
+      </section>
+
+      <section class="panel-card">
+        <div class="panel-card__header">
+          <div>
+            <span class="eyebrow eyebrow--red">Accesos</span>
+            <h2>Usuarios y roles activos</h2>
+          </div>
+
+          <a href="usuarios.html" class="panel-link">Administrar</a>
+        </div>
+
+        <div class="role-grid" id="roleGrid"></div>
+      </section>
+    </main>
+  </div>
+
+  <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
+    <div class="bot-drawer__header">
+      <div>
+        <span>🤖</span>
+        <strong>IA Admin</strong>
+        <small>Soporte administrativo</small>
+      </div>
+
+      <button type="button" id="closeBotDrawer">×</button>
+    </div>
+
+    <div class="bot-drawer__messages" id="botMessages">
+      <div class="message message--bot">
+        Hola. Puedo ayudarte a revisar usuarios, roles, permisos, auditoría, integraciones y riesgos de configuración.
+      </div>
+    </div>
+
+    <div class="bot-drawer__quick">
+      <button type="button" data-bot-prompt="Resume el estado de la plataforma">Resumen</button>
+      <button type="button" data-bot-prompt="Qué riesgos administrativos hay">Riesgos</button>
+      <button type="button" data-bot-prompt="Qué usuarios revisar">Usuarios</button>
+    </div>
+
+    <form class="bot-drawer__form" id="botForm">
+      <input id="botInput" type="text" placeholder="Escribe tu consulta..." autocomplete="off" />
+      <button type="submit">Enviar</button>
+    </form>
+  </aside>
+
+  <div class="drawer-backdrop" id="drawerBackdrop"></div>
+
+  <section class="search-modal" id="searchModal" aria-hidden="true">
+    <div class="search-modal__content">
+      <div class="search-modal__bar">
+        <span>🔎</span>
+        <input type="text" id="globalSearchInput" placeholder="Buscar usuario, rol, módulo o configuración..." />
+        <button type="button" id="closeSearchBtn">Esc</button>
+      </div>
+
+      <div class="search-results" id="searchResults"></div>
+    </div>
+  </section>
+
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <section class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>×</button>
+      <div class="modal__icon" id="genericModalIcon">ℹ</div>
+      <h3 id="genericModalTitle">Información</h3>
+      <p id="genericModalText">Mensaje del sistema.</p>
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>Entendido</button>
+      </div>
+    </div>
+  </section>
+
+  <script src="../assets/js/admin.js"></script>
+</body>
+</html>

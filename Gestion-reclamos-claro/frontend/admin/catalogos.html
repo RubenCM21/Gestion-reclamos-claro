@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Integraciones | Claro Atención 360</title>
+  <title>Catálogos | Claro Atención 360</title>
 
   <link rel="stylesheet" href="../assets/css/admin.css" />
 </head>
 
-<body data-page="admin-integraciones">
+<body data-page="admin-catalogos">
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- SIDEBAR -->
@@ -39,7 +39,7 @@
         Roles y permisos
       </a>
 
-      <a href="catalogos.html" class="sidebar-link">
+      <a href="catalogos.html" class="sidebar-link active">
         <span>🧩</span>
         Catálogos
       </a>
@@ -54,7 +54,7 @@
         Indicadores y reportes
       </a>
 
-      <a href="integraciones.html" class="sidebar-link active">
+      <a href="integraciones.html" class="sidebar-link">
         <span>🔌</span>
         Integraciones
         <small id="sidebarIntegrationAlerts">0</small>
@@ -98,8 +98,8 @@
         </button>
 
         <div>
-          <span class="eyebrow eyebrow--red">Conectividad del sistema</span>
-          <h1>Integraciones</h1>
+          <span class="eyebrow eyebrow--red">Configuración funcional</span>
+          <h1>Catálogos</h1>
         </div>
       </div>
 
@@ -127,7 +127,7 @@
           </button>
 
           <div class="user-menu__dropdown" id="userMenuDropdown">
-            <a href="indicadores-reportes.html">Indicadores y reportes</a>
+            <a href="reglas-sla.html">Reglas SLA</a>
             <a href="auditoria.html">Auditoría</a>
             <a href="configuracion-sistema.html">Configuración</a>
             <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
@@ -140,26 +140,26 @@
       <!-- HERO -->
       <section class="welcome-card">
         <div class="welcome-card__copy">
-          <span class="eyebrow eyebrow--red" id="integrationsHeroEyebrow">
-            Servicios conectados
+          <span class="eyebrow eyebrow--red" id="catalogHeroEyebrow">
+            Datos maestros del sistema
           </span>
 
-          <h2 id="integrationsHeroTitle">
-            Administra APIs, correo, autenticación, CRM, webhooks y notificaciones
+          <h2 id="catalogHeroTitle">
+            Administra categorías, prioridades, estados, canales y áreas
           </h2>
 
-          <p id="integrationsHeroText">
-            Controla el estado de las integraciones externas, última sincronización,
-            credenciales, errores, servicios activos, webhooks y trazabilidad técnica.
+          <p id="catalogHeroText">
+            Centraliza los catálogos funcionales usados por reclamos, incidencias, SLA,
+            asignaciones, reportes, auditoría e integraciones.
           </p>
 
           <div class="welcome-actions">
-            <button type="button" class="btn btn--primary" id="openCreateIntegrationBtn">
-              Nueva integración
+            <button type="button" class="btn btn--primary" id="openCreateCatalogItemBtn">
+              Nuevo elemento
             </button>
 
-            <button type="button" class="btn btn--soft" id="testAllIntegrationsBtn">
-              Probar conexiones
+            <button type="button" class="btn btn--soft" id="exportCatalogsBtn">
+              Exportar catálogos
             </button>
 
             <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
@@ -174,80 +174,80 @@
           </div>
 
           <div>
-            <strong id="integrationsSummaryTitle">Integraciones dinámicas</strong>
-            <small id="integrationsSummaryText">Resumen pendiente de carga.</small>
+            <strong id="catalogSummaryTitle">Catálogos dinámicos</strong>
+            <small id="catalogSummaryText">Resumen pendiente de carga.</small>
           </div>
         </aside>
       </section>
 
       <!-- KPIS -->
-      <section class="kpi-grid" id="integrationsKpiGrid" aria-label="Indicadores de integraciones"></section>
+      <section class="kpi-grid" id="catalogKpiGrid" aria-label="Indicadores de catálogos"></section>
 
-      <!-- GRÁFICOS -->
+      <!-- DISTRIBUCIÓN + ESTADO -->
       <section class="dashboard-grid dashboard-grid--secondary">
         <section class="panel-card">
           <div class="panel-card__header">
             <div>
-              <span class="eyebrow">Estado general</span>
-              <h2>Integraciones por estado</h2>
+              <span class="eyebrow">Distribución</span>
+              <h2>Elementos por catálogo</h2>
               <p>
-                Distribución de integraciones activas, con alerta, en error o deshabilitadas.
+                Cantidad de elementos configurados por categoría funcional.
               </p>
             </div>
 
-            <button type="button" class="panel-action" id="refreshIntegrationStatusBtn">
+            <button type="button" class="panel-action" id="refreshCatalogChartBtn">
+              Actualizar
+            </button>
+          </div>
+
+          <div class="bar-chart" id="catalogDistributionChart"></div>
+        </section>
+
+        <section class="panel-card">
+          <div class="panel-card__header">
+            <div>
+              <span class="eyebrow">Estado</span>
+              <h2>Activos e inactivos</h2>
+              <p>
+                Estado general de los elementos usados por los módulos del sistema.
+              </p>
+            </div>
+
+            <button type="button" class="panel-action" id="refreshCatalogStatusBtn">
               Actualizar
             </button>
           </div>
 
           <div class="donut-layout">
-            <div class="donut-card" id="integrationStatusDonut"></div>
-            <div class="donut-legend" id="integrationStatusLegend"></div>
+            <div class="donut-card" id="catalogStatusDonut"></div>
+            <div class="donut-legend" id="catalogStatusLegend"></div>
           </div>
-        </section>
-
-        <section class="panel-card">
-          <div class="panel-card__header">
-            <div>
-              <span class="eyebrow">Sincronización</span>
-              <h2>Últimas ejecuciones</h2>
-              <p>
-                Registro visual de sincronizaciones correctas, pendientes y fallidas.
-              </p>
-            </div>
-
-            <button type="button" class="panel-action" id="refreshIntegrationSyncBtn">
-              Actualizar
-            </button>
-          </div>
-
-          <div class="bar-chart" id="integrationSyncChart"></div>
         </section>
       </section>
 
-      <!-- INTEGRACIONES + IA -->
+      <!-- CATÁLOGOS + IA -->
       <section class="dashboard-grid">
         <section class="panel-card cases-panel">
           <div class="panel-card__header">
             <div>
-              <span class="eyebrow">Directorio técnico</span>
-              <h2>Integraciones configuradas</h2>
+              <span class="eyebrow">Gestión de catálogo</span>
+              <h2>Elementos configurados</h2>
               <p>
-                Filtra servicios externos por tipo, estado, criticidad, última sincronización o responsable.
+                Filtra por tipo de catálogo, estado, uso en SLA, canal, prioridad o área destino.
               </p>
             </div>
 
             <div class="panel-header-actions">
-              <button type="button" class="panel-action" id="refreshIntegrationsBtn">
+              <button type="button" class="panel-action" id="refreshCatalogsBtn">
                 Actualizar
               </button>
 
-              <button type="button" class="panel-action" id="toggleIntegrationsViewBtn">
+              <button type="button" class="panel-action" id="toggleCatalogViewBtn">
                 Vista tabla
               </button>
 
-              <button type="button" class="panel-action" id="exportIntegrationsBtn">
-                Exportar
+              <button type="button" class="panel-action" id="validateCatalogsBtn">
+                Validar
               </button>
             </div>
           </div>
@@ -256,69 +256,69 @@
             <div class="search-box-large">
               <span>⌕</span>
               <input
-                id="integrationSearch"
+                id="catalogSearch"
                 type="search"
-                placeholder="Buscar integración, tipo, estado, endpoint, responsable o última sincronización..."
+                placeholder="Buscar por nombre, tipo, estado, descripción, uso o dependencia..."
               />
             </div>
 
-            <div class="case-filters" id="integrationFilters">
-              <button type="button" class="filter-chip active" data-integration-filter="todos">
+            <div class="case-filters" id="catalogFilters">
+              <button type="button" class="filter-chip active" data-catalog-filter="todos">
                 Todos
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="activas">
-                Activas
+              <button type="button" class="filter-chip" data-catalog-filter="categorias">
+                Categorías
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="alerta">
-                Con alerta
+              <button type="button" class="filter-chip" data-catalog-filter="prioridades">
+                Prioridades
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="error">
-                Error
+              <button type="button" class="filter-chip" data-catalog-filter="estados">
+                Estados
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="api">
-                API
+              <button type="button" class="filter-chip" data-catalog-filter="canales">
+                Canales
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="webhook">
-                Webhooks
+              <button type="button" class="filter-chip" data-catalog-filter="areas">
+                Áreas
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="seguridad">
-                Seguridad
+              <button type="button" class="filter-chip" data-catalog-filter="motivos">
+                Motivos
               </button>
             </div>
           </div>
 
           <!-- VISTA CARDS -->
-          <div class="integration-card-grid" id="integrationCardList"></div>
+          <div class="catalog-card-grid" id="catalogCardList"></div>
 
           <!-- VISTA TABLA -->
-          <div class="cases-table-wrap hidden" id="integrationTableWrap">
+          <div class="cases-table-wrap hidden" id="catalogTableWrap">
             <table class="cases-table">
               <thead>
                 <tr>
-                  <th>Integración</th>
-                  <th>Tipo</th>
+                  <th>Elemento</th>
+                  <th>Catálogo</th>
                   <th>Estado</th>
-                  <th>Última sincronización</th>
-                  <th>Responsable</th>
-                  <th>Criticidad</th>
+                  <th>Uso</th>
+                  <th>Dependencia</th>
+                  <th>Última actualización</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
 
-              <tbody id="integrationTableBody"></tbody>
+              <tbody id="catalogTableBody"></tbody>
             </table>
           </div>
 
-          <div class="empty-state hidden" id="emptyIntegrationsState">
-            <span>🔌</span>
-            <h3>No hay integraciones con este filtro</h3>
-            <p>Cambia la búsqueda o selecciona otra categoría.</p>
+          <div class="empty-state hidden" id="emptyCatalogState">
+            <span>🧩</span>
+            <h3>No hay elementos con este filtro</h3>
+            <p>Cambia la búsqueda o selecciona otro catálogo.</p>
           </div>
         </section>
 
@@ -327,55 +327,30 @@
             <div class="ai-panel__header">
               <span>🤖</span>
               <div>
-                <h2>IA de integraciones</h2>
-                <p>Revisión de errores, alertas, servicios críticos y sincronización.</p>
+                <h2>IA de catálogos</h2>
+                <p>Revisión de duplicados, inconsistencias y dependencias.</p>
               </div>
             </div>
 
-            <div class="ai-summary" id="integrationsAiSummary"></div>
+            <div class="ai-summary" id="catalogAiSummary"></div>
 
-            <button type="button" class="btn btn--primary btn--full" id="analyzeIntegrationsBtn">
-              Analizar integraciones
+            <button type="button" class="btn btn--primary btn--full" id="analyzeCatalogsBtn">
+              Analizar catálogos
             </button>
           </section>
 
           <section class="panel-card">
             <div class="panel-card__header">
               <div>
-                <span class="eyebrow">Plan técnico</span>
-                <h2>Acciones sugeridas</h2>
-                <p>Secuencia recomendada para mantener conectividad estable.</p>
+                <span class="eyebrow">Control recomendado</span>
+                <h2>Checklist funcional</h2>
+                <p>Validación antes de modificar catálogos usados por el sistema.</p>
               </div>
             </div>
 
-            <div class="checklist-grid" id="integrationsActionPlan"></div>
+            <div class="checklist-grid" id="catalogActionPlan"></div>
           </section>
         </aside>
-      </section>
-
-      <!-- WEBHOOKS Y EVENTOS -->
-      <section class="panel-card">
-        <div class="panel-card__header">
-          <div>
-            <span class="eyebrow">Eventos técnicos</span>
-            <h2>Webhooks y eventos recientes</h2>
-            <p>
-              Últimas llamadas, respuestas, errores y eventos recibidos desde servicios conectados.
-            </p>
-          </div>
-
-          <div class="panel-header-actions">
-            <button type="button" class="panel-action" id="refreshWebhookEventsBtn">
-              Actualizar
-            </button>
-
-            <button type="button" class="panel-action" id="exportWebhookEventsBtn">
-              Exportar eventos
-            </button>
-          </div>
-        </div>
-
-        <div class="activity-timeline" id="webhookEventsTimeline"></div>
       </section>
     </main>
   </div>
@@ -403,7 +378,7 @@
       <div>
         <span>🤖</span>
         <strong>Asistente IA</strong>
-        <small>Integraciones</small>
+        <small>Catálogos del sistema</small>
       </div>
 
       <button type="button" id="closeBotDrawer">×</button>
@@ -411,21 +386,21 @@
 
     <div class="bot-drawer__messages" id="botMessages">
       <div class="message message--bot">
-        Puedo ayudarte a revisar integraciones con error, alertas de sincronización, webhooks fallidos o servicios críticos.
+        Puedo ayudarte a detectar duplicados, elementos inactivos, dependencias críticas o inconsistencias de catálogo.
       </div>
     </div>
 
     <div class="bot-drawer__quick">
-      <button type="button" data-bot-prompt="Qué integraciones tienen error">
-        Errores
+      <button type="button" data-bot-prompt="Valida inconsistencias de catálogos">
+        Validar
       </button>
 
-      <button type="button" data-bot-prompt="Qué integraciones críticas debo revisar">
-        Críticas
+      <button type="button" data-bot-prompt="Detecta elementos duplicados">
+        Duplicados
       </button>
 
-      <button type="button" data-bot-prompt="Resume últimas sincronizaciones">
-        Sincronización
+      <button type="button" data-bot-prompt="Qué catálogos impactan SLA">
+        Impacto SLA
       </button>
     </div>
 
@@ -438,111 +413,107 @@
   <div class="modal-backdrop" id="modalBackdrop"></div>
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-  <!-- MODAL DETALLE INTEGRACIÓN -->
-  <section class="modal" id="integrationDetailModal" aria-hidden="true">
+  <!-- MODAL DETALLE CATÁLOGO -->
+  <section class="modal" id="catalogDetailModal" aria-hidden="true">
     <div class="modal__content modal__content--wide">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon" id="integrationDetailIcon">🔌</div>
-      <span class="eyebrow eyebrow--red">Detalle de integración</span>
-      <h3 id="integrationDetailTitle">Integración seleccionada</h3>
-      <p id="integrationDetailText">Información técnica de la integración.</p>
+      <div class="modal__icon" id="catalogDetailIcon">🧩</div>
+      <span class="eyebrow eyebrow--red">Detalle de catálogo</span>
+      <h3 id="catalogDetailTitle">Elemento seleccionado</h3>
+      <p id="catalogDetailText">Información funcional del elemento seleccionado.</p>
 
-      <div class="case-modal-summary" id="integrationDetailSummary"></div>
+      <div class="case-modal-summary" id="catalogDetailSummary"></div>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="integrationEditBtn">
-          Editar integración
+        <button type="button" class="btn btn--primary" id="catalogEditBtn">
+          Editar elemento
         </button>
 
-        <button type="button" class="btn btn--soft" id="integrationTestBtn">
-          Probar conexión
+        <button type="button" class="btn btn--soft" id="catalogToggleStatusBtn">
+          Cambiar estado
         </button>
 
-        <button type="button" class="btn btn--ghost-dark" id="integrationLogsBtn">
-          Ver logs
+        <button type="button" class="btn btn--ghost-dark" id="catalogAuditBtn">
+          Ver auditoría
         </button>
       </div>
     </div>
   </section>
 
-  <!-- MODAL CREAR / EDITAR INTEGRACIÓN -->
-  <section class="modal" id="integrationFormModal" aria-hidden="true">
+  <!-- MODAL CREAR / EDITAR CATÁLOGO -->
+  <section class="modal" id="catalogFormModal" aria-hidden="true">
     <div class="modal__content modal__content--wide">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon">🔌</div>
-      <span class="eyebrow eyebrow--red" id="integrationFormEyebrow">Integración</span>
-      <h3 id="integrationFormTitle">Nueva integración</h3>
-      <p id="integrationFormText">
-        Registra un servicio externo, API, webhook, autenticación o canal de notificación.
+      <div class="modal__icon">🧩</div>
+      <span class="eyebrow eyebrow--red" id="catalogFormEyebrow">Catálogo</span>
+      <h3 id="catalogFormTitle">Nuevo elemento de catálogo</h3>
+      <p id="catalogFormText">
+        Registra un elemento funcional que será usado por los módulos de atención.
       </p>
 
-      <form class="admin-form" id="integrationForm">
+      <form class="admin-form" id="catalogForm">
         <div class="form-grid">
           <div class="form-group">
-            <label for="integrationName">Nombre de integración</label>
-            <input id="integrationName" type="text" placeholder="Ej. Servicio de correo transaccional" />
+            <label for="catalogItemName">Nombre del elemento</label>
+            <input id="catalogItemName" type="text" placeholder="Ej. Incidencia técnica" />
           </div>
 
           <div class="form-group">
-            <label for="integrationType">Tipo</label>
-            <select id="integrationType">
+            <label for="catalogItemType">Tipo de catálogo</label>
+            <select id="catalogItemType">
               <option value="">Seleccionar</option>
-              <option value="API">API</option>
-              <option value="Webhook">Webhook</option>
-              <option value="Correo">Correo</option>
-              <option value="Autenticación">Autenticación</option>
-              <option value="CRM">CRM</option>
-              <option value="Notificaciones">Notificaciones</option>
+              <option value="Categorías">Categorías</option>
+              <option value="Prioridades">Prioridades</option>
+              <option value="Estados">Estados</option>
+              <option value="Canales">Canales</option>
+              <option value="Áreas">Áreas</option>
+              <option value="Motivos">Motivos</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="integrationStatus">Estado</label>
-            <select id="integrationStatus">
+            <label for="catalogItemStatus">Estado</label>
+            <select id="catalogItemStatus">
               <option value="">Seleccionar</option>
-              <option value="Activa">Activa</option>
-              <option value="Con alerta">Con alerta</option>
-              <option value="Error">Error</option>
-              <option value="Deshabilitada">Deshabilitada</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+              <option value="En revisión">En revisión</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="integrationCriticality">Criticidad</label>
-            <select id="integrationCriticality">
+            <label for="catalogItemDependency">Dependencia</label>
+            <select id="catalogItemDependency">
               <option value="">Seleccionar</option>
-              <option value="Alta">Alta</option>
-              <option value="Media">Media</option>
-              <option value="Baja">Baja</option>
+              <option value="Sin dependencia">Sin dependencia</option>
+              <option value="Reglas SLA">Reglas SLA</option>
+              <option value="Asignaciones">Asignaciones</option>
+              <option value="Reportes">Reportes</option>
+              <option value="Integraciones">Integraciones</option>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="integrationEndpoint">Endpoint / URL</label>
-          <input id="integrationEndpoint" type="text" placeholder="https://api.servicio.com/v1/..." />
-        </div>
-
-        <div class="form-group">
-          <label for="integrationDescription">Descripción</label>
-          <textarea id="integrationDescription" placeholder="Describe el uso, dependencia y alcance de la integración."></textarea>
+          <label for="catalogItemDescription">Descripción</label>
+          <textarea id="catalogItemDescription" placeholder="Describe el uso funcional del elemento."></textarea>
         </div>
 
         <label class="form-check">
-          <input type="checkbox" id="integrationDeclaration" />
-          <span>Confirmo que la integración fue revisada y no expone credenciales visibles.</span>
+          <input type="checkbox" id="catalogFormDeclaration" />
+          <span>Confirmo que el elemento no duplica otro catálogo existente.</span>
         </label>
       </form>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="saveIntegrationBtn">
-          Guardar integración
+        <button type="button" class="btn btn--primary" id="saveCatalogItemBtn">
+          Guardar elemento
         </button>
 
-        <button type="button" class="btn btn--soft" id="suggestIntegrationBtn">
-          Validar IA
+        <button type="button" class="btn btn--soft" id="catalogSuggestBtn">
+          Validar con IA
         </button>
 
         <button type="button" class="btn btn--ghost-dark" data-close-modal>
@@ -552,25 +523,47 @@
     </div>
   </section>
 
-  <!-- MODAL LOGS INTEGRACIÓN -->
-  <section class="modal" id="integrationLogsModal" aria-hidden="true">
-    <div class="modal__content modal__content--wide">
+  <!-- MODAL CAMBIAR ESTADO CATÁLOGO -->
+  <section class="modal" id="catalogStatusModal" aria-hidden="true">
+    <div class="modal__content">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon">📄</div>
-      <span class="eyebrow eyebrow--red">Logs técnicos</span>
-      <h3 id="integrationLogsTitle">Eventos de integración</h3>
-      <p>Últimos eventos registrados para el servicio seleccionado.</p>
+      <div class="modal__icon">🔁</div>
+      <span class="eyebrow eyebrow--red">Estado de catálogo</span>
+      <h3>Cambiar estado del elemento</h3>
+      <p>
+        Antes de inactivar un elemento, valida que no afecte reglas SLA, reportes o integraciones.
+      </p>
 
-      <div class="activity-timeline" id="integrationLogsTimeline"></div>
+      <div class="case-modal-summary" id="catalogStatusSummary"></div>
+
+      <div class="form-group">
+        <label for="newCatalogStatus">Nuevo estado</label>
+        <select id="newCatalogStatus">
+          <option value="">Seleccionar</option>
+          <option value="Activo">Activo</option>
+          <option value="Inactivo">Inactivo</option>
+          <option value="En revisión">En revisión</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="catalogStatusReason">Motivo</label>
+        <textarea id="catalogStatusReason" placeholder="Sustenta el cambio de estado."></textarea>
+      </div>
+
+      <label class="form-check">
+        <input type="checkbox" id="catalogStatusDeclaration" />
+        <span>Confirmo que el impacto funcional fue revisado.</span>
+      </label>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="exportIntegrationLogsBtn">
-          Exportar logs
+        <button type="button" class="btn btn--primary" id="confirmCatalogStatusBtn">
+          Guardar estado
         </button>
 
         <button type="button" class="btn btn--ghost-dark" data-close-modal>
-          Cerrar
+          Cancelar
         </button>
       </div>
     </div>

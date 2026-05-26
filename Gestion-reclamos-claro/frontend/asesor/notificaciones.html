@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Dashboard Asesor | Claro Atención 360</title>
+  <title>Notificaciones del asesor | Claro Atención 360</title>
 
   <link rel="stylesheet" href="../assets/css/asesor.css" />
 </head>
 
-<body data-page="asesor-dashboard">
+<body data-page="asesor-notificaciones">
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- SIDEBAR -->
@@ -23,7 +23,7 @@
     </div>
 
     <nav class="sidebar__nav" aria-label="Navegación asesor">
-      <a href="dashboard.html" class="sidebar-link active">
+      <a href="dashboard.html" class="sidebar-link">
         <span>📊</span>
         Dashboard
       </a>
@@ -54,7 +54,7 @@
         Plantillas
       </a>
 
-      <a href="notificaciones.html" class="sidebar-link">
+      <a href="notificaciones.html" class="sidebar-link active">
         <span>🔔</span>
         Notificaciones
         <small id="sidebarNotificationCount">0</small>
@@ -89,8 +89,8 @@
         </button>
 
         <div>
-          <span class="eyebrow eyebrow--red">Panel operativo</span>
-          <h1>Dashboard del asesor</h1>
+          <span class="eyebrow eyebrow--red">Alertas operativas</span>
+          <h1>Notificaciones</h1>
         </div>
       </div>
 
@@ -128,173 +128,150 @@
 
     <!-- MAIN -->
     <main class="advisor-page">
-      <!-- HERO DINÁMICO -->
+      <!-- HERO -->
       <section class="welcome-card">
         <div class="welcome-card__copy">
-          <span class="eyebrow eyebrow--red" id="dashboardHeroEyebrow">
-            Turno operativo
+          <span class="eyebrow eyebrow--red" id="notificationsHeroEyebrow">
+            Centro de alertas
           </span>
 
-          <h2 id="dashboardHeroTitle">
-            Panel de gestión del asesor
+          <h2 id="notificationsHeroTitle">
+            Gestiona avisos, tareas y eventos críticos
           </h2>
 
-          <p id="dashboardHeroText">
-            Desde este panel podrás visualizar tu carga operativa, priorizar casos, revisar alertas SLA
-            y acceder rápidamente a las acciones principales de atención.
+          <p id="notificationsHeroText">
+            Aquí se concentran las alertas de SLA, nuevos casos asignados, respuestas de clientes,
+            derivaciones, recordatorios y eventos internos que requieren acción del asesor.
           </p>
 
           <div class="welcome-actions">
-            <a href="bandeja.html" class="btn btn--primary" id="goToInboxBtn">
-              Revisar bandeja
-            </a>
-
-            <a href="cola-trabajo.html" class="btn btn--soft" id="goToWorkQueueBtn">
-              Ver cola de trabajo
-            </a>
-
-            <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
-              Consultar IA
+            <button type="button" class="btn btn--primary" id="notificationsPrioritizeBtn">
+              Priorizar alertas
             </button>
+
+            <button type="button" class="btn btn--soft" id="markAllAdvisorNotificationsBtn">
+              Marcar leídas
+            </button>
+
+            <a href="calendario-sla.html" class="btn btn--ghost-dark">
+              Ver calendario SLA
+            </a>
           </div>
         </div>
 
         <aside class="welcome-card__status">
           <div class="status-orb">
-            <span id="advisorStatusDot"></span>
+            <span></span>
           </div>
 
           <div>
-            <strong id="advisorStatus">Disponible</strong>
-            <small id="advisorLastAccess">Último acceso pendiente de carga</small>
+            <strong id="notificationsSummaryTitle">Alertas dinámicas</strong>
+            <small id="notificationsSummaryText">Resumen pendiente de carga.</small>
           </div>
         </aside>
       </section>
 
-      <!-- KPIS DINÁMICOS -->
-      <section class="kpi-grid" id="advisorKpiGrid" aria-label="Indicadores del asesor"></section>
+      <!-- KPIS -->
+      <section class="kpi-grid" id="notificationsKpiGrid" aria-label="Indicadores de notificaciones"></section>
 
-      <!-- CASOS PRIORITARIOS + IA -->
-      <section class="dashboard-grid">
+      <!-- NOTIFICACIONES + IA -->
+      <section class="bandeja-layout">
         <section class="panel-card cases-panel">
           <div class="panel-card__header">
             <div>
-              <span class="eyebrow">Priorización</span>
-              <h2>Casos que debes atender primero</h2>
+              <span class="eyebrow">Bandeja de alertas</span>
+              <h2>Notificaciones operativas</h2>
               <p>
-                Lista generada dinámicamente según SLA, prioridad, estado, impacto y acción pendiente.
+                Filtra y atiende las notificaciones según prioridad, tipo, estado y relación con casos.
               </p>
             </div>
 
             <div class="panel-header-actions">
-              <button type="button" class="panel-action" id="refreshPriorityBtn">
+              <button type="button" class="panel-action" id="refreshAdvisorNotificationsBtn">
                 Actualizar
               </button>
 
-              <button type="button" class="panel-action" id="sortPriorityBtn">
-                Ordenar IA
+              <button type="button" class="panel-action" id="clearAdvisorReadBtn">
+                Limpiar leídas
+              </button>
+            </div>
+          </div>
+
+          <div class="advisor-toolbar">
+            <div class="search-box-large">
+              <span>⌕</span>
+              <input
+                id="advisorNotificationSearch"
+                type="search"
+                placeholder="Buscar por caso, alerta, cliente, SLA o tipo..."
+              />
+            </div>
+
+            <div class="case-filters" id="advisorNotificationFilters">
+              <button type="button" class="filter-chip active" data-advisor-notification-filter="todas">
+                Todas
               </button>
 
-              <a href="bandeja.html" class="panel-link">
-                Ver bandeja
-              </a>
+              <button type="button" class="filter-chip" data-advisor-notification-filter="critica">
+                Críticas
+              </button>
+
+              <button type="button" class="filter-chip" data-advisor-notification-filter="sla">
+                SLA
+              </button>
+
+              <button type="button" class="filter-chip" data-advisor-notification-filter="cliente">
+                Respuesta cliente
+              </button>
+
+              <button type="button" class="filter-chip" data-advisor-notification-filter="asignacion">
+                Asignaciones
+              </button>
+
+              <button type="button" class="filter-chip" data-advisor-notification-filter="no_leidas">
+                No leídas
+              </button>
             </div>
           </div>
 
-          <div class="case-list" id="priorityCasesList"></div>
+          <div class="notification-list notification-list--advisor" id="advisorNotificationList"></div>
 
-          <div class="empty-state hidden" id="emptyPriorityState">
-            <span>📭</span>
-            <h3>No hay casos prioritarios</h3>
-            <p>Cuando existan casos críticos o con SLA cercano, aparecerán aquí.</p>
+          <div class="empty-state hidden" id="emptyAdvisorNotificationState">
+            <span>🔔</span>
+            <h3>No hay notificaciones con este filtro</h3>
+            <p>Cambia la búsqueda o selecciona otra categoría.</p>
           </div>
         </section>
 
-        <aside class="panel-card ai-panel">
-          <div class="ai-panel__header">
-            <span>🤖</span>
-            <div>
-              <h2>Resumen IA de carga</h2>
-              <p>Lectura rápida para decidir el siguiente paso operativo.</p>
+        <aside class="form-side-stack sticky-panel">
+          <section class="panel-card ai-panel">
+            <div class="ai-panel__header">
+              <span>🤖</span>
+              <div>
+                <h2>IA de alertas</h2>
+                <p>Lectura inteligente de notificaciones.</p>
+              </div>
             </div>
-          </div>
 
-          <div class="ai-summary" id="advisorAiSummary"></div>
+            <div class="ai-summary" id="advisorNotificationsAiSummary"></div>
 
-          <button type="button" class="btn btn--primary btn--full" id="analyzeAdvisorWorkBtn">
-            Analizar mi carga
-          </button>
+            <button type="button" class="btn btn--primary btn--full" id="analyzeAdvisorNotificationsBtn">
+              Analizar alertas
+            </button>
+          </section>
+
+          <section class="panel-card">
+            <div class="panel-card__header">
+              <div>
+                <span class="eyebrow">Acción recomendada</span>
+                <h2>Plan de revisión</h2>
+                <p>Secuencia sugerida para gestionar alertas sin perder SLA.</p>
+              </div>
+            </div>
+
+            <div class="checklist-grid" id="advisorNotificationActionPlan"></div>
+          </section>
         </aside>
-      </section>
-
-      <!-- ACTIVIDAD + SLA -->
-      <section class="dashboard-grid dashboard-grid--secondary">
-        <section class="panel-card timeline-panel">
-          <div class="panel-card__header">
-            <div>
-              <span class="eyebrow">Actividad</span>
-              <h2>Últimos movimientos</h2>
-              <p>
-                Historial operativo de cambios, revisiones, solicitudes y respuestas recientes.
-              </p>
-            </div>
-
-            <button type="button" class="panel-action" id="refreshActivityBtn">
-              Refrescar
-            </button>
-          </div>
-
-          <div class="activity-timeline" id="advisorActivityTimeline"></div>
-
-          <div class="empty-state hidden" id="emptyActivityState">
-            <span>🕘</span>
-            <h3>Sin movimientos recientes</h3>
-            <p>Las acciones registradas aparecerán en esta sección.</p>
-          </div>
-        </section>
-
-        <section class="panel-card sla-panel">
-          <div class="panel-card__header">
-            <div>
-              <span class="eyebrow">SLA</span>
-              <h2>Alertas de vencimiento</h2>
-              <p>
-                Casos con mayor riesgo de incumplimiento por tiempo de atención.
-              </p>
-            </div>
-
-            <button type="button" class="panel-action" id="refreshSlaBtn">
-              Actualizar
-            </button>
-          </div>
-
-          <div class="sla-list" id="advisorSlaList"></div>
-
-          <div class="empty-state hidden" id="emptySlaState">
-            <span>✅</span>
-            <h3>Sin alertas SLA</h3>
-            <p>No existen casos con riesgo de vencimiento en este momento.</p>
-          </div>
-        </section>
-      </section>
-
-      <!-- COLA RESUMIDA DINÁMICA -->
-      <section class="queue-section">
-        <div class="section-heading">
-          <span class="eyebrow eyebrow--red">Cola operativa</span>
-          <h2>Distribución rápida por estado</h2>
-          <p>
-            Tablero resumido de la carga asignada para detectar cuellos de botella y acciones pendientes.
-          </p>
-        </div>
-
-        <div class="queue-board" id="queueBoard"></div>
-
-        <div class="empty-state hidden" id="emptyQueueBoardState">
-          <span>🗂️</span>
-          <h3>No hay casos en cola</h3>
-          <p>Cuando se asignen casos al asesor, se distribuirán por estado automáticamente.</p>
-        </div>
       </section>
     </main>
   </div>
@@ -322,7 +299,7 @@
       <div>
         <span>🤖</span>
         <strong>Asistente IA</strong>
-        <small>Soporte operativo del asesor</small>
+        <small>Alertas del asesor</small>
       </div>
 
       <button type="button" id="closeBotDrawer">×</button>
@@ -330,19 +307,21 @@
 
     <div class="bot-drawer__messages" id="botMessages">
       <div class="message message--bot">
-        Puedo ayudarte a priorizar casos, revisar SLA, redactar respuestas o validar cierres.
+        Puedo priorizar alertas, explicar riesgos SLA y sugerir la siguiente acción.
       </div>
     </div>
 
     <div class="bot-drawer__quick">
-      <button type="button" data-bot-prompt="Prioriza mi bandeja">
-        Priorizar
+      <button type="button" data-bot-prompt="Qué alerta atiendo primero">
+        Priorizar alerta
       </button>
-      <button type="button" data-bot-prompt="Qué caso está en riesgo SLA">
+
+      <button type="button" data-bot-prompt="Qué notificación tiene riesgo SLA">
         Riesgo SLA
       </button>
-      <button type="button" data-bot-prompt="Qué debo validar antes de cerrar">
-        Validar cierre
+
+      <button type="button" data-bot-prompt="Qué casos puedo cerrar">
+        Cierres
       </button>
     </div>
 
@@ -356,25 +335,25 @@
   <div class="modal-backdrop" id="modalBackdrop"></div>
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-  <!-- MODAL VISTA RÁPIDA DE CASO -->
-  <section class="modal" id="caseModal" aria-hidden="true">
+  <!-- MODAL DETALLE NOTIFICACIÓN -->
+  <section class="modal" id="advisorNotificationModal" aria-hidden="true">
     <div class="modal__content modal__content--wide">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon" id="caseModalIcon">🎫</div>
-      <span class="eyebrow eyebrow--red">Vista rápida</span>
-      <h3 id="caseModalTitle">Caso seleccionado</h3>
-      <p id="caseModalText">Detalle rápido del caso seleccionado.</p>
+      <div class="modal__icon" id="notificationModalIcon">🔔</div>
+      <span class="eyebrow eyebrow--red">Detalle de notificación</span>
+      <h3 id="notificationModalTitle">Notificación seleccionada</h3>
+      <p id="notificationModalText">Detalle de la alerta seleccionada.</p>
 
-      <div class="case-modal-summary" id="caseModalSummary"></div>
+      <div class="case-modal-summary" id="notificationModalSummary"></div>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="caseModalOpenDetailBtn">
-          Abrir detalle
+        <button type="button" class="btn btn--primary" id="notificationOpenCaseBtn">
+          Abrir caso
         </button>
 
-        <button type="button" class="btn btn--soft" id="caseModalUpdateBtn">
-          Actualizar
+        <button type="button" class="btn btn--soft" id="notificationMarkReadBtn">
+          Marcar leída
         </button>
 
         <button type="button" class="btn btn--ghost-dark" data-close-modal>
@@ -384,21 +363,19 @@
     </div>
   </section>
 
-  <!-- MODAL ACCIÓN RÁPIDA -->
-  <section class="modal" id="quickActionModal" aria-hidden="true">
-    <div class="modal__content modal__content--wide">
+  <!-- MODAL CONFIRMAR LIMPIEZA -->
+  <section class="modal" id="clearNotificationsModal" aria-hidden="true">
+    <div class="modal__content">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon" id="quickActionIcon">⚙️</div>
-      <span class="eyebrow eyebrow--red" id="quickActionEyebrow">Acción rápida</span>
-      <h3 id="quickActionTitle">Confirmar acción</h3>
-      <p id="quickActionText">Revisa la información antes de continuar.</p>
-
-      <div class="case-modal-summary" id="quickActionSummary"></div>
+      <div class="modal__icon">🧹</div>
+      <span class="eyebrow eyebrow--red">Limpiar notificaciones</span>
+      <h3>Confirmar limpieza de leídas</h3>
+      <p>Esta acción ocultará las notificaciones ya revisadas en la vista actual.</p>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="quickActionConfirmBtn">
-          Confirmar
+        <button type="button" class="btn btn--primary" id="confirmClearReadNotificationsBtn">
+          Limpiar leídas
         </button>
 
         <button type="button" class="btn btn--ghost-dark" data-close-modal>

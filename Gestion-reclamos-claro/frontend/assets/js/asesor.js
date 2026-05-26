@@ -1,589 +1,457 @@
 "use strict";
 
 /* =========================================================
-   ESTADO GLOBAL
+   CLARO ATENCIÓN 360 - ASESOR.JS
+   Versión dinámica lista para backend
+   ---------------------------------------------------------
+   Regla:
+   - HTML: estructura + ids + contenedores
+   - JS: mock data + render dinámico + acciones
+   - Backend futuro: reemplaza Mock por llamadas API
 ========================================================= */
-
-const AdvisorState = {
-  theme: localStorage.getItem("claro360-theme") || "light",
-  dashboardData: null,
-  currentSearch: ""
-};
 
 /* =========================================================
-   MOCK DATA - ELIMINAR CUANDO SE CONECTE AL BACKEND
-   Datos solo para visualizar y probar el frontend.
+   MOCK DATA TEMPORAL
+   Cuando conectes backend, reemplazas este objeto por fetch/API.
 ========================================================= */
 
-const MockAdvisorDashboard = {
-  asesor: {
-    id: 1,
-    nombre: "Asesor Demo",
-    iniciales: "AD",
-    rol: "Asesor de Atención",
-    turno: "Turno mañana",
-    estado: "Disponible",
-    ultimoAcceso: "Último acceso: hoy 08:10"
+const Mock = {
+  advisor: {
+    id: "ASE-001",
+    name: "Asesor Demo",
+    initials: "AD",
+    role: "Asesor de Atención",
+    status: "Disponible",
+    shift: "Turno operativo",
+    lastAccess: "Último acceso: hoy 08:40"
   },
 
-  indicadores: [
+  cases: [
     {
-      icono: "📥",
-      valor: 14,
-      titulo: "Casos asignados",
-      descripcion: "En tu bandeja actual"
-    },
-    {
-      icono: "⏱️",
-      valor: 4,
-      titulo: "Riesgo SLA",
-      descripcion: "Requieren prioridad"
-    },
-    {
-      icono: "💬",
-      valor: 3,
-      titulo: "Pendientes por cliente",
-      descripcion: "Esperando respuesta"
-    },
-    {
-      icono: "✅",
-      valor: 8,
-      titulo: "Atendidos hoy",
-      descripcion: "Acciones registradas"
-    }
-  ],
-
-  casosPrioritarios: [
-    {
-      id: 501,
-      codigo: "CAS-2026-000245",
-      icono: "⚠️",
-      tipo: "Incidencia",
-      cliente: "Cliente Empresa Demo",
-      titulo: "Correo corporativo no disponible",
-      descripcion: "Cliente empresarial reporta error de acceso en correo corporativo.",
-      servicio: "Correo empresa",
-      estado: "En atención",
-      estadoTipo: "warning",
-      prioridad: "Crítica",
-      sla: "01h 20m",
-      canal: "Portal empresas"
-    },
-    {
-      id: 502,
-      codigo: "CAS-2026-000123",
-      icono: "📝",
-      tipo: "Reclamo",
-      cliente: "Cliente Persona Demo",
-      titulo: "Lentitud recurrente en Internet hogar",
-      descripcion: "Reclamo por bajo rendimiento del servicio en horario nocturno.",
-      servicio: "Internet hogar",
-      estado: "En atención",
-      estadoTipo: "info",
-      prioridad: "Alta",
-      sla: "05h 42m",
-      canal: "Web"
-    },
-    {
-      id: 503,
-      codigo: "CAS-2026-000184",
-      icono: "💬",
-      tipo: "Incidencia",
-      cliente: "Cliente Persona Demo",
-      titulo: "Cliente debe adjuntar evidencia",
-      descripcion: "Se solicitó evidencia adicional para continuar el diagnóstico.",
-      servicio: "Red móvil",
-      estado: "Pendiente por cliente",
-      estadoTipo: "purple",
-      prioridad: "Media",
-      sla: "12h 15m",
-      canal: "App"
-    }
-  ],
-
-  resumenIA: [
-    {
-      titulo: "Prioridad inmediata",
-      texto: "Atiende primero el caso empresarial de correo corporativo por prioridad crítica y menor SLA restante."
-    },
-    {
-      titulo: "Pendientes por cliente",
-      texto: "Hay casos que no requieren acción directa hasta que el cliente adjunte evidencia."
-    },
-    {
-      titulo: "Recomendación operativa",
-      texto: "Registra avances claros, solicita evidencias específicas y evita cierres sin sustento."
-    }
-  ],
-
-  actividad: [
-    {
-      icono: "✍️",
-      titulo: "Actualización registrada",
-      descripcion: "Se agregó avance técnico al caso CAS-2026-000123.",
-      fecha: "Hoy 09:40"
-    },
-    {
-      icono: "💬",
-      titulo: "Solicitud enviada",
-      descripcion: "Se solicitó evidencia al cliente para continuar la atención.",
-      fecha: "Hoy 09:05"
-    },
-    {
-      icono: "✅",
-      titulo: "Caso cerrado",
-      descripcion: "Se registró respuesta final en reclamo de facturación.",
-      fecha: "Ayer 17:30"
-    }
-  ],
-
-  alertasSla: [
-    {
-      codigo: "CAS-2026-000245",
-      titulo: "Correo corporativo no disponible",
-      riesgo: "Crítico",
-      restante: "01h 20m",
-      porcentaje: 85,
-      color: "var(--danger)"
-    },
-    {
-      codigo: "CAS-2026-000123",
-      titulo: "Lentitud Internet hogar",
-      riesgo: "Medio",
-      restante: "05h 42m",
-      porcentaje: 58,
-      color: "var(--warning)"
-    },
-    {
-      codigo: "CAS-2026-000184",
-      titulo: "Intermitencia móvil",
-      riesgo: "Bajo",
-      restante: "12h 15m",
-      porcentaje: 32,
-      color: "var(--success)"
-    }
-  ],
-
-  colaTrabajo: [
-    {
-      estado: "Nuevo",
-      casos: [
-        {
-          codigo: "CAS-2026-000301",
-          titulo: "Consulta por recibo",
-          prioridad: "Media"
-        },
-        {
-          codigo: "CAS-2026-000302",
-          titulo: "Falla en TV+",
-          prioridad: "Baja"
-        }
+      id: "REC-2026-000245",
+      icon: "📝",
+      type: "Reclamo",
+      clientType: "Persona",
+      clientName: "Cliente Persona Demo",
+      document: "DNI asociado",
+      title: "Cobro no reconocido en recibo mensual",
+      description: "Solicitud de revisión por cargo observado en el recibo mensual del servicio de Internet hogar.",
+      reason: "El cliente indica que existe un cargo que no reconoce en su recibo mensual. Adjunta evidencia de facturación y solicita revisión comercial.",
+      service: "Internet hogar",
+      channel: "Portal cliente",
+      priority: "Alta",
+      status: "En atención",
+      queueStatus: "En atención",
+      slaHours: 6,
+      slaText: "06h restantes",
+      slaGroup: "hoy",
+      createdAt: "Hoy 09:30",
+      updatedAt: "Hoy 10:10",
+      assignedTo: "Asesor Demo",
+      action: "Validar evidencia y preparar respuesta comercial.",
+      evidence: [
+        { icon: "📄", name: "recibo_mayo.pdf", detail: "Comprobante adjunto por el cliente." },
+        { icon: "🖼️", name: "captura_cargo.png", detail: "Captura del cargo observado." }
+      ],
+      history: [
+        { icon: "📥", title: "Caso asignado", text: "El caso fue asignado al asesor para revisión.", date: "Hoy 09:30" },
+        { icon: "🔎", title: "Revisión iniciada", text: "Se inició validación de recibo y sustento adjunto.", date: "Hoy 10:10" }
       ]
     },
     {
-      estado: "En atención",
-      casos: [
-        {
-          codigo: "CAS-2026-000245",
-          titulo: "Correo corporativo no disponible",
-          prioridad: "Crítica"
-        },
-        {
-          codigo: "CAS-2026-000123",
-          titulo: "Lentitud Internet hogar",
-          prioridad: "Alta"
-        }
+      id: "INC-2026-000301",
+      icon: "🔥",
+      type: "Incidencia",
+      clientType: "Persona",
+      clientName: "Cliente Hogar Demo",
+      document: "DNI asociado",
+      title: "Internet hogar sin servicio",
+      description: "El cliente reporta ausencia total del servicio de internet hogar.",
+      reason: "El servicio se encuentra sin navegación. El cliente indica que reinició el equipo y el problema continúa.",
+      service: "Internet hogar",
+      channel: "Call center",
+      priority: "Crítica",
+      status: "En revisión técnica",
+      queueStatus: "Nuevo",
+      slaHours: 2,
+      slaText: "02h restantes",
+      slaGroup: "hoy",
+      createdAt: "Hoy 08:50",
+      updatedAt: "Hoy 09:15",
+      assignedTo: "Asesor Demo",
+      action: "Derivar a soporte técnico y registrar avance inmediato.",
+      evidence: [
+        { icon: "📷", name: "router_estado.jpg", detail: "Imagen del estado del equipo." }
+      ],
+      history: [
+        { icon: "📥", title: "Caso recibido", text: "El caso ingresó desde call center.", date: "Hoy 08:50" },
+        { icon: "⚠️", title: "SLA crítico", text: "Se detectó vencimiento cercano.", date: "Hoy 09:15" }
       ]
     },
     {
-      estado: "Pendiente cliente",
-      casos: [
-        {
-          codigo: "CAS-2026-000184",
-          titulo: "Intermitencia móvil",
-          prioridad: "Media"
-        }
+      id: "INC-2026-000184",
+      icon: "📩",
+      type: "Incidencia",
+      clientType: "Persona",
+      clientName: "Cliente Móvil Demo",
+      document: "DNI asociado",
+      title: "Intermitencia en servicio móvil",
+      description: "Reporte de cortes breves de datos móviles en zona frecuente.",
+      reason: "El cliente reporta intermitencia en navegación móvil. Falta evidencia técnica para continuar el diagnóstico.",
+      service: "Red móvil",
+      channel: "App",
+      priority: "Media",
+      status: "Pendiente por cliente",
+      queueStatus: "Pendiente cliente",
+      slaHours: 12,
+      slaText: "12h restantes",
+      slaGroup: "mañana",
+      createdAt: "Ayer 18:20",
+      updatedAt: "Hoy 08:05",
+      assignedTo: "Asesor Demo",
+      action: "Solicitar evidencia técnica al cliente.",
+      evidence: [],
+      history: [
+        { icon: "📥", title: "Caso registrado", text: "El cliente reportó intermitencia desde la app.", date: "Ayer 18:20" },
+        { icon: "📩", title: "Pendiente de evidencia", text: "Se requiere información adicional.", date: "Hoy 08:05" }
       ]
     },
     {
-      estado: "Listo para cierre",
-      casos: [
-        {
-          codigo: "CAS-2026-000097",
-          titulo: "Cobro no reconocido",
-          prioridad: "Media"
-        }
+      id: "REC-2026-000097",
+      icon: "✅",
+      type: "Reclamo",
+      clientType: "Empresa",
+      clientName: "Cliente Empresa Demo",
+      document: "RUC asociado",
+      title: "Revisión de facturación corporativa",
+      description: "Caso revisado y preparado para respuesta final al cliente empresa.",
+      reason: "Se revisó la facturación corporativa y existe respuesta preparada para cierre.",
+      service: "Servicio empresa",
+      channel: "Correo",
+      priority: "Media",
+      status: "Listo para cierre",
+      queueStatus: "Listo para cierre",
+      slaHours: 24,
+      slaText: "24h restantes",
+      slaGroup: "semana",
+      createdAt: "18/05/2026",
+      updatedAt: "Ayer 16:40",
+      assignedTo: "Asesor Demo",
+      action: "Validar respuesta final y cerrar.",
+      evidence: [
+        { icon: "📄", name: "validacion_facturacion.pdf", detail: "Validación interna de facturación." }
+      ],
+      history: [
+        { icon: "🔎", title: "Revisión completada", text: "El área responsable completó la revisión.", date: "Ayer 16:40" },
+        { icon: "✅", title: "Listo para cierre", text: "Respuesta final preparada.", date: "Ayer 17:10" }
+      ]
+    },
+    {
+      id: "REC-2026-000222",
+      icon: "🔀",
+      type: "Reclamo",
+      clientType: "Empresa",
+      clientName: "Cliente Corporativo Demo",
+      document: "RUC asociado",
+      title: "Validación backoffice de cargo adicional",
+      description: "Caso derivado a facturación para validación de cargo adicional.",
+      reason: "El cliente empresa solicita revisión de cargo adicional. Requiere respuesta de backoffice.",
+      service: "Servicio empresa",
+      channel: "Portal empresa",
+      priority: "Alta",
+      status: "Derivado",
+      queueStatus: "Derivado",
+      slaHours: 18,
+      slaText: "18h restantes",
+      slaGroup: "semana",
+      createdAt: "17/05/2026",
+      updatedAt: "Ayer 11:30",
+      assignedTo: "Asesor Demo",
+      action: "Dar seguimiento a respuesta del área de facturación.",
+      evidence: [
+        { icon: "📄", name: "detalle_cargo.xlsx", detail: "Detalle del cargo observado." }
+      ],
+      history: [
+        { icon: "🔀", title: "Caso derivado", text: "Se derivó a facturación.", date: "Ayer 11:30" }
       ]
     }
-  ]
+  ],
+
+  templates: [
+    {
+      id: "TPL-001",
+      icon: "📩",
+      category: "evidencia",
+      title: "Solicitud de evidencia adicional",
+      channel: "Portal cliente / Correo",
+      description: "Mensaje para solicitar sustento adicional al cliente.",
+      body: "Estimado/a {cliente_nombre}, para continuar con la atención del caso {codigo_caso}, necesitamos que nos envíe evidencia relacionada con {servicio_afectado}. Esta información permitirá continuar la revisión dentro del plazo indicado."
+    },
+    {
+      id: "TPL-002",
+      icon: "📝",
+      category: "reclamo",
+      title: "Respuesta por revisión de facturación",
+      channel: "Correo",
+      description: "Respuesta base para reclamos comerciales de facturación.",
+      body: "Estimado/a {cliente_nombre}, hemos revisado la información asociada al caso {codigo_caso}. A continuación, detallamos el resultado de la evaluación realizada sobre el servicio {servicio_afectado}."
+    },
+    {
+      id: "TPL-003",
+      icon: "🔀",
+      category: "derivacion",
+      title: "Comunicación de derivación técnica",
+      channel: "Portal cliente",
+      description: "Mensaje para informar derivación a un área responsable.",
+      body: "Estimado/a {cliente_nombre}, su caso {codigo_caso} fue derivado al área responsable para realizar una validación especializada del servicio {servicio_afectado}."
+    },
+    {
+      id: "TPL-004",
+      icon: "✅",
+      category: "cierre",
+      title: "Cierre con respuesta final",
+      channel: "Correo / Portal",
+      description: "Respuesta final para cierre de caso.",
+      body: "Estimado/a {cliente_nombre}, se completó la revisión del caso {codigo_caso}. Se deja constancia del resultado y de la acción aplicada sobre el servicio {servicio_afectado}."
+    }
+  ],
+
+  notifications: [
+    {
+      id: "NOT-001",
+      icon: "🔥",
+      type: "sla",
+      priority: "critica",
+      unread: true,
+      caseId: "INC-2026-000301",
+      title: "SLA crítico próximo a vencer",
+      text: "El caso INC-2026-000301 vence en menos de 2 horas y requiere actualización inmediata.",
+      date: "Hace 10 min"
+    },
+    {
+      id: "NOT-002",
+      icon: "📩",
+      type: "cliente",
+      priority: "alta",
+      unread: true,
+      caseId: "INC-2026-000184",
+      title: "Cliente respondió solicitud",
+      text: "El cliente adjuntó información para continuar la revisión del caso.",
+      date: "Hace 25 min"
+    },
+    {
+      id: "NOT-003",
+      icon: "📥",
+      type: "asignacion",
+      priority: "alta",
+      unread: true,
+      caseId: "REC-2026-000245",
+      title: "Nuevo caso asignado",
+      text: "Se asignó un reclamo comercial a tu bandeja.",
+      date: "Hoy 09:30"
+    },
+    {
+      id: "NOT-004",
+      icon: "🔀",
+      type: "derivacion",
+      priority: "media",
+      unread: false,
+      caseId: "REC-2026-000222",
+      title: "Derivación respondida",
+      text: "El área responsable respondió la derivación del caso.",
+      date: "Ayer 16:40"
+    }
+  ],
+
+  performance: {
+    kpis: [
+      ["📥", "28", "Casos atendidos", "Semana actual"],
+      ["✅", "16", "Casos cerrados", "Con respuesta final"],
+      ["⏱️", "92%", "SLA cumplido", "Meta operativa semanal"],
+      ["⭐", "4.6", "Satisfacción", "Promedio de encuestas"]
+    ],
+    chart: [
+      ["Lun", 7],
+      ["Mar", 5],
+      ["Mié", 9],
+      ["Jue", 6],
+      ["Vie", 8]
+    ],
+    table: [
+      ["Reclamo comercial", "12", "3h 20m", "94%", "Bueno", "success"],
+      ["Incidencia técnica", "10", "4h 10m", "89%", "Vigilar", "warning"],
+      ["Solicitudes cliente", "6", "2h 45m", "96%", "Bueno", "success"]
+    ]
+  }
 };
 
 /* =========================================================
-   API LAYER - CAMBIAR AQUÍ CUANDO EXISTA BACKEND
+   STATE
 ========================================================= */
 
-const AdvisorApi = {
-  async getDashboard() {
-    await delay(500);
-
-    return MockAdvisorDashboard;
-
-    /*
-    const response = await fetch("/api/asesor/dashboard", {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      }
-    });
-
-    if (!response.ok) {
-      throw new Error("No se pudo cargar el dashboard del asesor");
-    }
-
-    return await response.json();
-    */
-  }
+const State = {
+  page: document.body.dataset.page || "",
+  theme: localStorage.getItem("claro360-asesor-theme") || "light",
+  selectedCaseId: null,
+  selectedTemplateId: null,
+  selectedNotificationId: null,
+  queueFilter: "todos",
+  inboxFilter: "todos",
+  slaFilter: "todos",
+  templateFilter: "todos",
+  notificationFilter: "todas",
+  queueView: "cards",
+  performancePeriod: "semana"
 };
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ = (selector, parent = document) => parent.querySelector(selector);
+const $$ = (selector, parent = document) => Array.from(parent.querySelectorAll(selector));
+
+function esc(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function setText(selector, value) {
+  const el = $(selector);
+  if (el) el.textContent = value ?? "";
+}
+
+function setHTML(selector, value) {
+  const el = $(selector);
+  if (el) el.innerHTML = value ?? "";
+}
+
+function getValue(selector) {
+  return $(selector)?.value?.trim() || "";
+}
+
+function isChecked(selector) {
+  return Boolean($(selector)?.checked);
+}
+
+function getCase(id) {
+  return Mock.cases.find(c => c.id === id) || null;
+}
+
+function getTemplate(id) {
+  return Mock.templates.find(t => t.id === id) || null;
+}
+
+function getNotification(id) {
+  return Mock.notifications.find(n => n.id === id) || null;
+}
+
+function statusType(status) {
+  const value = String(status || "").toLowerCase();
+  if (value.includes("cierre") || value.includes("cerrado")) return "success";
+  if (value.includes("pendiente")) return "warning";
+  if (value.includes("crítico") || value.includes("critico")) return "danger";
+  if (value.includes("derivado")) return "purple";
+  return "info";
+}
+
+function priorityType(priority) {
+  const value = String(priority || "").toLowerCase();
+  if (value.includes("crítica") || value.includes("critica")) return "danger";
+  if (value.includes("alta")) return "warning";
+  if (value.includes("media")) return "info";
+  return "success";
+}
+
+function pillClass(type) {
+  return `status-pill status-pill--${type || "info"}`;
+}
+
+function slaRisk(c) {
+  return Number(c.slaHours) <= 8;
+}
+
+function saveSelectedCase(id) {
+  State.selectedCaseId = id;
+  localStorage.setItem("claro360-selected-case", id);
+}
+
+function goToDetail(id) {
+  saveSelectedCase(id);
+  window.location.href = `detalle-atencion.html?id=${encodeURIComponent(id)}`;
+}
+
+function getCaseIdFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  return params.get("id") || localStorage.getItem("claro360-selected-case") || Mock.cases[0]?.id;
+}
+
+function show(el, condition) {
+  if (!el) return;
+  el.classList.toggle("hidden", !condition);
+}
+
+function toast(title, message, type = "info") {
+  const box = $("#toastContainer");
+  if (!box) {
+    alert(`${title}\n${message}`);
+    return;
+  }
+
+  const item = document.createElement("div");
+  item.className = `toast toast--${type}`;
+  item.innerHTML = `
+    <span>${type === "success" ? "✓" : type === "warning" ? "!" : type === "danger" ? "×" : "ℹ"}</span>
+    <div>
+      <strong>${esc(title)}</strong>
+      <p>${esc(message)}</p>
+    </div>
+  `;
+
+  box.appendChild(item);
+
+  setTimeout(() => {
+    item.style.opacity = "0";
+    item.style.transform = "translateX(18px)";
+    setTimeout(() => item.remove(), 260);
+  }, 3200);
+}
 
 /* =========================================================
    INIT
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-  applyTheme(AdvisorState.theme);
-  bindLayout();
-  bindTheme();
-  bindUserMenu();
-  bindSearch();
-  bindBot();
-  bindModals();
-  bindLogout();
+  applyTheme(State.theme);
+  setupBaseUI();
+  setupGlobalEvents();
+  setupBot();
+  setupSearch();
+  updateGlobalBadges();
 
-  const page = document.body.dataset.page;
-
-  if (page === "asesor-dashboard") {
-    loadAdvisorDashboard();
-  }
+  if (State.page === "asesor-dashboard") initDashboard();
+  if (State.page === "asesor-bandeja") initBandeja();
+  if (State.page === "asesor-detalle-atencion") initDetalleAtencion();
+  if (State.page === "asesor-cola-trabajo") initColaTrabajo();
+  if (State.page === "asesor-calendario-sla") initCalendarioSla();
+  if (State.page === "asesor-plantillas-respuesta") initPlantillas();
+  if (State.page === "asesor-notificaciones") initNotificaciones();
+  if (State.page === "asesor-rendimiento") initRendimiento();
 });
 
 /* =========================================================
-   UTILIDADES
+   BASE UI
 ========================================================= */
 
-function $(selector, parent = document) {
-  return parent.querySelector(selector);
-}
+function setupBaseUI() {
+  setText("#userNameTop", Mock.advisor.name);
+  setText("#userRoleTop", Mock.advisor.role);
+  setText("#userAvatar", Mock.advisor.initials);
 
-function $all(selector, parent = document) {
-  return Array.from(parent.querySelectorAll(selector));
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function setText(selector, value) {
-  const element = $(selector);
-  if (element) element.textContent = value;
-}
-
-function showToast({ title, message, type = "info" }) {
-  const container = $("#toastContainer");
-  if (!container) return;
-
-  const toast = document.createElement("div");
-  toast.className = `toast toast--${type}`;
-  toast.innerHTML = `
-    <span>${type === "success" ? "✓" : type === "warning" ? "!" : type === "danger" ? "×" : "ℹ"}</span>
-    <div>
-      <strong>${title}</strong>
-      <p>${message}</p>
-    </div>
-  `;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.transform = "translateX(24px)";
-    setTimeout(() => toast.remove(), 250);
-  }, 4200);
-}
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-async function loadAdvisorDashboard() {
-  try {
-    renderAdvisorLoading();
-
-    const data = await AdvisorApi.getDashboard();
-
-    AdvisorState.dashboardData = data;
-
-    renderAdvisorDashboard(data);
-  } catch (error) {
-    openGenericModal({
-      icon: "!",
-      title: "Error al cargar",
-      text: "No se pudo cargar el dashboard del asesor."
-    });
-  }
-}
-
-function renderAdvisorLoading() {
-  setText("#welcomeTitle", "Cargando bandeja operativa...");
-  setText("#welcomeMessage", "Estamos preparando tu panel de atención.");
-}
-
-function renderAdvisorDashboard(data) {
-  renderAdvisorUser(data.asesor);
-  renderAdvisorWelcome(data.asesor);
-  renderAdvisorKpis(data.indicadores);
-  renderPriorityCases(data.casosPrioritarios);
-  renderAdvisorAiSummary(data.resumenIA);
-  renderAdvisorActivity(data.actividad);
-  renderAdvisorSla(data.alertasSla);
-  renderQueueBoard(data.colaTrabajo);
-}
-
-function renderAdvisorUser(user) {
-  setText("#userAvatar", user.iniciales);
-  setText("#userNameTop", user.nombre);
-  setText("#userRoleTop", user.rol);
-}
-
-function renderAdvisorWelcome(user) {
-  setText("#advisorShift", user.turno);
-  setText("#welcomeTitle", `Hola, ${user.nombre}`);
-  setText(
-    "#welcomeMessage",
-    "Desde este panel puedes revisar tu carga asignada, atender casos, solicitar información al cliente, actualizar avances y controlar riesgos SLA."
-  );
-  setText("#advisorStatus", user.estado);
-  setText("#advisorLastAccess", user.ultimoAcceso);
-}
-
-function renderAdvisorKpis(items) {
-  const grid = $("#advisorKpiGrid");
-  if (!grid) return;
-
-  grid.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="kpi-card">
-          <span class="kpi-card__icon">${item.icono}</span>
-          <div>
-            <strong>${item.valor}</strong>
-            <p>${item.titulo}</p>
-            <small>${item.descripcion}</small>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  const assigned = items.find((item) => item.titulo === "Casos asignados");
-  setText("#sidebarAssignedCount", assigned ? assigned.valor : "");
-}
-
-function renderPriorityCases(cases) {
-  const list = $("#priorityCasesList");
-  if (!list) return;
-
-  list.innerHTML = cases
-    .map((caso) => {
-      return `
-        <article class="case-item">
-          <span class="case-icon">${caso.icono}</span>
-
-          <div>
-            <h3>${caso.titulo}</h3>
-            <p>${caso.descripcion}</p>
-
-            <div class="case-meta">
-              <span>${caso.codigo}</span>
-              <span>${caso.tipo}</span>
-              <span>${caso.cliente}</span>
-              <span>${caso.servicio}</span>
-              <span>Prioridad ${caso.prioridad}</span>
-              <span>SLA: ${caso.sla}</span>
-            </div>
-          </div>
-
-          <div>
-            <span class="status-pill status-pill--${caso.estadoTipo}">
-              ${caso.estado}
-            </span>
-            <button type="button" data-case-id="${caso.id}">
-              Abrir
-            </button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  $all("[data-case-id]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = Number(button.dataset.caseId);
-      const caso = cases.find((item) => item.id === id);
-
-      if (caso) {
-        openCaseModal(caso);
-      }
-    });
-  });
-}
-
-function renderAdvisorAiSummary(items) {
-  const container = $("#advisorAiSummary");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="ai-summary-item">
-          <strong>${item.titulo}</strong>
-          <p>${item.texto}</p>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderAdvisorActivity(items) {
-  const container = $("#advisorActivityTimeline");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="activity-item">
-          <span class="activity-icon">${item.icono}</span>
-          <div class="activity-content">
-            <strong>${item.titulo}</strong>
-            <p>${item.descripcion}</p>
-            <small>${item.fecha}</small>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderAdvisorSla(items) {
-  const container = $("#advisorSlaList");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="sla-item">
-          <div class="sla-item__top">
-            <div>
-              <strong>${item.codigo}</strong>
-              <p>${item.titulo}</p>
-            </div>
-
-            <span class="status-pill ${item.riesgo === "Crítico" ? "status-pill--danger" : item.riesgo === "Medio" ? "status-pill--warning" : "status-pill--success"}">
-              ${item.riesgo}
-            </span>
-          </div>
-
-          <p>Tiempo restante: ${item.restante}</p>
-
-          <div class="sla-bar">
-            <span style="width:${item.porcentaje}%; background:${item.color};"></span>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function renderQueueBoard(columns) {
-  const board = $("#queueBoard");
-  if (!board) return;
-
-  board.innerHTML = columns
-    .map((column) => {
-      return `
-        <section class="queue-column">
-          <div class="queue-column__header">
-            <h3>${column.estado}</h3>
-            <small>${column.casos.length}</small>
-          </div>
-
-          ${column.casos
-            .map((caso) => {
-              return `
-                <article class="queue-card">
-                  <strong>${caso.codigo}</strong>
-                  <p>${caso.titulo}</p>
-                  <span class="status-pill status-pill--info">
-                    ${caso.prioridad}
-                  </span>
-                </article>
-              `;
-            })
-            .join("")}
-        </section>
-      `;
-    })
-    .join("");
-}
-
-/* =========================================================
-   MODAL CASO
-========================================================= */
-
-function openCaseModal(caso) {
-  setText("#caseModalIcon", caso.icono);
-  setText("#caseModalTitle", caso.codigo);
-  setText("#caseModalText", caso.descripcion);
-
-  const summary = $("#caseModalSummary");
-
-  if (summary) {
-    summary.innerHTML = `
-      <div>
-        <span>Cliente</span>
-        <strong>${caso.cliente}</strong>
-      </div>
-      <div>
-        <span>Tipo</span>
-        <strong>${caso.tipo}</strong>
-      </div>
-      <div>
-        <span>Servicio</span>
-        <strong>${caso.servicio}</strong>
-      </div>
-      <div>
-        <span>Estado</span>
-        <strong>${caso.estado}</strong>
-      </div>
-      <div>
-        <span>Prioridad</span>
-        <strong>${caso.prioridad}</strong>
-      </div>
-      <div>
-        <span>SLA</span>
-        <strong>${caso.sla}</strong>
-      </div>
-    `;
-  }
-
-  openModal("#caseModal");
-}
-
-/* =========================================================
-   LAYOUT
-========================================================= */
-
-function bindLayout() {
   $("#menuBtn")?.addEventListener("click", () => {
     $("#sidebar")?.classList.add("open");
     $("#drawerBackdrop")?.classList.add("show");
@@ -591,104 +459,139 @@ function bindLayout() {
   });
 
   $("#drawerBackdrop")?.addEventListener("click", () => {
-    closeSidebar();
     closeBot();
+    closeSidebar();
   });
 
-  $("#refreshActivityBtn")?.addEventListener("click", () => {
-    if (AdvisorState.dashboardData) {
-      renderAdvisorActivity(AdvisorState.dashboardData.actividad);
-    }
-
-    showToast({
-      title: "Actividad actualizada",
-      message: "Se refrescó el historial operativo.",
-      type: "success"
-    });
+  $("#themeToggle")?.addEventListener("click", () => {
+    applyTheme(State.theme === "light" ? "dark" : "light");
+    toast("Tema actualizado", `Se activó el modo ${State.theme === "dark" ? "oscuro" : "claro"}.`, "success");
   });
 
-  $("#refreshSlaBtn")?.addEventListener("click", () => {
-    if (AdvisorState.dashboardData) {
-      renderAdvisorSla(AdvisorState.dashboardData.alertasSla);
-    }
-
-    showToast({
-      title: "SLA actualizado",
-      message: "Se actualizaron las alertas de vencimiento.",
-      type: "success"
-    });
+  $("#userMenuButton")?.addEventListener("click", e => {
+    e.stopPropagation();
+    $("#userMenuDropdown")?.classList.toggle("open");
   });
+
+  document.addEventListener("click", () => {
+    $("#userMenuDropdown")?.classList.remove("open");
+  });
+
+  $("#logoutBtn")?.addEventListener("click", logout);
+  $("#logoutDropdownBtn")?.addEventListener("click", logout);
 }
 
 function closeSidebar() {
   $("#sidebar")?.classList.remove("open");
-  $("#drawerBackdrop")?.classList.remove("show");
-  document.body.classList.remove("drawer-open");
-}
-
-/* =========================================================
-   TEMA
-========================================================= */
-
-function bindTheme() {
-  $("#themeToggle")?.addEventListener("click", () => {
-    const next = AdvisorState.theme === "light" ? "dark" : "light";
-    applyTheme(next);
-
-    showToast({
-      title: "Tema actualizado",
-      message: `Se activó el modo ${next === "dark" ? "oscuro" : "claro"}.`,
-      type: "success"
-    });
-  });
+  if (!$("#botDrawer")?.classList.contains("open")) {
+    $("#drawerBackdrop")?.classList.remove("show");
+    document.body.classList.remove("drawer-open");
+  }
 }
 
 function applyTheme(theme) {
-  AdvisorState.theme = theme;
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("claro360-theme", theme);
+  State.theme = theme;
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("claro360-asesor-theme", theme);
+}
+
+function logout() {
+  toast("Sesión cerrada", "Serás redirigido al login.", "success");
+  setTimeout(() => {
+    window.location.href = "../login.html";
+  }, 700);
+}
+
+function updateGlobalBadges() {
+  setText("#sidebarAssignedCount", Mock.cases.length);
+  const unread = Mock.notifications.filter(n => n.unread).length;
+  setText("#sidebarNotificationCount", unread);
+  setText("#notificationBadge", unread);
 }
 
 /* =========================================================
-   USER MENU
+   GLOBAL EVENTS / MODALS
 ========================================================= */
 
-function bindUserMenu() {
-  $("#userMenuButton")?.addEventListener("click", () => {
-    $("#userMenuDropdown")?.classList.toggle("open");
+function setupGlobalEvents() {
+  document.addEventListener("click", e => {
+    const closeBtn = e.target.closest("[data-close-modal]");
+    if (closeBtn) closeModals();
+
+    const modalBtn = e.target.closest("[data-open-modal]");
+    if (modalBtn) {
+      e.preventDefault();
+      openModal(`#${modalBtn.dataset.openModal}`);
+    }
   });
 
-  document.addEventListener("click", (event) => {
-    const menu = $(".user-menu");
+  $("#modalBackdrop")?.addEventListener("click", closeModals);
 
-    if (menu && !menu.contains(event.target)) {
-      $("#userMenuDropdown")?.classList.remove("open");
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") {
+      closeModals();
+      closeSearch();
+      closeBot();
+      closeSidebar();
     }
   });
 }
 
+function openModal(selector) {
+  const modal = $(selector);
+  if (!modal) {
+    toast("Modal no encontrado", `No existe ${selector}.`, "warning");
+    return;
+  }
+
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+  $("#modalBackdrop")?.classList.add("show");
+  document.body.classList.add("modal-open");
+}
+
+function closeModals() {
+  $$(".modal").forEach(m => {
+    m.classList.remove("show");
+    m.setAttribute("aria-hidden", "true");
+  });
+
+  $("#modalBackdrop")?.classList.remove("show");
+  document.body.classList.remove("modal-open");
+}
+
+function genericModal(icon, title, text) {
+  setText("#genericModalIcon", icon);
+  setText("#genericModalTitle", title);
+  setText("#genericModalText", text);
+  openModal("#genericModal");
+}
+
+function summaryHTML(items) {
+  return items.map(([label, value]) => `
+    <div>
+      <span>${esc(label)}</span>
+      <strong>${esc(value)}</strong>
+    </div>
+  `).join("");
+}
+
 /* =========================================================
-   BUSCADOR
+   SEARCH
 ========================================================= */
 
-function bindSearch() {
+function setupSearch() {
   $("#globalSearchBtn")?.addEventListener("click", openSearch);
   $("#closeSearchBtn")?.addEventListener("click", closeSearch);
-
-  $("#globalSearchInput")?.addEventListener("input", (event) => {
-    AdvisorState.currentSearch = event.target.value.trim().toLowerCase();
-    renderSearchResults();
-  });
+  $("#globalSearchInput")?.addEventListener("input", renderSearch);
 }
 
 function openSearch() {
   $("#searchModal")?.classList.add("show");
   $("#searchModal")?.setAttribute("aria-hidden", "false");
   document.body.classList.add("search-open");
-
-  setTimeout(() => $("#globalSearchInput")?.focus(), 100);
-
-  renderSearchResults();
+  setTimeout(() => $("#globalSearchInput")?.focus(), 50);
+  renderSearch();
 }
 
 function closeSearch() {
@@ -697,95 +600,85 @@ function closeSearch() {
   document.body.classList.remove("search-open");
 }
 
-function renderSearchResults() {
-  const container = $("#searchResults");
-  const data = AdvisorState.dashboardData;
+function renderSearch() {
+  const box = $("#searchResults");
+  if (!box) return;
 
-  if (!container || !data) return;
+  const q = getValue("#globalSearchInput").toLowerCase();
 
-  const q = AdvisorState.currentSearch;
+  const pages = [
+    ["📊", "Dashboard", "Resumen operativo del asesor.", "dashboard.html"],
+    ["📥", "Bandeja", "Casos asignados y filtros.", "bandeja.html"],
+    ["🗂️", "Cola de trabajo", "Kanban operativo.", "cola-trabajo.html"],
+    ["⏱️", "Calendario SLA", "Vencimientos y alertas.", "calendario-sla.html"],
+    ["💬", "Plantillas", "Respuestas predefinidas.", "plantillas-respuesta.html"],
+    ["🔔", "Notificaciones", "Alertas operativas.", "notificaciones.html"],
+    ["📈", "Rendimiento", "Indicadores del asesor.", "rendimiento.html"]
+  ].map(([icon, title, text, href]) => ({ icon, title, text, href, key: `${title} ${text}` }));
 
-  const cases = data.casosPrioritarios.map((item) => ({
-    icon: item.icono,
-    title: item.codigo,
-    text: `${item.cliente} · ${item.titulo}`,
-    href: "detalle-atencion.html",
-    keywords: `${item.codigo} ${item.cliente} ${item.titulo} ${item.servicio} ${item.estado}`.toLowerCase()
+  const cases = Mock.cases.map(c => ({
+    icon: c.icon,
+    title: c.id,
+    text: `${c.title} · ${c.clientName}`,
+    href: `detalle-atencion.html?id=${encodeURIComponent(c.id)}`,
+    key: `${c.id} ${c.title} ${c.clientName} ${c.service} ${c.priority} ${c.status}`
   }));
 
-  const results = q ? cases.filter((item) => item.keywords.includes(q)) : cases;
+  const items = [...pages, ...cases].filter(i => !q || i.key.toLowerCase().includes(q));
 
-  if (!results.length) {
-    container.innerHTML = `<p class="muted">No se encontraron resultados.</p>`;
-    return;
-  }
-
-  container.innerHTML = results
-    .map((item) => {
-      return `
-        <a href="${item.href}" class="search-result-item">
-          <span>${item.icon}</span>
-          <div>
-            <strong>${item.title}</strong>
-            <small>${item.text}</small>
-          </div>
-        </a>
-      `;
-    })
-    .join("");
+  box.innerHTML = items.length
+    ? items.map(i => `
+      <a href="${i.href}" class="search-result-item">
+        <span>${i.icon}</span>
+        <div>
+          <strong>${esc(i.title)}</strong>
+          <small>${esc(i.text)}</small>
+        </div>
+      </a>
+    `).join("")
+    : `<p class="muted">No se encontraron resultados.</p>`;
 }
 
 /* =========================================================
    BOT
 ========================================================= */
 
-function bindBot() {
+function setupBot() {
   $("#openBotSidebar")?.addEventListener("click", openBot);
   $("#openBotWelcome")?.addEventListener("click", openBot);
-
-  $("#analyzeAdvisorWorkBtn")?.addEventListener("click", () => {
-    openBot();
-    addBotMessage("Prioriza mi bandeja", "user");
-
-    setTimeout(() => {
-      addBotMessage(generateBotResponse("prioriza mi bandeja"), "bot");
-    }, 500);
-  });
+  $("#attentionOpenBotBtn")?.addEventListener("click", openBot);
 
   $("#closeBotDrawer")?.addEventListener("click", closeBot);
 
-  $("#botForm")?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    const input = $("#botInput");
-    const prompt = input?.value.trim();
-
+  $("#botForm")?.addEventListener("submit", e => {
+    e.preventDefault();
+    const prompt = getValue("#botInput");
     if (!prompt) return;
-
-    addBotMessage(prompt, "user");
-    input.value = "";
-
-    const typing = addTyping();
-
-    await delay(500);
-
-    typing.remove();
-    addBotMessage(generateBotResponse(prompt), "bot");
+    $("#botInput").value = "";
+    askBot(prompt);
   });
 
-  $all("[data-bot-prompt]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const prompt = button.dataset.botPrompt || "";
+  $$("[data-bot-prompt]").forEach(btn => {
+    btn.addEventListener("click", () => askBot(btn.dataset.botPrompt));
+  });
 
-      addBotMessage(prompt, "user");
+  const aiButtons = [
+    ["analyzeAdvisorWorkBtn", "Analiza mi carga"],
+    ["analyzeQueueBtn", "Prioriza mi bandeja"],
+    ["attentionAiBtn", "Resume este caso"],
+    ["queueAnalyzeBtn", "Ordena mi cola de trabajo"],
+    ["slaAnalyzeBtn", "Analiza vencimientos SLA"],
+    ["templateAnalyzeBtn", "Analiza plantillas"],
+    ["analyzeAdvisorNotificationsBtn", "Prioriza mis alertas"],
+    ["performanceInsightBtn", "Analiza mi rendimiento"],
+    ["performanceAnalyzeBtn", "Analiza mi rendimiento"],
+    ["slaPrioritizeBtn", "Prioriza SLA"],
+    ["notificationsPrioritizeBtn", "Qué alerta atiendo primero"],
+    ["templateAiBtn", "Genera plantilla para pedir evidencia"]
+  ];
 
-      const typing = addTyping();
-
-      await delay(500);
-
-      typing.remove();
-      addBotMessage(generateBotResponse(prompt), "bot");
-    });
+  aiButtons.forEach(([id, prompt]) => {
+    $(`#${id}`)?.addEventListener("click", () => askBot(prompt));
   });
 }
 
@@ -797,1433 +690,1467 @@ function openBot() {
 
 function closeBot() {
   $("#botDrawer")?.classList.remove("open");
-  $("#drawerBackdrop")?.classList.remove("show");
-  document.body.classList.remove("drawer-open");
-}
-
-function addBotMessage(text, sender) {
-  const container = $("#botMessages");
-  if (!container) return;
-
-  const message = document.createElement("div");
-  message.className = `message message--${sender}`;
-  message.textContent = text;
-
-  container.appendChild(message);
-  container.scrollTop = container.scrollHeight;
-}
-
-function addTyping() {
-  const container = $("#botMessages");
-  const message = document.createElement("div");
-
-  message.className = "message message--bot";
-  message.textContent = "Asistente IA está analizando la carga operativa...";
-
-  container?.appendChild(message);
-
-  if (container) {
-    container.scrollTop = container.scrollHeight;
+  if (!$("#sidebar")?.classList.contains("open")) {
+    $("#drawerBackdrop")?.classList.remove("show");
+    document.body.classList.remove("drawer-open");
   }
-
-  return message;
 }
 
-function generateBotResponse(prompt) {
-  const text = prompt.toLowerCase();
-  const data = AdvisorState.dashboardData;
+function askBot(prompt) {
+  openBot();
+  addMessage(prompt, "user");
 
-  if (!data) {
-    return "Aún estoy cargando tu información operativa. Intenta nuevamente en unos segundos.";
-  }
-
-  if (text.includes("prioriza")) {
-    return "Prioriza primero los casos críticos con menor SLA restante. En este momento el caso CAS-2026-000245 debe atenderse antes que los demás.";
-  }
-
-  if (text.includes("sla")) {
-    return "El principal riesgo SLA está en el caso CAS-2026-000245, con prioridad crítica y poco tiempo restante.";
-  }
-
-  if (text.includes("responder")) {
-    return "Para responder al cliente, usa una estructura clara: confirmar recepción, explicar acción realizada, solicitar evidencia concreta si falta información y cerrar con el siguiente paso.";
-  }
-
-  return "Puedo ayudarte a priorizar casos, identificar riesgos SLA, redactar respuestas o resumir la atención.";
-}
-
-/* =========================================================
-   MODALES
-========================================================= */
-
-function bindModals() {
-  $all("[data-close-modal]").forEach((button) => {
-    button.addEventListener("click", closeAllModals);
-  });
-
-  $("#modalBackdrop")?.addEventListener("click", closeAllModals);
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeAllModals();
-      closeSearch();
-      closeBot();
-      closeSidebar();
-    }
-  });
-}
-
-function openModal(selector) {
-  const modal = $(selector);
-  const backdrop = $("#modalBackdrop");
-
-  if (!modal || !backdrop) return;
-
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden", "false");
-  backdrop.classList.add("show");
-  document.body.classList.add("modal-open");
-}
-
-function closeAllModals() {
-  $all(".modal").forEach((modal) => {
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden", "true");
-  });
-
-  $("#modalBackdrop")?.classList.remove("show");
-  document.body.classList.remove("modal-open");
-}
-
-function openGenericModal({ icon = "ℹ", title = "Información", text = "" }) {
-  setText("#genericModalIcon", icon);
-  setText("#genericModalTitle", title);
-  setText("#genericModalText", text);
-  openModal("#genericModal");
-}
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-function bindLogout() {
-  $("#logoutBtn")?.addEventListener("click", logout);
-  $("#logoutDropdownBtn")?.addEventListener("click", logout);
-}
-
-function logout() {
-  localStorage.removeItem("claro360-token");
-  localStorage.removeItem("claro360-session");
-
-  showToast({
-    title: "Sesión cerrada",
-    message: "Serás redirigido al inicio de sesión.",
-    type: "success"
-  });
+  const typing = document.createElement("div");
+  typing.className = "message message--bot typing";
+  typing.textContent = "Analizando";
+  $("#botMessages")?.appendChild(typing);
 
   setTimeout(() => {
-    window.location.href = "../login.html";
-  }, 700);
+    typing.remove();
+    addMessage(botAnswer(prompt), "bot");
+  }, 450);
+}
+
+function addMessage(text, who) {
+  const box = $("#botMessages");
+  if (!box) return;
+
+  const msg = document.createElement("div");
+  msg.className = `message message--${who}`;
+  msg.textContent = text;
+
+  box.appendChild(msg);
+  box.scrollTop = box.scrollHeight;
+}
+
+function botAnswer(prompt) {
+  const p = String(prompt || "").toLowerCase();
+  const risk = Mock.cases.filter(slaRisk).sort((a, b) => a.slaHours - b.slaHours);
+  const closeable = Mock.cases.filter(c => c.status === "Listo para cierre");
+  const pending = Mock.cases.filter(c => c.status === "Pendiente por cliente");
+
+  if (p.includes("sla") || p.includes("vence") || p.includes("riesgo")) {
+    return risk.length
+      ? `El primer caso en riesgo es ${risk[0].id}: ${risk[0].title}. Tiene ${risk[0].slaText}. Recomendación: abrir detalle y registrar avance inmediato.`
+      : "No hay casos en riesgo SLA crítico en este momento.";
+  }
+
+  if (p.includes("bandeja") || p.includes("prioriza") || p.includes("cola")) {
+    return "Orden recomendado: primero casos críticos con SLA corto, luego pendientes por cliente, después derivados y finalmente listos para cierre.";
+  }
+
+  if (p.includes("cerrar") || p.includes("cierre")) {
+    return closeable.length
+      ? `Puedes revisar ${closeable[0].id}. Antes de cerrar valida evidencia, respuesta final y trazabilidad.`
+      : "No hay casos listos para cierre en este momento.";
+  }
+
+  if (p.includes("evidencia") || p.includes("cliente")) {
+    return pending.length
+      ? `El caso ${pending[0].id} está pendiente por cliente. Solicita evidencia clara: captura, fecha, servicio afectado y prueba técnica.`
+      : "No hay casos pendientes por cliente ahora.";
+  }
+
+  if (p.includes("rendimiento")) {
+    return "Tu rendimiento simulado muestra buen cumplimiento SLA. La oportunidad principal es reducir bloqueos por cliente usando solicitudes más específicas.";
+  }
+
+  if (p.includes("plantilla") || p.includes("redacta")) {
+    return "Una buena plantilla debe indicar qué falta, por qué se necesita, plazo de respuesta y canal de envío. Evita mensajes genéricos.";
+  }
+
+  return "Puedo ayudarte a priorizar casos, revisar SLA, redactar respuestas, validar cierres o interpretar indicadores.";
 }
 
 /* =========================================================
-   PÁGINAS ASESOR: BANDEJA, DETALLE, ACTUALIZAR
+   COMPONENTS
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  const page = document.body.dataset.page;
-
-  if (page === "asesor-bandeja") {
-    initAdvisorQueuePage();
-  }
-
-  if (page === "asesor-detalle-atencion") {
-    initAttentionDetailPage();
-  }
-
-  if (page === "asesor-actualizar-caso") {
-    initAdvisorUpdatePage();
-  }
-});
-
-/* =========================================================
-   MOCK DATA - ELIMINAR CUANDO SE CONECTE AL BACKEND
-========================================================= */
-
-const MockAdvisorCases = [
-  {
-    id: 501,
-    codigo: "CAS-2026-000245",
-    icono: "⚠️",
-    tipo: "Incidencia",
-    cliente: "Cliente Empresa Demo",
-    documento: "RUC 20123456789",
-    titulo: "Correo corporativo no disponible",
-    descripcion: "Cliente empresarial reporta error de acceso en correo corporativo.",
-    servicio: "Correo empresa",
-    estado: "En atención",
-    estadoTipo: "warning",
-    prioridad: "Crítica",
-    sla: "01h 20m",
-    canal: "Portal empresas"
-  },
-  {
-    id: 502,
-    codigo: "CAS-2026-000123",
-    icono: "📝",
-    tipo: "Reclamo",
-    cliente: "Cliente Persona Demo",
-    documento: "DNI 76543210",
-    titulo: "Lentitud recurrente en Internet hogar",
-    descripcion: "Reclamo por bajo rendimiento del servicio en horario nocturno.",
-    servicio: "Internet hogar",
-    estado: "En atención",
-    estadoTipo: "info",
-    prioridad: "Alta",
-    sla: "05h 42m",
-    canal: "Web"
-  },
-  {
-    id: 503,
-    codigo: "CAS-2026-000184",
-    icono: "💬",
-    tipo: "Incidencia",
-    cliente: "Cliente Persona Demo",
-    documento: "DNI 76543210",
-    titulo: "Cliente debe adjuntar evidencia",
-    descripcion: "Se solicitó evidencia adicional para continuar el diagnóstico.",
-    servicio: "Red móvil",
-    estado: "Pendiente por cliente",
-    estadoTipo: "purple",
-    prioridad: "Media",
-    sla: "12h 15m",
-    canal: "App"
-  },
-  {
-    id: 504,
-    codigo: "CAS-2026-000333",
-    icono: "✅",
-    tipo: "Reclamo",
-    cliente: "Cliente Demo",
-    documento: "DNI 70000000",
-    titulo: "Respuesta final preparada",
-    descripcion: "El caso ya cuenta con sustento y puede pasar a cierre.",
-    servicio: "Facturación",
-    estado: "Listo para cierre",
-    estadoTipo: "success",
-    prioridad: "Media",
-    sla: "Cierre pendiente",
-    canal: "Call center"
-  }
-];
-
-const MockAttentionDetail = {
-  caso: {
-    codigo: "CAS-2026-000245",
-    icono: "⚠️",
-    tipo: "Incidencia",
-    cliente: "Cliente Empresa Demo",
-    documento: "RUC 20123456789",
-    titulo: "Correo corporativo no disponible",
-    descripcion: "Cliente empresarial reporta error de acceso en correo corporativo desde primeras horas del día.",
-    servicio: "Correo empresa",
-    estado: "En atención",
-    estadoTipo: "warning",
-    prioridad: "Crítica",
-    sla: "01h 20m",
-    canal: "Portal empresas",
-    responsable: "Asesor Demo"
-  },
-
-  cliente: {
-    nombre: "Cliente Empresa Demo",
-    documento: "RUC 20123456789",
-    segmento: "Empresa",
-    contacto: "soporte.empresa@demo.com",
-    telefono: "+51 999 000 111",
-    contrato: "Contrato B2B activo"
-  },
-
-  historial: [
-    {
-      icono: "📥",
-      titulo: "Caso recibido",
-      descripcion: "El caso ingresó por portal empresas.",
-      fecha: "Hoy 08:10"
-    },
-    {
-      icono: "🏷️",
-      titulo: "Clasificación aplicada",
-      descripcion: "Se clasificó como incidencia crítica de correo empresarial.",
-      fecha: "Hoy 08:18"
-    },
-    {
-      icono: "🎧",
-      titulo: "Asignado a asesor",
-      descripcion: "El caso fue asignado a la bandeja operativa.",
-      fecha: "Hoy 08:25"
-    },
-    {
-      icono: "🔎",
-      titulo: "Revisión iniciada",
-      descripcion: "Se inició validación técnica y revisión de evidencias.",
-      fecha: "Hoy 08:45"
-    }
-  ],
-
-  evidencias: [
-    {
-      icono: "📷",
-      nombre: "captura_error_correo.png",
-      detalle: "Subido por cliente · Hoy 08:12"
-    },
-    {
-      icono: "📄",
-      nombre: "usuarios_afectados.xlsx",
-      detalle: "Subido por cliente · Hoy 08:14"
-    }
-  ],
-
-  resumenIA: [
-    {
-      titulo: "Prioridad",
-      texto: "Caso crítico por tratarse de un servicio empresarial con impacto operativo."
-    },
-    {
-      titulo: "Siguiente paso",
-      texto: "Validar usuarios afectados, revisar evidencia y registrar derivación técnica si corresponde."
-    },
-    {
-      titulo: "Riesgo SLA",
-      texto: "Alto. El caso tiene poco tiempo restante para respuesta inicial."
-    }
-  ],
-
-  checklist: [
-    {
-      icono: "✅",
-      titulo: "Evidencia recibida",
-      texto: "El cliente adjuntó capturas y listado de usuarios."
-    },
-    {
-      icono: "⏱️",
-      titulo: "SLA crítico",
-      texto: "Se debe registrar avance antes del vencimiento."
-    },
-    {
-      icono: "🧩",
-      titulo: "Impacto validado",
-      texto: "Pendiente confirmar si afecta a todos los usuarios."
-    },
-    {
-      icono: "📨",
-      titulo: "Respuesta pendiente",
-      texto: "Falta comunicar siguiente paso al cliente."
-    }
-  ]
-};
-
-/* =========================================================
-   API LAYER - CAMBIAR AQUÍ CUANDO EXISTA BACKEND
-========================================================= */
-
-const AdvisorCasesApi = {
-  async getAssignedCases() {
-    await delay(400);
-    return MockAdvisorCases;
-
-    /*
-    const response = await fetch("/api/asesor/casos-asignados", {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      }
-    });
-
-    return await response.json();
-    */
-  },
-
-  async getAttentionDetail() {
-    await delay(400);
-    return MockAttentionDetail;
-
-    /*
-    const response = await fetch("/api/asesor/casos/{id}", {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      }
-    });
-
-    return await response.json();
-    */
-  },
-
-  async updateCase(payload) {
-    await delay(700);
-
-    return {
-      ok: true,
-      codigo: payload.caseCode || "CAS-2026-000245",
-      estado: payload.status,
-      operacion: "Actualización de atención"
-    };
-
-    /*
-    const response = await fetch("/api/asesor/casos/{id}/actualizaciones", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    return await response.json();
-    */
-  }
-};
-
-/* =========================================================
-   BANDEJA ASIGNADA
-========================================================= */
-
-let AdvisorQueueState = {
-  cases: [],
-  filter: "todos",
-  search: ""
-};
-
-async function initAdvisorQueuePage() {
-  bindAdvisorQueueEvents();
-
-  const cases = await AdvisorCasesApi.getAssignedCases();
-
-  AdvisorQueueState.cases = cases;
-
-  renderAdvisorQueue();
-  renderAdvisorQueueAiSummary(cases);
+function renderKpis(selector, data) {
+  setHTML(selector, data.map(([icon, value, title, text]) => `
+    <article class="kpi-card">
+      <span class="kpi-card__icon">${icon}</span>
+      <div>
+        <strong>${esc(value)}</strong>
+        <p>${esc(title)}</p>
+        <small>${esc(text)}</small>
+      </div>
+    </article>
+  `).join(""));
 }
 
-function bindAdvisorQueueEvents() {
-  $("#advisorQueueSearch")?.addEventListener("input", (event) => {
-    AdvisorQueueState.search = event.target.value.trim().toLowerCase();
-    renderAdvisorQueue();
+function caseCard(c) {
+  return `
+    <article class="case-card">
+      <span class="case-card__icon">${c.icon}</span>
+
+      <div>
+        <h3>${esc(c.title)}</h3>
+        <p>${esc(c.description)}</p>
+
+        <div class="case-meta">
+          <span>${esc(c.id)}</span>
+          <span>${esc(c.clientName)}</span>
+          <span>${esc(c.type)}</span>
+          <span>${esc(c.service)}</span>
+          <span>${esc(c.priority)}</span>
+          <span>${esc(c.slaText)}</span>
+        </div>
+      </div>
+
+      <div class="case-actions">
+        <span class="${pillClass(statusType(c.status))}">${esc(c.status)}</span>
+        <button type="button" data-action="view-case" data-case-id="${esc(c.id)}">Ver</button>
+      </div>
+    </article>
+  `;
+}
+
+function bindCaseActions(root = document) {
+  $$("[data-action='view-case']", root).forEach(btn => {
+    btn.addEventListener("click", () => openCasePreview(btn.dataset.caseId));
   });
 
-  $all("[data-advisor-filter]").forEach((button) => {
-    button.addEventListener("click", () => {
-      AdvisorQueueState.filter = button.dataset.advisorFilter || "todos";
+  $$("[data-action='open-detail']", root).forEach(btn => {
+    btn.addEventListener("click", () => goToDetail(btn.dataset.caseId));
+  });
 
-      $all("[data-advisor-filter]").forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
+  $$("[data-action='update-case']", root).forEach(btn => {
+    btn.addEventListener("click", () => openQueueUpdate(btn.dataset.caseId));
+  });
 
-      renderAdvisorQueue();
+  $$("[data-action='request-case']", root).forEach(btn => {
+    btn.addEventListener("click", () => openQueueRequest(btn.dataset.caseId));
+  });
+
+  $$("[data-action='derive-case']", root).forEach(btn => {
+    btn.addEventListener("click", () => openQueueDerive(btn.dataset.caseId));
+  });
+
+  $$("[data-action='move-case']", root).forEach(btn => {
+    btn.addEventListener("click", () => openMoveCase(btn.dataset.caseId));
+  });
+
+  $$("[data-action='close-case']", root).forEach(btn => {
+    btn.addEventListener("click", () => openWorkQueueClose(btn.dataset.caseId));
+  });
+}
+
+function openCasePreview(id) {
+  const c = getCase(id);
+  if (!c) return;
+
+  saveSelectedCase(id);
+
+  setText("#caseModalIcon", c.icon);
+  setText("#caseModalTitle", c.id);
+  setText("#caseModalText", c.description);
+  setHTML("#caseModalSummary", caseSummary(c));
+
+  $("#caseModalOpenDetailBtn")?.addEventListener("click", () => goToDetail(c.id), { once: true });
+  $("#caseModalUpdateBtn")?.addEventListener("click", () => {
+    closeModals();
+    openQueueUpdate(c.id);
+  }, { once: true });
+
+  openModal("#caseModal");
+}
+
+function caseSummary(c) {
+  return summaryHTML([
+    ["Cliente", c.clientName],
+    ["Tipo", c.type],
+    ["Servicio", c.service],
+    ["Prioridad", c.priority],
+    ["Estado", c.status],
+    ["SLA", c.slaText],
+    ["Acción sugerida", c.action]
+  ]);
+}
+
+function renderAi(selector, rows) {
+  setHTML(selector, rows.map(([title, text]) => `
+    <div class="ai-summary-item">
+      <strong>${esc(title)}</strong>
+      <p>${esc(text)}</p>
+    </div>
+  `).join(""));
+}
+
+function renderChecklist(selector, rows) {
+  setHTML(selector, rows.map(([icon, title, text]) => `
+    <article class="check-item">
+      <span class="check-icon">${icon}</span>
+      <div>
+        <strong>${esc(title)}</strong>
+        <p>${esc(text)}</p>
+      </div>
+    </article>
+  `).join(""));
+}
+
+function renderActivity(selector, rows) {
+  setHTML(selector, rows.map(a => `
+    <article class="activity-item">
+      <span class="activity-icon">${a.icon}</span>
+      <div class="activity-content">
+        <strong>${esc(a.title)}</strong>
+        <p>${esc(a.text)}</p>
+        <small>${esc(a.date)}</small>
+      </div>
+    </article>
+  `).join(""));
+}
+
+/* =========================================================
+   DASHBOARD
+========================================================= */
+
+function initDashboard() {
+  setText("#dashboardHeroEyebrow", Mock.advisor.shift);
+  setText("#dashboardHeroTitle", `Hola, ${Mock.advisor.name}`);
+  setText("#advisorStatus", Mock.advisor.status);
+  setText("#advisorLastAccess", Mock.advisor.lastAccess);
+
+  renderKpis("#advisorKpiGrid", [
+    ["📥", Mock.cases.length, "Casos asignados", "Carga actual"],
+    ["🔥", Mock.cases.filter(c => c.priority === "Crítica").length, "Críticos", "Atención inmediata"],
+    ["⏱️", Mock.cases.filter(slaRisk).length, "Riesgo SLA", "Vencimiento cercano"],
+    ["✅", Mock.cases.filter(c => c.status === "Listo para cierre").length, "Listos cierre", "Validación final"]
+  ]);
+
+  renderPriorityCases();
+  renderDashboardActivity();
+  renderDashboardSla();
+  renderDashboardQueue();
+
+  renderAi("#advisorAiSummary", [
+    ["Prioridad principal", "Atiende primero los casos críticos con menor tiempo SLA."],
+    ["Bloqueos", "Los casos pendientes por cliente deben tener solicitud clara y plazo visible."],
+    ["Cierre rápido", "Los listos para cierre pueden liberar carga si ya tienen evidencia y respuesta final."]
+  ]);
+
+  $("#refreshPriorityBtn")?.addEventListener("click", () => {
+    renderPriorityCases();
+    toast("Casos actualizados", "La lista de prioridad fue actualizada.", "success");
+  });
+
+  $("#sortPriorityBtn")?.addEventListener("click", () => {
+    renderPriorityCases();
+    toast("Orden IA aplicado", "Se ordenaron los casos por criticidad y SLA.", "success");
+  });
+
+  $("#refreshActivityBtn")?.addEventListener("click", () => {
+    renderDashboardActivity();
+    toast("Actividad actualizada", "Se refrescaron los últimos movimientos.", "success");
+  });
+
+  $("#refreshSlaBtn")?.addEventListener("click", () => {
+    renderDashboardSla();
+    toast("SLA actualizado", "Se recalcularon las alertas de vencimiento.", "success");
+  });
+}
+
+function renderPriorityCases() {
+  const items = [...Mock.cases]
+    .sort((a, b) => a.slaHours - b.slaHours)
+    .slice(0, 4);
+
+  setHTML("#priorityCasesList", items.map(caseCard).join(""));
+  show($("#emptyPriorityState"), !items.length);
+  bindCaseActions($("#priorityCasesList"));
+}
+
+function renderDashboardActivity() {
+  const rows = Mock.cases.flatMap(c => c.history.map(h => ({
+    ...h,
+    title: `${h.title} · ${c.id}`
+  }))).slice(0, 5);
+
+  renderActivity("#advisorActivityTimeline", rows);
+  show($("#emptyActivityState"), !rows.length);
+}
+
+function renderDashboardSla() {
+  const rows = Mock.cases
+    .filter(slaRisk)
+    .sort((a, b) => a.slaHours - b.slaHours);
+
+  setHTML("#advisorSlaList", rows.map(c => `
+    <article class="sla-item">
+      <span class="activity-icon">⏱️</span>
+      <div>
+        <strong>${esc(c.id)} · ${esc(c.priority)}</strong>
+        <p>${esc(c.title)} · ${esc(c.slaText)}</p>
+        <div class="sla-meter"><span style="width:${Math.max(10, 100 - c.slaHours * 8)}%"></span></div>
+      </div>
+      <button type="button" class="panel-action" data-action="open-detail" data-case-id="${esc(c.id)}">Abrir</button>
+    </article>
+  `).join(""));
+
+  show($("#emptySlaState"), !rows.length);
+  bindCaseActions($("#advisorSlaList"));
+}
+
+function renderDashboardQueue() {
+  const groups = ["Nuevo", "En atención", "Pendiente cliente", "Derivado", "Listo para cierre"];
+  setHTML("#queueBoard", groups.map(group => {
+    const rows = Mock.cases.filter(c => c.queueStatus === group);
+    return `
+      <article class="queue-column">
+        <div class="queue-column__header">
+          <h3>${esc(group)}</h3>
+          <span class="${pillClass("info")}">${rows.length}</span>
+        </div>
+
+        ${rows.map(c => `
+          <div class="queue-mini-card">
+            <strong>${esc(c.id)}</strong>
+            <p>${esc(c.title)}</p>
+            <div class="case-meta">
+              <span>${esc(c.priority)}</span>
+              <span>${esc(c.slaText)}</span>
+            </div>
+            <button type="button" class="panel-action" data-action="open-detail" data-case-id="${esc(c.id)}">Abrir</button>
+          </div>
+        `).join("") || `<p class="muted">Sin casos.</p>`}
+      </article>
+    `;
+  }).join(""));
+
+  show($("#emptyQueueBoardState"), !Mock.cases.length);
+  bindCaseActions($("#queueBoard"));
+}
+
+/* =========================================================
+   BANDEJA
+========================================================= */
+
+function initBandeja() {
+  renderInbox();
+
+  $("#advisorQueueSearch")?.addEventListener("input", renderInbox);
+
+  $$("[data-advisor-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.inboxFilter = btn.dataset.advisorFilter;
+      $$("[data-advisor-filter]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderInbox();
     });
   });
 
-  $("#refreshQueueBtn")?.addEventListener("click", async () => {
-    AdvisorQueueState.cases = await AdvisorCasesApi.getAssignedCases();
-    renderAdvisorQueue();
-
-    showToast({
-      title: "Bandeja actualizada",
-      message: "Se actualizó la lista de casos asignados.",
-      type: "success"
-    });
+  $("#refreshQueueBtn")?.addEventListener("click", () => {
+    renderInbox();
+    toast("Bandeja actualizada", "Se refrescaron los casos asignados.", "success");
   });
 
   $("#exportQueueBtn")?.addEventListener("click", () => {
-    openGenericModal({
-      icon: "📄",
-      title: "Exportación preparada",
-      text: "Cuando se conecte el backend, se generará un archivo con la bandeja filtrada."
-    });
+    genericModal("📤", "Exportación preparada", "Cuando exista backend, se exportará la bandeja en Excel o CSV.");
+  });
+
+  $("#toggleQueueViewBtn")?.addEventListener("click", () => {
+    State.queueView = State.queueView === "cards" ? "table" : "cards";
+    $("#toggleQueueViewBtn").textContent = State.queueView === "cards" ? "Vista tabla" : "Vista cards";
+    renderInbox();
   });
 
   $("#prioritizeQueueBtn")?.addEventListener("click", () => {
-    openGenericModal({
-      icon: "🤖",
-      title: "Priorización IA",
-      text: "Atiende primero los casos críticos con menor SLA restante y luego los de prioridad alta en atención."
-    });
+    toast("Priorización aplicada", "La bandeja se ordenó por SLA y prioridad.", "success");
+    askBot("Prioriza mi bandeja");
   });
 
-  $("#analyzeQueueBtn")?.addEventListener("click", () => {
-    openBot();
-    addBotMessage("Prioriza mi bandeja", "user");
-
-    setTimeout(() => {
-      addBotMessage(generateBotResponse("prioriza mi bandeja"), "bot");
-    }, 500);
+  $("#confirmQueueUpdateBtn")?.addEventListener("click", confirmQueueUpdate);
+  $("#queueUpdateAiBtn")?.addEventListener("click", () => {
+    $("#queueUpdateDetail").value = "Se revisó la información disponible, se validó el estado del caso y se registra avance para mantener trazabilidad operativa.";
+    toast("Texto generado", "Se mejoró la redacción de actualización.", "success");
   });
+
+  $("#confirmQueueRequestBtn")?.addEventListener("click", confirmQueueRequest);
+  $("#queueRequestAiBtn")?.addEventListener("click", () => {
+    $("#queueRequestSubject").value = "Solicitud de información adicional";
+    $("#queueRequestMessage").value = "Estimado cliente, para continuar con la atención de su caso necesitamos que nos envíe evidencia adicional relacionada con el servicio reportado. Esta información permitirá continuar la revisión dentro del plazo indicado.";
+    toast("Mensaje generado", "Se generó texto de solicitud.", "success");
+  });
+
+  $("#confirmQueueDeriveBtn")?.addEventListener("click", confirmQueueDerive);
 }
 
-function renderAdvisorQueue() {
-  const list = $("#advisorQueueList");
-  const empty = $("#emptyAdvisorQueueState");
+function inboxFilteredCases() {
+  const q = getValue("#advisorQueueSearch").toLowerCase();
 
-  if (!list || !empty) return;
+  return Mock.cases.filter(c => {
+    const text = `${c.id} ${c.title} ${c.clientName} ${c.service} ${c.priority} ${c.status}`.toLowerCase();
+    const matchesSearch = !q || text.includes(q);
 
-  const filtered = getFilteredAdvisorQueue();
+    const f = State.inboxFilter;
+    const matchesFilter =
+      f === "todos" ||
+      (f === "critica" && c.priority === "Crítica") ||
+      (f === "alta" && c.priority === "Alta") ||
+      (f === "pendiente_cliente" && c.status === "Pendiente por cliente") ||
+      (f === "sla_riesgo" && slaRisk(c)) ||
+      (f === "listo_cierre" && c.status === "Listo para cierre");
 
-  setText("#queueSummaryStatus", `${filtered.length} casos visibles`);
-  setText("#queueSummaryText", `Filtro activo: ${AdvisorQueueState.filter}`);
-  setText("#sidebarAssignedCount", AdvisorQueueState.cases.length);
+    return matchesSearch && matchesFilter;
+  }).sort((a, b) => a.slaHours - b.slaHours);
+}
 
-  if (!filtered.length) {
-    list.innerHTML = "";
-    empty.classList.remove("hidden");
+function renderInbox() {
+  const rows = inboxFilteredCases();
+
+  setText("#queueSummaryStatus", `${rows.length} casos visibles`);
+  setText("#queueSummaryText", `Filtro actual: ${State.inboxFilter}`);
+
+  renderKpis("#inboxKpiGrid", [
+    ["📥", rows.length, "Casos visibles", "Resultado del filtro"],
+    ["🔥", rows.filter(c => c.priority === "Crítica").length, "Críticos", "Atención inmediata"],
+    ["⏱️", rows.filter(slaRisk).length, "Riesgo SLA", "Vencimiento cercano"],
+    ["✅", rows.filter(c => c.status === "Listo para cierre").length, "Listos cierre", "Validación final"]
+  ]);
+
+  setHTML("#advisorQueueList", rows.map(c => `
+    <article class="case-card">
+      <span class="case-card__icon">${c.icon}</span>
+      <div>
+        <h3>${esc(c.title)}</h3>
+        <p>${esc(c.description)}</p>
+        <div class="case-meta">
+          <span>${esc(c.id)}</span>
+          <span>${esc(c.clientName)}</span>
+          <span>${esc(c.type)}</span>
+          <span>${esc(c.service)}</span>
+          <span>${esc(c.priority)}</span>
+          <span>${esc(c.slaText)}</span>
+        </div>
+      </div>
+      <div class="case-actions">
+        <span class="${pillClass(statusType(c.status))}">${esc(c.status)}</span>
+        <button type="button" data-action="open-detail" data-case-id="${esc(c.id)}">Ver</button>
+        <button type="button" data-action="update-case" data-case-id="${esc(c.id)}">Actualizar</button>
+        <button type="button" data-action="request-case" data-case-id="${esc(c.id)}">Solicitar</button>
+        <button type="button" data-action="derive-case" data-case-id="${esc(c.id)}">Derivar</button>
+      </div>
+    </article>
+  `).join(""));
+
+  setHTML("#advisorQueueTableBody", rows.map(c => `
+    <tr>
+      <td>${esc(c.id)}</td>
+      <td>${esc(c.clientName)}</td>
+      <td>${esc(c.type)}</td>
+      <td>${esc(c.service)}</td>
+      <td>${esc(c.priority)}</td>
+      <td><span class="${pillClass(statusType(c.status))}">${esc(c.status)}</span></td>
+      <td>${esc(c.slaText)}</td>
+      <td>
+        <button type="button" class="panel-action" data-action="open-detail" data-case-id="${esc(c.id)}">Abrir</button>
+      </td>
+    </tr>
+  `).join(""));
+
+  show($("#advisorQueueList"), State.queueView === "cards");
+  show($("#advisorQueueTableWrap"), State.queueView === "table");
+  show($("#emptyAdvisorQueueState"), !rows.length);
+
+  renderAi("#queueAiSummary", [
+    ["Primero", "Atiende casos críticos o con menor SLA disponible."],
+    ["Bloqueos", "Solicita información cuando el caso esté pendiente por cliente."],
+    ["Cierre", "Valida casos listos para cierre si tienen evidencia suficiente."]
+  ]);
+
+  renderChecklist("#inboxSuggestedActions", [
+    ["1", "Abrir primer SLA", "Revisar el caso con menor tiempo restante."],
+    ["2", "Solicitar evidencia", "Desbloquear pendientes por cliente."],
+    ["3", "Cerrar casos listos", "Reducir carga operativa sin perder trazabilidad."]
+  ]);
+
+  bindCaseActions($("#advisorQueueList"));
+  bindCaseActions($("#advisorQueueTableBody"));
+}
+
+function openQueueUpdate(id) {
+  const c = getCase(id);
+  if (!c) return;
+
+  saveSelectedCase(id);
+  setHTML("#queueUpdateContext", caseSummary(c));
+  openModal("#queueUpdateModal");
+}
+
+function confirmQueueUpdate() {
+  if (!State.selectedCaseId) return;
+  if (!getValue("#queueUpdateStatus") || !getValue("#queueUpdateVisibility") || !getValue("#queueUpdateSummary") || !getValue("#queueUpdateDetail") || !isChecked("#queueUpdateDeclaration")) {
+    toast("Faltan datos", "Completa estado, visibilidad, resumen, detalle y confirmación.", "warning");
     return;
   }
 
-  empty.classList.add("hidden");
-
-  list.innerHTML = filtered
-    .map((caso) => {
-      return `
-        <article class="case-item">
-          <span class="case-icon">${caso.icono}</span>
-
-          <div>
-            <h3>${caso.titulo}</h3>
-            <p>${caso.descripcion}</p>
-
-            <div class="case-meta">
-              <span>${caso.codigo}</span>
-              <span>${caso.tipo}</span>
-              <span>${caso.cliente}</span>
-              <span>${caso.servicio}</span>
-              <span>Prioridad ${caso.prioridad}</span>
-              <span>SLA: ${caso.sla}</span>
-              <span>${caso.canal}</span>
-            </div>
-          </div>
-
-          <div>
-            <span class="status-pill status-pill--${caso.estadoTipo}">
-              ${caso.estado}
-            </span>
-            <button type="button" data-advisor-case-id="${caso.id}">
-              Abrir
-            </button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  $all("[data-advisor-case-id]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = Number(button.dataset.advisorCaseId);
-      const caso = AdvisorQueueState.cases.find((item) => item.id === id);
-
-      if (caso) openCaseModal(caso);
-    });
-  });
+  closeModals();
+  toast("Actualización registrada", "El caso fue actualizado en el frontend simulado.", "success");
 }
 
-function getFilteredAdvisorQueue() {
-  return AdvisorQueueState.cases.filter((caso) => {
-    const q = AdvisorQueueState.search;
+function openQueueRequest(id) {
+  const c = getCase(id);
+  if (!c) return;
 
-    const matchesSearch =
-      !q ||
-      caso.codigo.toLowerCase().includes(q) ||
-      caso.cliente.toLowerCase().includes(q) ||
-      caso.titulo.toLowerCase().includes(q) ||
-      caso.servicio.toLowerCase().includes(q) ||
-      caso.estado.toLowerCase().includes(q) ||
-      caso.prioridad.toLowerCase().includes(q);
+  saveSelectedCase(id);
+  setHTML("#queueRequestContext", caseSummary(c));
+  openModal("#queueRequestModal");
+}
 
-    const filter = AdvisorQueueState.filter;
+function confirmQueueRequest() {
+  if (!getValue("#queueRequestChannel") || !getValue("#queueRequestDeadline") || !getValue("#queueRequestSubject") || !getValue("#queueRequestMessage") || !isChecked("#queueRequestDeclaration")) {
+    toast("Faltan datos", "Completa canal, plazo, asunto, mensaje y confirmación.", "warning");
+    return;
+  }
 
+  closeModals();
+  toast("Solicitud enviada", "La solicitud fue registrada y enviada de forma simulada.", "success");
+}
+
+function openQueueDerive(id) {
+  const c = getCase(id);
+  if (!c) return;
+
+  saveSelectedCase(id);
+  setHTML("#queueDeriveContext", caseSummary(c));
+  openModal("#queueDeriveModal");
+}
+
+function confirmQueueDerive() {
+  if (!getValue("#queueDeriveArea") || !getValue("#queueDerivePriority") || !getValue("#queueDeriveReason")) {
+    toast("Faltan datos", "Completa área, prioridad y motivo.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Caso derivado", "La derivación fue registrada de forma simulada.", "success");
+}
+
+/* =========================================================
+   DETALLE ATENCIÓN
+========================================================= */
+
+function initDetalleAtencion() {
+  const id = getCaseIdFromUrl();
+  saveSelectedCase(id);
+  renderCaseDetail(id);
+
+  $("#openUpdateCaseModal")?.addEventListener("click", () => openDetailUpdate());
+  $("#quickOpenUpdateBtn")?.addEventListener("click", () => openDetailUpdate());
+
+  $("#openRequestInfoModal")?.addEventListener("click", () => openDetailRequest());
+  $("#quickOpenRequestBtn")?.addEventListener("click", () => openDetailRequest());
+
+  $("#quickOpenDeriveBtn")?.addEventListener("click", () => openDetailDerive());
+  $("#quickOpenCloseBtn")?.addEventListener("click", () => openDetailClose());
+
+  $("#detailDownloadBtn")?.addEventListener("click", () => genericModal("📄", "Constancia preparada", "La constancia se generará desde backend con los datos reales del caso."));
+  $("#detailShareBtn")?.addEventListener("click", () => genericModal("🔗", "Enlace preparado", "Se generó una referencia simulada para compartir el caso."));
+  $("#attentionEvidenceHelpBtn")?.addEventListener("click", () => genericModal("📎", "Guía de evidencias", "Valida fecha, servicio, captura, documento sustentatorio y relación directa con el caso."));
+
+  $("#refreshAttentionHistoryBtn")?.addEventListener("click", () => {
+    renderCaseDetail(State.selectedCaseId);
+    toast("Historial actualizado", "Se refrescó la línea de tiempo del caso.", "success");
+  });
+
+  $("#refreshDetailSlaBtn")?.addEventListener("click", () => {
+    renderCaseDetail(State.selectedCaseId);
+    toast("SLA actualizado", "Se actualizó la alerta SLA del caso.", "success");
+  });
+
+  $("#confirmQuickUpdateBtn")?.addEventListener("click", confirmDetailUpdate);
+  $("#updateImproveTextBtn")?.addEventListener("click", () => {
+    $("#quickUpdateDetail").value = "Se revisó la información registrada por el cliente, se validó la evidencia disponible y se deja constancia del avance realizado. Como siguiente paso, corresponde continuar con la validación y comunicar el resultado según la visibilidad seleccionada.";
+    toast("Texto mejorado", "La IA generó una redacción base.", "success");
+  });
+
+  $("#confirmQuickRequestBtn")?.addEventListener("click", confirmDetailRequest);
+  $("#requestGenerateTextBtn")?.addEventListener("click", () => {
+    $("#quickRequestSubject").value = "Solicitud de información adicional para continuar la atención";
+    $("#quickRequestMessage").value = "Estimado cliente, para continuar con la atención de su caso necesitamos que nos envíe evidencia adicional relacionada con el servicio reportado. Esta información permitirá continuar la revisión dentro del plazo indicado.";
+    toast("Mensaje generado", "Se generó un mensaje base.", "success");
+  });
+
+  $("#confirmDeriveBtn")?.addEventListener("click", confirmDetailDerive);
+  $("#confirmCloseCaseBtn")?.addEventListener("click", confirmDetailClose);
+  $("#closeCaseAiBtn")?.addEventListener("click", () => toast("Validación IA", "La IA recomienda cerrar solo si hay evidencia, respuesta final y trazabilidad completa.", "success"));
+}
+
+function renderCaseDetail(id) {
+  const c = getCase(id);
+
+  if (!c) {
+    show($("#emptyCaseInfoState"), true);
+    return;
+  }
+
+  setText("#caseTypeLabel", c.type);
+  setText("#caseTitle", c.title);
+  setText("#caseDescription", c.description);
+  setText("#caseReasonText", c.reason);
+  setText("#caseStatusBadge", c.status);
+  $("#caseStatusBadge").className = pillClass(statusType(c.status));
+
+  setHTML("#caseMeta", `
+    <span>${esc(c.id)}</span>
+    <span>${esc(c.clientName)}</span>
+    <span>${esc(c.service)}</span>
+    <span>${esc(c.priority)}</span>
+    <span>${esc(c.slaText)}</span>
+  `);
+
+  setHTML("#customerInfoGrid", [
+    ["👤", "Cliente", c.clientName],
+    ["🪪", "Documento", c.document],
+    ["📡", "Servicio", c.service],
+    ["📬", "Canal", c.channel],
+    ["⏱️", "SLA", c.slaText],
+    ["📌", "Acción sugerida", c.action]
+  ].map(([icon, title, text]) => `
+    <article class="info-item">
+      <span class="info-icon">${icon}</span>
+      <div>
+        <strong>${esc(title)}</strong>
+        <p>${esc(text)}</p>
+      </div>
+    </article>
+  `).join(""));
+
+  setHTML("#attentionEvidenceList", c.evidence.map(e => `
+    <article class="evidence-item">
+      <span class="evidence-icon">${e.icon}</span>
+      <div>
+        <strong>${esc(e.name)}</strong>
+        <p>${esc(e.detail)}</p>
+      </div>
+      <button type="button" class="panel-action" onclick="void(0)">Ver</button>
+    </article>
+  `).join(""));
+
+  show($("#emptyEvidenceState"), !c.evidence.length);
+
+  renderChecklist("#attentionChecklist", [
+    ["✅", "Cliente identificado", "Datos básicos y servicio asociado validados."],
+    ["📎", "Evidencia revisada", c.evidence.length ? "Existen archivos disponibles para análisis." : "Falta evidencia para continuar."],
+    ["⏱️", "SLA monitoreado", `Tiempo restante: ${c.slaText}.`],
+    ["💬", "Respuesta clara", "Debe indicar acción realizada y siguiente paso."]
+  ]);
+
+  renderActivity("#attentionHistoryTimeline", c.history);
+  show($("#emptyHistoryState"), !c.history.length);
+
+  renderAi("#attentionAiSummary", [
+    ["Resumen", c.description],
+    ["Siguiente paso", c.action],
+    ["Riesgo", slaRisk(c) ? "Caso con vencimiento cercano. Priorizar atención." : "Caso sin riesgo crítico inmediato."]
+  ]);
+
+  setHTML("#detailSlaList", `
+    <article class="sla-item">
+      <span class="activity-icon">⏱️</span>
+      <div>
+        <strong>${esc(c.slaText)} · ${esc(c.priority)}</strong>
+        <p>${esc(c.status)} · ${esc(c.action)}</p>
+        <div class="sla-meter"><span style="width:${Math.max(10, 100 - c.slaHours * 5)}%"></span></div>
+      </div>
+    </article>
+  `);
+}
+
+function openDetailUpdate() {
+  const c = getCase(State.selectedCaseId);
+  if (!c) return;
+  setHTML("#updateCaseContext", caseSummary(c));
+  openModal("#updateAttentionModal");
+}
+
+function openDetailRequest() {
+  const c = getCase(State.selectedCaseId);
+  if (!c) return;
+  setHTML("#requestCaseContext", caseSummary(c));
+  openModal("#requestInfoModal");
+}
+
+function openDetailDerive() {
+  const c = getCase(State.selectedCaseId);
+  if (!c) return;
+  setHTML("#deriveCaseContext", caseSummary(c));
+  openModal("#deriveCaseModal");
+}
+
+function openDetailClose() {
+  const c = getCase(State.selectedCaseId);
+  if (!c) return;
+  setHTML("#closeCaseContext", caseSummary(c));
+  openModal("#closeCaseModal");
+}
+
+function confirmDetailUpdate() {
+  if (!getValue("#quickUpdateStatus") || !getValue("#quickUpdateVisibility") || !getValue("#quickUpdateSummary") || !getValue("#quickUpdateDetail") || !isChecked("#quickUpdateDeclaration")) {
+    toast("Faltan datos", "Completa estado, visibilidad, resumen, detalle y confirmación.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Actualización registrada", "El avance fue registrado correctamente.", "success");
+}
+
+function confirmDetailRequest() {
+  if (!getValue("#quickRequestChannel") || !getValue("#quickRequestDeadline") || !getValue("#quickRequestSubject") || !getValue("#quickRequestMessage") || !isChecked("#quickRequestDeclaration")) {
+    toast("Faltan datos", "Completa canal, plazo, asunto, mensaje y confirmación.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Solicitud enviada", "La solicitud fue registrada correctamente.", "success");
+}
+
+function confirmDetailDerive() {
+  if (!getValue("#deriveArea") || !getValue("#derivePriority") || !getValue("#deriveReason")) {
+    toast("Faltan datos", "Completa área, prioridad y motivo.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Caso derivado", "La derivación fue registrada correctamente.", "success");
+}
+
+function confirmDetailClose() {
+  if (!getValue("#closeCaseResponse") || !isChecked("#closeCaseDeclaration")) {
+    toast("Validación pendiente", "Ingresa respuesta final y confirma la declaración.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Caso cerrado", "El cierre fue registrado correctamente.", "success");
+}
+
+/* =========================================================
+   COLA TRABAJO
+========================================================= */
+
+function initColaTrabajo() {
+  renderWorkQueue();
+
+  $("#workQueueSearch")?.addEventListener("input", renderWorkQueue);
+
+  $$("[data-queue-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.queueFilter = btn.dataset.queueFilter;
+      $$("[data-queue-filter]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderWorkQueue();
+    });
+  });
+
+  $("#queueSmartOrderBtn")?.addEventListener("click", () => {
+    toast("Cola ordenada", "Se priorizó por SLA y criticidad.", "success");
+    askBot("Ordena mi cola de trabajo");
+  });
+
+  $("#queueBalanceBtn")?.addEventListener("click", () => toast("Balance simulado", "La carga fue balanceada de forma simulada.", "success"));
+  $("#queueRefreshBtn")?.addEventListener("click", () => {
+    renderWorkQueue();
+    toast("Cola actualizada", "Se refrescó la cola de trabajo.", "success");
+  });
+  $("#queueExportBtn")?.addEventListener("click", () => genericModal("📤", "Exportación preparada", "El tablero se exportará cuando exista backend."));
+
+  $("#queueOpenDetailBtn")?.addEventListener("click", () => goToDetail(State.selectedCaseId));
+  $("#queueMoveCaseBtn")?.addEventListener("click", () => {
+    closeModals();
+    openMoveCase(State.selectedCaseId);
+  });
+
+  $("#confirmMoveCaseBtn")?.addEventListener("click", confirmMoveCase);
+  $("#confirmWorkQueueRequestBtn")?.addEventListener("click", confirmWorkQueueRequest);
+  $("#workQueueGenerateRequestBtn")?.addEventListener("click", () => {
+    $("#workQueueRequestMessage").value = "Estimado cliente, necesitamos información adicional para continuar con la atención del caso. Por favor adjunte evidencia relacionada con el servicio reportado dentro del plazo indicado.";
+    toast("Texto generado", "Se generó mensaje de solicitud.", "success");
+  });
+  $("#confirmWorkQueueCloseBtn")?.addEventListener("click", confirmWorkQueueClose);
+  $("#queueCloseAiBtn")?.addEventListener("click", () => toast("Validación IA", "Verifica evidencia, respuesta final y trazabilidad antes del cierre.", "success"));
+}
+
+function workQueueFilteredCases() {
+  const q = getValue("#workQueueSearch").toLowerCase();
+
+  return Mock.cases.filter(c => {
+    const text = `${c.id} ${c.title} ${c.clientName} ${c.service} ${c.priority} ${c.status} ${c.queueStatus}`.toLowerCase();
+    const matchesSearch = !q || text.includes(q);
+
+    const f = State.queueFilter;
     const matchesFilter =
-      filter === "todos" ||
-      caso.prioridad === filter ||
-      caso.estado === filter;
+      f === "todos" ||
+      (f === "critica" && c.priority === "Crítica") ||
+      (f === "sla_riesgo" && slaRisk(c)) ||
+      (f === "pendiente_cliente" && c.queueStatus === "Pendiente cliente") ||
+      (f === "listo_cierre" && c.queueStatus === "Listo para cierre");
 
     return matchesSearch && matchesFilter;
   });
 }
 
-function renderAdvisorQueueAiSummary(cases) {
-  const container = $("#queueAiSummary");
-  if (!container) return;
+function renderWorkQueue() {
+  const rows = workQueueFilteredCases();
 
-  const critical = cases.filter((item) => item.prioridad === "Crítica").length;
-  const high = cases.filter((item) => item.prioridad === "Alta").length;
-  const pending = cases.filter((item) => item.estado === "Pendiente por cliente").length;
+  renderKpis("#workQueueKpiGrid", [
+    ["📥", rows.length, "Casos en cola", "Carga visible"],
+    ["🔥", rows.filter(c => c.priority === "Crítica").length, "Críticos", "Prioridad inmediata"],
+    ["⏱️", rows.filter(slaRisk).length, "Riesgo SLA", "Vencimiento cercano"],
+    ["✅", rows.filter(c => c.queueStatus === "Listo para cierre").length, "Listos cierre", "Validación final"]
+  ]);
 
-  container.innerHTML = `
-    <div class="ai-summary-item">
-      <strong>Críticos</strong>
-      <p>${critical} caso(s) requieren atención inmediata por prioridad crítica.</p>
-    </div>
+  setText("#workQueueSummaryTitle", `${rows.length} casos visibles`);
+  setText("#workQueueSummaryText", `Filtro actual: ${State.queueFilter}`);
 
-    <div class="ai-summary-item">
-      <strong>Alta prioridad</strong>
-      <p>${high} caso(s) deben mantenerse en seguimiento cercano.</p>
-    </div>
+  const groups = ["Nuevo", "En atención", "Pendiente cliente", "Derivado", "Listo para cierre"];
 
-    <div class="ai-summary-item">
-      <strong>Pendientes por cliente</strong>
-      <p>${pending} caso(s) dependen de información del cliente.</p>
-    </div>
-  `;
-}
+  setHTML("#workQueueBoard", groups.map(group => {
+    const groupCases = rows.filter(c => c.queueStatus === group);
 
-/* =========================================================
-   DETALLE DE ATENCIÓN
-========================================================= */
+    return `
+      <article class="queue-column">
+        <div class="queue-column__header">
+          <h3>${esc(group)}</h3>
+          <span class="${pillClass("info")}">${groupCases.length}</span>
+        </div>
 
-async function initAttentionDetailPage() {
-  const detail = await AdvisorCasesApi.getAttentionDetail();
-
-  renderAttentionDetail(detail);
-
-  $("#attentionAiBtn")?.addEventListener("click", () => {
-    openGenericModal({
-      icon: "🤖",
-      title: "Resumen IA",
-      text: "El caso es crítico, tiene impacto empresarial y requiere avance antes del vencimiento de SLA."
-    });
-  });
-
-  $("#attentionOpenBotBtn")?.addEventListener("click", openBot);
-
-  $("#refreshAttentionHistoryBtn")?.addEventListener("click", async () => {
-    const updated = await AdvisorCasesApi.getAttentionDetail();
-    renderAttentionHistory(updated.historial);
-
-    showToast({
-      title: "Historial actualizado",
-      message: "Se actualizó la línea de tiempo de atención.",
-      type: "success"
-    });
-  });
-}
-
-function renderAttentionDetail(detail) {
-  const caso = detail.caso;
-
-  setText("#attentionCaseType", caso.tipo);
-  setText("#attentionCaseTitle", `${caso.codigo} · ${caso.titulo}`);
-  setText("#attentionCaseDescription", caso.descripcion);
-  setText("#attentionCaseStatus", caso.estado);
-
-  const status = $("#attentionCaseStatus");
-  if (status) {
-    status.className = `status-pill status-pill--${caso.estadoTipo}`;
-  }
-
-  const meta = $("#attentionCaseMeta");
-  if (meta) {
-    meta.innerHTML = `
-      <span>${caso.cliente}</span>
-      <span>${caso.documento}</span>
-      <span>${caso.servicio}</span>
-      <span>Prioridad ${caso.prioridad}</span>
-      <span>SLA: ${caso.sla}</span>
-      <span>${caso.canal}</span>
+        ${groupCases.map(c => `
+          <div class="queue-mini-card">
+            <strong>${esc(c.id)}</strong>
+            <p>${esc(c.title)}</p>
+            <div class="case-meta">
+              <span>${esc(c.priority)}</span>
+              <span>${esc(c.slaText)}</span>
+            </div>
+            <button type="button" class="panel-action" data-action="open-detail" data-case-id="${esc(c.id)}">Detalle</button>
+            <button type="button" class="panel-action" data-action="move-case" data-case-id="${esc(c.id)}">Mover</button>
+            ${group === "Pendiente cliente" ? `<button type="button" class="panel-action" data-action="request-case" data-case-id="${esc(c.id)}">Solicitar</button>` : ""}
+            ${group === "Listo para cierre" ? `<button type="button" class="panel-action" data-action="close-case" data-case-id="${esc(c.id)}">Cerrar</button>` : ""}
+          </div>
+        `).join("") || `<p class="muted">Sin casos.</p>`}
+      </article>
     `;
-  }
+  }).join(""));
 
-  renderCustomerInfo(detail.cliente);
-  renderAttentionHistory(detail.historial);
-  renderAttentionEvidence(detail.evidencias);
-  renderAttentionAiSummary(detail.resumenIA);
-  renderAttentionChecklist(detail.checklist);
+  renderAi("#workQueueAiSummary", [
+    ["Atender primero", "Casos críticos con SLA menor a 8 horas."],
+    ["Evitar bloqueo", "Pendientes por cliente deben tener solicitud clara."],
+    ["Liberar carga", "Cerrar casos listos con evidencia suficiente."]
+  ]);
+
+  show($("#emptyWorkQueueState"), !rows.length);
+  bindCaseActions($("#workQueueBoard"));
 }
 
-function renderCustomerInfo(cliente) {
-  const grid = $("#customerInfoGrid");
-  if (!grid) return;
+function openMoveCase(id) {
+  const c = getCase(id);
+  if (!c) return;
 
-  const rows = [
-    ["Cliente", cliente.nombre],
-    ["Documento", cliente.documento],
-    ["Segmento", cliente.segmento],
-    ["Correo", cliente.contacto],
-    ["Teléfono", cliente.telefono],
-    ["Contrato", cliente.contrato]
-  ];
-
-  grid.innerHTML = rows
-    .map(([label, value]) => {
-      return `
-        <article class="info-card">
-          <span>${label}</span>
-          <strong>${value}</strong>
-        </article>
-      `;
-    })
-    .join("");
+  saveSelectedCase(id);
+  setHTML("#moveCaseContext", caseSummary(c));
+  openModal("#moveCaseModal");
 }
 
-function renderAttentionHistory(items) {
-  const container = $("#attentionHistoryTimeline");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="activity-item">
-          <span class="activity-icon">${item.icono}</span>
-          <div class="activity-content">
-            <strong>${item.titulo}</strong>
-            <p>${item.descripcion}</p>
-            <small>${item.fecha}</small>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderAttentionEvidence(items) {
-  const container = $("#attentionEvidenceList");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="evidence-row">
-          <span>${item.icono}</span>
-          <div>
-            <strong>${item.nombre}</strong>
-            <small>${item.detalle}</small>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderAttentionAiSummary(items) {
-  const container = $("#attentionAiSummary");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="ai-summary-item">
-          <strong>${item.titulo}</strong>
-          <p>${item.texto}</p>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderAttentionChecklist(items) {
-  const container = $("#attentionChecklist");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="check-card">
-          <span>${item.icono}</span>
-          <strong>${item.titulo}</strong>
-          <p>${item.texto}</p>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-/* =========================================================
-   ACTUALIZAR CASO
-========================================================= */
-
-function initAdvisorUpdatePage() {
-  bindAdvisorFileInput("#updateEvidence", "#updateFileList");
-  bindAdvisorUpdateForm();
-
-  $("#updateAnalyzeBtn")?.addEventListener("click", () => {
-    const summary = $("#updateSummary")?.value.trim();
-    const detail = $("#updateDetail")?.value.trim();
-
-    if (!summary || !detail) {
-      openGenericModal({
-        icon: "🤖",
-        title: "Análisis IA",
-        text: "Ingresa un resumen y detalle de atención para analizar la calidad de la actualización."
-      });
-      return;
-    }
-
-    openGenericModal({
-      icon: "🤖",
-      title: "Análisis IA",
-      text: "La actualización es comprensible. Se recomienda confirmar el estado seleccionado y dejar explícito el siguiente paso."
-    });
-  });
-
-  $("#updateImproveTextBtn")?.addEventListener("click", () => {
-    const detail = $("#updateDetail");
-
-    if (!detail || !detail.value.trim()) {
-      openGenericModal({
-        icon: "✍️",
-        title: "Sin texto",
-        text: "Escribe primero el detalle de atención para que la IA pueda sugerir mejoras."
-      });
-      return;
-    }
-
-    detail.value =
-      "Se realizó la revisión de la información disponible en el caso, validando la evidencia adjunta por el cliente y el estado actual del servicio. Como siguiente paso, se continuará con la verificación técnica correspondiente y se comunicará al cliente el avance registrado.";
-
-    showToast({
-      title: "Redacción mejorada",
-      message: "Se aplicó una versión más clara y trazable.",
-      type: "success"
-    });
-  });
-
-  $("#updateSaveDraftBtn")?.addEventListener("click", () => {
-    showToast({
-      title: "Borrador guardado",
-      message: "La actualización fue guardada temporalmente en el navegador.",
-      type: "success"
-    });
-  });
-}
-
-function bindAdvisorUpdateForm() {
-  $("#advisorUpdateForm")?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    clearAdvisorFormErrors();
-
-    const payload = {
-      caseCode: $("#updateCaseCode")?.value.trim(),
-      status: $("#updateStatus")?.value,
-      actionType: $("#updateActionType")?.value,
-      visibility: $("#updateVisibility")?.value,
-      summary: $("#updateSummary")?.value.trim(),
-      detail: $("#updateDetail")?.value.trim(),
-      declaration: $("#updateDeclaration")?.checked
-    };
-
-    const validation = validateAdvisorUpdatePayload(payload);
-
-    if (!validation.ok) {
-      showAdvisorFormErrors(validation.errors);
-
-      showToast({
-        title: "Formulario incompleto",
-        message: validation.firstMessage,
-        type: "warning"
-      });
-
-      return;
-    }
-
-    setAdvisorButtonLoading("#updateSubmitBtn", true);
-
-    const result = await AdvisorCasesApi.updateCase(payload);
-
-    setAdvisorButtonLoading("#updateSubmitBtn", false);
-
-    if (result.ok) {
-      window.location.href = `confirmacion-atencion.html?type=actualizacion&case=${encodeURIComponent(result.codigo)}`;
-    }
-  });
-}
-
-function validateAdvisorUpdatePayload(payload) {
-  const errors = {};
-
-  if (!payload.caseCode) errors.updateCaseCode = "Ingresa el código del caso.";
-  if (!payload.status) errors.updateStatus = "Selecciona el nuevo estado.";
-  if (!payload.actionType) errors.updateActionType = "Selecciona el tipo de acción.";
-  if (!payload.visibility) errors.updateVisibility = "Selecciona la visibilidad.";
-  if (!payload.summary) errors.updateSummary = "Ingresa el resumen de la acción.";
-  if (!payload.detail) errors.updateDetail = "Ingresa el detalle de atención.";
-  if (!payload.declaration) errors.updateDeclaration = "Debes confirmar la declaración.";
-
-  return buildAdvisorValidation(errors);
-}
-
-/* =========================================================
-   UTILIDADES FORMULARIOS ASESOR
-========================================================= */
-
-function buildAdvisorValidation(errors) {
-  const messages = Object.values(errors);
-
-  return {
-    ok: messages.length === 0,
-    errors,
-    firstMessage: messages[0] || ""
-  };
-}
-
-function showAdvisorFormErrors(errors) {
-  Object.entries(errors).forEach(([key, value]) => {
-    const element = $(`#${key}Error`);
-    if (element) element.textContent = value;
-  });
-}
-
-function clearAdvisorFormErrors() {
-  $all(".form-error").forEach((item) => {
-    item.textContent = "";
-  });
-}
-
-function bindAdvisorFileInput(inputSelector, listSelector) {
-  const input = $(inputSelector);
-  const list = $(listSelector);
-
-  if (!input || !list) return;
-
-  input.addEventListener("change", () => {
-    const files = Array.from(input.files || []);
-
-    if (!files.length) {
-      list.innerHTML = "";
-      return;
-    }
-
-    list.innerHTML = files
-      .map((file) => {
-        return `
-          <div class="file-chip">
-            <span>📎 ${file.name}</span>
-            <small>${formatAdvisorFileSize(file.size)}</small>
-          </div>
-        `;
-      })
-      .join("");
-  });
-}
-
-function formatAdvisorFileSize(bytes) {
-  if (bytes < 1024) return `${bytes} B`;
-  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(1)} KB`;
-  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
-}
-
-function setAdvisorButtonLoading(selector, value) {
-  const button = $(selector);
-
-  if (!button) return;
-
-  button.disabled = value;
-  button.classList.toggle("loading", value);
-}
-
-/* =========================================================
-   PÁGINAS ASESOR: SOLICITAR INFORMACIÓN Y CONFIRMACIÓN
-========================================================= */
-
-document.addEventListener("DOMContentLoaded", () => {
-  const page = document.body.dataset.page;
-
-  if (page === "asesor-solicitar-informacion") {
-    initAdvisorRequestInfoPage();
-  }
-
-  if (page === "asesor-confirmacion-atencion") {
-    initAdvisorConfirmationPage();
-  }
-});
-
-/* =========================================================
-   API LAYER - SOLICITUD DE INFORMACIÓN
-   CAMBIAR AQUÍ CUANDO EXISTA BACKEND
-========================================================= */
-
-const AdvisorRequestApi = {
-  async sendInformationRequest(payload) {
-    await delay(700);
-
-    return {
-      ok: true,
-      codigo: payload.caseCode || "CAS-2026-000245",
-      operacion: "Solicitud de información",
-      estado: "Pendiente por cliente",
-      payload
-    };
-
-    /*
-    const response = await fetch("/api/asesor/casos/{id}/solicitudes", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    return await response.json();
-    */
-  }
-};
-
-/* =========================================================
-   SOLICITAR INFORMACIÓN
-========================================================= */
-
-function initAdvisorRequestInfoPage() {
-  bindAdvisorRequestForm();
-
-  $("#requestGenerateTextBtn")?.addEventListener("click", generateRequestMessage);
-  $("#requestImproveTextBtn")?.addEventListener("click", improveRequestMessage);
-  $("#requestPreviewBtn")?.addEventListener("click", previewRequestMessage);
-}
-
-function bindAdvisorRequestForm() {
-  $("#advisorRequestForm")?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    clearAdvisorFormErrors();
-
-    const payload = getRequestPayload();
-
-    const validation = validateRequestPayload(payload);
-
-    if (!validation.ok) {
-      showAdvisorFormErrors(validation.errors);
-
-      showToast({
-        title: "Formulario incompleto",
-        message: validation.firstMessage,
-        type: "warning"
-      });
-
-      return;
-    }
-
-    setAdvisorButtonLoading("#requestSubmitBtn", true);
-
-    const result = await AdvisorRequestApi.sendInformationRequest(payload);
-
-    setAdvisorButtonLoading("#requestSubmitBtn", false);
-
-    if (result.ok) {
-      window.location.href = `confirmacion-atencion.html?type=solicitud&case=${encodeURIComponent(result.codigo)}`;
-    }
-  });
-}
-
-function getRequestPayload() {
-  return {
-    caseCode: $("#requestCaseCode")?.value.trim(),
-    channel: $("#requestChannel")?.value,
-    type: $("#requestType")?.value,
-    deadline: $("#requestDeadline")?.value,
-    subject: $("#requestSubject")?.value.trim(),
-    message: $("#requestMessage")?.value.trim(),
-    allowFiles: $("#requestAllowFiles")?.checked,
-    reminder: $("#requestReminder")?.checked,
-    pauseFlow: $("#requestPauseFlow")?.checked,
-    declaration: $("#requestDeclaration")?.checked
-  };
-}
-
-function validateRequestPayload(payload) {
-  const errors = {};
-
-  if (!payload.caseCode) errors.requestCaseCode = "Ingresa el código del caso.";
-  if (!payload.channel) errors.requestChannel = "Selecciona el canal de envío.";
-  if (!payload.type) errors.requestType = "Selecciona el tipo de información requerida.";
-  if (!payload.deadline) errors.requestDeadline = "Selecciona el plazo de respuesta.";
-  if (!payload.subject) errors.requestSubject = "Ingresa el asunto de la solicitud.";
-  if (!payload.message) errors.requestMessage = "Ingresa el mensaje para el cliente.";
-  if (!payload.declaration) errors.requestDeclaration = "Debes confirmar la declaración.";
-
-  return buildAdvisorValidation(errors);
-}
-
-function generateRequestMessage() {
-  const type = $("#requestType")?.value;
-  const deadline = $("#requestDeadline")?.value;
-
-  const subject = $("#requestSubject");
-  const message = $("#requestMessage");
-
-  if (!subject || !message) return;
-
-  const typeText = {
-    evidencia: "evidencia adicional",
-    datos: "datos del servicio",
-    confirmacion: "confirmación del cliente",
-    documento: "documento o comprobante",
-    prueba: "prueba técnica"
-  }[type] || "información adicional";
-
-  const deadlineText = deadline || "el plazo indicado";
-
-  subject.value = `Solicitud de ${typeText} para continuar la atención`;
-
-  message.value =
-    `Estimado cliente, para continuar con la atención de su caso necesitamos que nos envíe ${typeText}. ` +
-    `Esta información nos permitirá validar correctamente la situación reportada y continuar con el análisis correspondiente. ` +
-    `Le agradeceremos responder dentro del plazo de ${deadlineText}.`;
-
-  showToast({
-    title: "Mensaje generado",
-    message: "Se generó un mensaje base para el cliente.",
-    type: "success"
-  });
-}
-
-function improveRequestMessage() {
-  const message = $("#requestMessage");
-
-  if (!message || !message.value.trim()) {
-    openGenericModal({
-      icon: "✍️",
-      title: "Sin mensaje",
-      text: "Escribe o genera primero un mensaje para que la IA pueda mejorarlo."
-    });
+function confirmMoveCase() {
+  if (!getValue("#moveCaseStatus") || !getValue("#moveCaseVisibility") || !getValue("#moveCaseReason") || !isChecked("#moveCaseDeclaration")) {
+    toast("Faltan datos", "Completa estado, visibilidad, motivo y confirmación.", "warning");
     return;
   }
 
-  message.value =
-    "Estimado cliente, para poder continuar con la atención de su caso, necesitamos que nos remita la información o evidencia solicitada. " +
-    "Esto nos permitirá validar adecuadamente lo reportado y avanzar con la revisión correspondiente. " +
-    "Agradeceremos enviar la información dentro del plazo indicado en la solicitud. Quedamos atentos a su respuesta.";
-
-  showToast({
-    title: "Mensaje mejorado",
-    message: "Se aplicó una redacción más clara y formal.",
-    type: "success"
-  });
+  closeModals();
+  toast("Estado actualizado", "El movimiento fue registrado de forma simulada.", "success");
 }
 
-function previewRequestMessage() {
-  const payload = getRequestPayload();
+function openWorkQueueClose(id) {
+  const c = getCase(id);
+  if (!c) return;
 
-  setText(
-    "#requestPreviewText",
-    payload.message || "Aún no se ha redactado un mensaje para el cliente."
-  );
+  saveSelectedCase(id);
+  setHTML("#workQueueCloseContext", caseSummary(c));
+  openModal("#queueCloseModal");
+}
 
-  const summary = $("#requestPreviewSummary");
-
-  if (summary) {
-    summary.innerHTML = `
-      <div>
-        <span>Caso</span>
-        <strong>${payload.caseCode || "No indicado"}</strong>
-      </div>
-      <div>
-        <span>Canal</span>
-        <strong>${payload.channel || "No seleccionado"}</strong>
-      </div>
-      <div>
-        <span>Tipo</span>
-        <strong>${payload.type || "No seleccionado"}</strong>
-      </div>
-      <div>
-        <span>Plazo</span>
-        <strong>${payload.deadline || "No seleccionado"}</strong>
-      </div>
-    `;
+function confirmWorkQueueClose() {
+  if (!getValue("#workQueueCloseResponse") || !isChecked("#workQueueCloseDeclaration")) {
+    toast("Validación pendiente", "Ingresa respuesta final y confirma la declaración.", "warning");
+    return;
   }
 
-  openModal("#requestPreviewModal");
+  closeModals();
+  toast("Caso cerrado", "El cierre fue registrado de forma simulada.", "success");
+}
+
+function confirmWorkQueueRequest() {
+  if (!getValue("#workQueueRequestChannel") || !getValue("#workQueueRequestDeadline") || !getValue("#workQueueRequestMessage") || !isChecked("#workQueueRequestDeclaration")) {
+    toast("Faltan datos", "Completa canal, plazo, mensaje y confirmación.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Solicitud enviada", "La solicitud fue registrada de forma simulada.", "success");
 }
 
 /* =========================================================
-   CONFIRMACIÓN DE ATENCIÓN
+   CALENDARIO SLA
 ========================================================= */
 
-function initAdvisorConfirmationPage() {
-  const params = new URLSearchParams(window.location.search);
-  const type = params.get("type") || "actualizacion";
-  const caseCode = params.get("case") || "CAS-2026-000245";
+function initCalendarioSla() {
+  renderSlaCalendar();
 
-  const config = {
-    actualizacion: {
-      title: "Actualización registrada",
-      text: "La actualización fue guardada correctamente en el historial del caso.",
-      rows: [
-        ["Operación", "Actualización de atención"],
-        ["Caso", caseCode],
-        ["Estado", "Registrado"],
-        ["Fecha", new Date().toLocaleString("es-PE")]
-      ]
-    },
-    solicitud: {
-      title: "Solicitud enviada",
-      text: "La solicitud de información fue enviada al cliente y registrada en el historial del caso.",
-      rows: [
-        ["Operación", "Solicitud de información"],
-        ["Caso", caseCode],
-        ["Nuevo estado", "Pendiente por cliente"],
-        ["Fecha", new Date().toLocaleString("es-PE")]
-      ]
-    },
-    cierre: {
-      title: "Caso preparado para cierre",
-      text: "El caso fue actualizado y quedó listo para revisión o cierre según corresponda.",
-      rows: [
-        ["Operación", "Cierre de atención"],
-        ["Caso", caseCode],
-        ["Estado", "Listo para cierre"],
-        ["Fecha", new Date().toLocaleString("es-PE")]
-      ]
-    }
-  }[type];
+  $("#slaSearchInput")?.addEventListener("input", renderSlaCalendar);
 
-  setText("#advisorConfirmationTitle", config.title);
-  setText("#advisorConfirmationText", config.text);
+  $$("[data-sla-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.slaFilter = btn.dataset.slaFilter;
+      $$("[data-sla-filter]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderSlaCalendar();
+    });
+  });
 
-  const summary = $("#advisorConfirmationSummary");
+  $("#slaRefreshBtn")?.addEventListener("click", () => {
+    renderSlaCalendar();
+    toast("Calendario actualizado", "Se refrescaron vencimientos SLA.", "success");
+  });
 
-  if (summary) {
-    summary.innerHTML = config.rows
-      .map(([label, value]) => {
-        return `
+  $("#slaTodayBtn")?.addEventListener("click", () => {
+    State.slaFilter = "hoy";
+    renderSlaCalendar();
+    toast("Vista de hoy", "Se muestran vencimientos del día.", "success");
+  });
+
+  $("#slaWeekBtn")?.addEventListener("click", () => {
+    State.slaFilter = "todos";
+    renderSlaCalendar();
+    toast("Vista semanal", "Se muestran vencimientos de la semana.", "success");
+  });
+
+  $("#slaExportBtn")?.addEventListener("click", () => genericModal("📤", "Exportación preparada", "El calendario SLA se exportará con backend."));
+
+  $("#confirmSlaReminderBtn")?.addEventListener("click", confirmSlaReminder);
+  $("#improveSlaReminderBtn")?.addEventListener("click", () => {
+    $("#slaReminderMessage").value = "Estimado cliente, le recordamos que necesitamos la información solicitada para continuar con la atención de su caso dentro del plazo establecido.";
+    toast("Texto mejorado", "Se generó recordatorio con IA.", "success");
+  });
+  $("#confirmSlaFollowBtn")?.addEventListener("click", confirmSlaFollow);
+}
+
+function slaFilteredCases() {
+  const q = getValue("#slaSearchInput").toLowerCase();
+
+  return Mock.cases.filter(c => {
+    const text = `${c.id} ${c.title} ${c.clientName} ${c.priority} ${c.status} ${c.slaText}`.toLowerCase();
+    const matchesSearch = !q || text.includes(q);
+
+    const f = State.slaFilter;
+    const matchesFilter =
+      f === "todos" ||
+      (f === "critico" && slaRisk(c)) ||
+      (f === "hoy" && c.slaGroup === "hoy") ||
+      (f === "pendiente_cliente" && c.status === "Pendiente por cliente") ||
+      (f === "listo_cierre" && c.status === "Listo para cierre");
+
+    return matchesSearch && matchesFilter;
+  }).sort((a, b) => a.slaHours - b.slaHours);
+}
+
+function renderSlaCalendar() {
+  const rows = slaFilteredCases();
+
+  renderKpis("#slaKpiGrid", [
+    ["🔥", rows.filter(slaRisk).length, "SLA críticos", "Menos de 8 horas"],
+    ["⏱️", rows.filter(c => c.slaGroup === "hoy").length, "Vence hoy", "Monitoreo inmediato"],
+    ["📩", rows.filter(c => c.status === "Pendiente por cliente").length, "Pendiente cliente", "Puede bloquear avance"],
+    ["✅", rows.filter(c => c.status === "Listo para cierre").length, "Listos cierre", "Validación final"]
+  ]);
+
+  setText("#slaSummaryTitle", `${rows.filter(slaRisk).length} casos en riesgo`);
+  setText("#slaSummaryText", `${rows.length} vencimientos visibles según filtro.`);
+
+  const groups = [
+    ["hoy", "Hoy", "Vencimientos críticos"],
+    ["mañana", "Mañana", "Casos programados"],
+    ["semana", "Esta semana", "Seguimientos preventivos"]
+  ];
+
+  setHTML("#slaCalendarGrid", groups.map(([key, title, subtitle]) => {
+    const items = rows.filter(c => c.slaGroup === key);
+    return `
+      <article class="sla-day-card ${key === "hoy" ? "sla-day-card--critical" : ""}">
+        <div class="sla-day-card__header">
           <div>
-            <span>${label}</span>
-            <strong>${value}</strong>
+            <span class="eyebrow">${esc(title)}</span>
+            <h3>${esc(subtitle)}</h3>
           </div>
-        `;
-      })
-      .join("");
-  }
+          <span class="${pillClass(key === "hoy" ? "danger" : "info")}">${items.length} casos</span>
+        </div>
 
-  $("#advisorConfirmationBotBtn")?.addEventListener("click", openBot);
+        <div class="sla-list">
+          ${items.map(c => `
+            <article class="sla-item">
+              <span class="activity-icon">⏱️</span>
+              <div>
+                <strong>${esc(c.id)} · ${esc(c.title)}</strong>
+                <p>${esc(c.clientName)} · ${esc(c.priority)} · ${esc(c.slaText)}</p>
+                <div class="sla-meter"><span style="width:${Math.max(10, 100 - c.slaHours * 5)}%"></span></div>
+              </div>
+              <button type="button" class="panel-action" data-action="open-detail" data-case-id="${esc(c.id)}">Abrir</button>
+              <button type="button" class="panel-action" data-action="sla-reminder" data-case-id="${esc(c.id)}">Recordar</button>
+            </article>
+          `).join("") || `<p class="muted">Sin casos en este periodo.</p>`}
+        </div>
+      </article>
+    `;
+  }).join(""));
+
+  renderAi("#slaAiSummary", [
+    ["Atención inmediata", "Prioriza los casos con menos horas restantes."],
+    ["Prevención", "Envía recordatorios a clientes pendientes antes del vencimiento."],
+    ["Seguimiento", "Registra avance en casos derivados para mantener trazabilidad."]
+  ]);
+
+  renderChecklist("#slaActionPlan", [
+    ["1", "Resolver críticos", "Abrir casos con vencimiento menor a 8 horas."],
+    ["2", "Enviar recordatorios", "Notificar a clientes con información pendiente."],
+    ["3", "Registrar seguimiento", "Actualizar derivados antes de vencimiento."]
+  ]);
+
+  show($("#emptySlaCalendarState"), !rows.length);
+
+  bindCaseActions($("#slaCalendarGrid"));
+
+  $$("[data-action='sla-reminder']").forEach(btn => {
+    btn.addEventListener("click", () => openSlaReminder(btn.dataset.caseId));
+  });
+}
+
+function openSlaReminder(id) {
+  const c = getCase(id);
+  if (!c) return;
+  saveSelectedCase(id);
+  setHTML("#slaReminderContext", caseSummary(c));
+  openModal("#slaReminderModal");
+}
+
+function confirmSlaReminder() {
+  if (!getValue("#slaReminderChannel") || !getValue("#slaReminderDeadline") || !getValue("#slaReminderMessage") || !isChecked("#slaReminderDeclaration")) {
+    toast("Faltan datos", "Completa canal, plazo, mensaje y confirmación.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Recordatorio enviado", "El recordatorio fue registrado de forma simulada.", "success");
+}
+
+function confirmSlaFollow() {
+  if (!getValue("#slaFollowText") || !isChecked("#slaFollowDeclaration")) {
+    toast("Faltan datos", "Completa el seguimiento y confirma la declaración.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Seguimiento registrado", "El seguimiento SLA fue registrado.", "success");
 }
 
 /* =========================================================
-   MODALES REUTILIZABLES
+   PLANTILLAS
 ========================================================= */
 
-let reusableConfirmCallback = null;
-let reusableDeleteCallback = null;
-let reusablePreviewCallback = null;
+function initPlantillas() {
+  renderTemplates();
 
-function openReusableModal(selector) {
-  const modal = document.querySelector(selector);
-  const backdrop = document.querySelector("#modalBackdrop");
+  $("#templateSearchInput")?.addEventListener("input", renderTemplates);
 
-  if (!modal || !backdrop) return;
-
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden", "false");
-  backdrop.classList.add("show");
-  document.body.classList.add("modal-open");
-}
-
-function closeReusableModals() {
-  document.querySelectorAll(".modal").forEach((modal) => {
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden", "true");
+  $$("[data-template-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.templateFilter = btn.dataset.templateFilter;
+      $$("[data-template-filter]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderTemplates();
+    });
   });
 
-  document.querySelector("#modalBackdrop")?.classList.remove("show");
-  document.body.classList.remove("modal-open");
-}
-
-function bindReusableModals() {
-  document.querySelectorAll("[data-close-modal]").forEach((button) => {
-    button.addEventListener("click", closeReusableModals);
+  $("#newTemplateBtn")?.addEventListener("click", () => openModal("#newTemplateModal"));
+  $("#manageVariablesBtn")?.addEventListener("click", openVariablesModal);
+  $("#refreshTemplatesBtn")?.addEventListener("click", () => {
+    renderTemplates();
+    toast("Plantillas actualizadas", "Se refrescó el catálogo.", "success");
   });
+  $("#templateExportBtn")?.addEventListener("click", () => genericModal("📤", "Exportación preparada", "El catálogo se exportará con backend."));
 
-  document.querySelector("#modalBackdrop")?.addEventListener("click", closeReusableModals);
-
-  document.querySelector("#cancelConfirmActionBtn")?.addEventListener("click", closeReusableModals);
-
-  document.querySelector("#acceptConfirmActionBtn")?.addEventListener("click", () => {
-    if (typeof reusableConfirmCallback === "function") {
-      reusableConfirmCallback();
-    }
-
-    reusableConfirmCallback = null;
-    closeReusableModals();
+  $("#previewUseTemplateBtn")?.addEventListener("click", () => {
+    closeModals();
+    openUseTemplate(State.selectedTemplateId);
   });
-
-  document.querySelector("#acceptDeleteActionBtn")?.addEventListener("click", () => {
-    if (typeof reusableDeleteCallback === "function") {
-      reusableDeleteCallback();
-    }
-
-    reusableDeleteCallback = null;
-    closeReusableModals();
-  });
-
-  document.querySelector("#acceptPreviewActionBtn")?.addEventListener("click", () => {
-    if (typeof reusablePreviewCallback === "function") {
-      reusablePreviewCallback();
-    }
-
-    reusablePreviewCallback = null;
-    closeReusableModals();
+  $("#improveTemplateBtn")?.addEventListener("click", () => toast("Plantilla mejorada", "La IA mejoró el tono de la plantilla.", "success"));
+  $("#sendTemplateBtn")?.addEventListener("click", sendTemplate);
+  $("#templateToneBtn")?.addEventListener("click", () => toast("Tono mejorado", "Se ajustó la redacción del mensaje.", "success"));
+  $("#saveTemplateBtn")?.addEventListener("click", saveNewTemplate);
+  $("#generateNewTemplateBtn")?.addEventListener("click", () => {
+    $("#newTemplateBody").value = "Estimado/a {cliente_nombre}, para continuar con la atención del caso {codigo_caso}, necesitamos información adicional relacionada con {servicio_afectado}. Agradecemos enviarla dentro del plazo indicado.";
+    toast("Plantilla generada", "Se generó una plantilla base con IA.", "success");
   });
 }
 
-function openConfirmActionModal({
-  title = "¿Deseas confirmar esta acción?",
-  text = "Revisa que la información ingresada sea correcta antes de continuar.",
-  actionName = "Acción pendiente",
-  summary = [],
-  onConfirm = null
-}) {
-  reusableConfirmCallback = onConfirm;
+function templateFiltered() {
+  const q = getValue("#templateSearchInput").toLowerCase();
+  return Mock.templates.filter(t => {
+    const text = `${t.title} ${t.category} ${t.channel} ${t.description}`.toLowerCase();
+    const matchSearch = !q || text.includes(q);
+    const matchFilter = State.templateFilter === "todos" || t.category === State.templateFilter;
+    return matchSearch && matchFilter;
+  });
+}
 
-  setReusableText("#confirmActionTitle", title);
-  setReusableText("#confirmActionText", text);
-  setReusableText("#confirmActionName", actionName);
+function renderTemplates() {
+  const rows = templateFiltered();
 
-  const summaryContainer = document.querySelector("#confirmActionSummary");
+  renderKpis("#templateKpiGrid", [
+    ["📩", Mock.templates.filter(t => t.category === "evidencia").length, "Evidencia", "Solicitudes"],
+    ["📝", Mock.templates.filter(t => t.category === "reclamo").length, "Reclamo", "Respuestas"],
+    ["🔀", Mock.templates.filter(t => t.category === "derivacion").length, "Derivación", "Áreas"],
+    ["✅", Mock.templates.filter(t => t.category === "cierre").length, "Cierre", "Finalización"]
+  ]);
 
-  if (summaryContainer) {
-    summaryContainer.innerHTML = summary.length
-      ? summary.map((item) => {
-          return `
-            <div>
-              <span>${item.label}</span>
-              <strong>${item.value}</strong>
-            </div>
-          `;
-        }).join("")
-      : `
+  setText("#templateSummaryTitle", `${rows.length} plantillas visibles`);
+  setText("#templateSummaryText", `Filtro actual: ${State.templateFilter}`);
+
+  setHTML("#templateGrid", rows.map(t => `
+    <article class="template-card">
+      <div class="template-card__header">
+        <span>${t.icon}</span>
         <div>
-          <span>Acción</span>
-          <strong>${actionName}</strong>
+          <strong>${esc(t.title)}</strong>
+          <small>${esc(t.channel)}</small>
         </div>
-        <div>
-          <span>Estado</span>
-          <strong>Por confirmar</strong>
+      </div>
+
+      <p>${esc(t.description)}</p>
+
+      <div class="case-meta">
+        <span>${esc(t.category)}</span>
+        <span>${esc(t.id)}</span>
+      </div>
+
+      <div class="service-actions">
+        <button type="button" data-template-preview="${esc(t.id)}">Previsualizar</button>
+        <button type="button" data-template-use="${esc(t.id)}">Usar</button>
+      </div>
+    </article>
+  `).join(""));
+
+  renderAi("#templatesAiSummary", [
+    ["Tono recomendado", "Usa mensajes claros, neutrales y orientados a acción."],
+    ["Evita ambigüedad", "Indica qué falta, por qué se requiere y plazo."],
+    ["Cierre correcto", "Incluye resultado, sustento y canal de seguimiento."]
+  ]);
+
+  renderChecklist("#templateVariablesList", [
+    ["{ }", "{cliente_nombre}", "Inserta automáticamente el nombre del cliente."],
+    ["{ }", "{codigo_caso}", "Incluye el código del reclamo o incidencia."],
+    ["{ }", "{servicio_afectado}", "Muestra el servicio relacionado con la atención."],
+    ["{ }", "{fecha_limite}", "Agrega el plazo máximo de respuesta del caso."]
+  ]);
+
+  show($("#emptyTemplateState"), !rows.length);
+
+  $$("[data-template-preview]").forEach(btn => {
+    btn.addEventListener("click", () => openPreviewTemplate(btn.dataset.templatePreview));
+  });
+
+  $$("[data-template-use]").forEach(btn => {
+    btn.addEventListener("click", () => openUseTemplate(btn.dataset.templateUse));
+  });
+}
+
+function openPreviewTemplate(id) {
+  const t = getTemplate(id);
+  if (!t) return;
+
+  State.selectedTemplateId = id;
+  setText("#previewTemplateIcon", t.icon);
+  setText("#previewTemplateTitle", t.title);
+  setText("#previewTemplateDescription", t.description);
+  setHTML("#previewTemplateSummary", summaryHTML([
+    ["Canal sugerido", t.channel],
+    ["Categoría", t.category],
+    ["Mensaje", t.body]
+  ]));
+  openModal("#previewTemplateModal");
+}
+
+function openUseTemplate(id) {
+  const t = getTemplate(id);
+  if (!t) return;
+
+  State.selectedTemplateId = id;
+  setHTML("#useTemplateContext", summaryHTML([
+    ["Plantilla", t.title],
+    ["Categoría", t.category],
+    ["Canal sugerido", t.channel]
+  ]));
+  $("#templateMessage").value = t.body;
+  openModal("#useTemplateModal");
+}
+
+function sendTemplate() {
+  if (!getValue("#templateCaseCode") || !getValue("#templateChannel") || !getValue("#templateMessage") || !isChecked("#templateDeclaration")) {
+    toast("Faltan datos", "Completa código, canal, mensaje y confirmación.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Mensaje enviado", "La plantilla fue aplicada al caso de forma simulada.", "success");
+}
+
+function saveNewTemplate() {
+  if (!getValue("#newTemplateName") || !getValue("#newTemplateCategory") || !getValue("#newTemplateBody") || !isChecked("#newTemplateDeclaration")) {
+    toast("Faltan datos", "Completa nombre, categoría, contenido y confirmación.", "warning");
+    return;
+  }
+  closeModals();
+  toast("Plantilla guardada", "La plantilla fue guardada de forma simulada.", "success");
+}
+
+function openVariablesModal() {
+  setHTML("#variablesModalSummary", summaryHTML([
+    ["{cliente_nombre}", "Nombre del cliente."],
+    ["{codigo_caso}", "Código único del caso."],
+    ["{servicio_afectado}", "Servicio asociado."],
+    ["{fecha_limite}", "Plazo máximo de respuesta."],
+    ["{asesor_nombre}", "Nombre del asesor responsable."]
+  ]));
+  openModal("#variablesModal");
+}
+
+/* =========================================================
+   NOTIFICACIONES
+========================================================= */
+
+function initNotificaciones() {
+  renderNotifications();
+
+  $("#advisorNotificationSearch")?.addEventListener("input", renderNotifications);
+
+  $$("[data-advisor-notification-filter]").forEach(btn => {
+    btn.addEventListener("click", () => {
+      State.notificationFilter = btn.dataset.advisorNotificationFilter;
+      $$("[data-advisor-notification-filter]").forEach(b => b.classList.remove("active"));
+      btn.classList.add("active");
+      renderNotifications();
+    });
+  });
+
+  $("#refreshAdvisorNotificationsBtn")?.addEventListener("click", () => {
+    renderNotifications();
+    toast("Notificaciones actualizadas", "Se refrescaron las alertas.", "success");
+  });
+
+  $("#markAllAdvisorNotificationsBtn")?.addEventListener("click", () => {
+    Mock.notifications.forEach(n => n.unread = false);
+    renderNotifications();
+    updateGlobalBadges();
+    toast("Notificaciones leídas", "Todas las alertas fueron marcadas como leídas.", "success");
+  });
+
+  $("#clearAdvisorReadBtn")?.addEventListener("click", () => openModal("#clearNotificationsModal"));
+
+  $("#confirmClearReadNotificationsBtn")?.addEventListener("click", () => {
+    Mock.notifications = Mock.notifications.filter(n => n.unread);
+    closeModals();
+    renderNotifications();
+    updateGlobalBadges();
+    toast("Leídas limpiadas", "Se ocultaron las notificaciones leídas.", "success");
+  });
+
+  $("#notificationOpenCaseBtn")?.addEventListener("click", () => {
+    const n = getNotification(State.selectedNotificationId);
+    if (n?.caseId) goToDetail(n.caseId);
+  });
+
+  $("#notificationMarkReadBtn")?.addEventListener("click", () => {
+    const n = getNotification(State.selectedNotificationId);
+    if (n) n.unread = false;
+    closeModals();
+    renderNotifications();
+    updateGlobalBadges();
+    toast("Notificación leída", "La alerta fue marcada como leída.", "success");
+  });
+}
+
+function notificationFiltered() {
+  const q = getValue("#advisorNotificationSearch").toLowerCase();
+
+  return Mock.notifications.filter(n => {
+    const text = `${n.title} ${n.text} ${n.caseId} ${n.type} ${n.priority}`.toLowerCase();
+    const matchSearch = !q || text.includes(q);
+    const f = State.notificationFilter;
+    const matchFilter =
+      f === "todas" ||
+      (f === "critica" && n.priority === "critica") ||
+      (f === "sla" && n.type === "sla") ||
+      (f === "cliente" && n.type === "cliente") ||
+      (f === "asignacion" && n.type === "asignacion") ||
+      (f === "no_leidas" && n.unread);
+    return matchSearch && matchFilter;
+  });
+}
+
+function renderNotifications() {
+  const rows = notificationFiltered();
+
+  renderKpis("#notificationsKpiGrid", [
+    ["🔥", Mock.notifications.filter(n => n.priority === "critica").length, "Críticas", "SLA o urgencia"],
+    ["📥", Mock.notifications.filter(n => n.type === "asignacion").length, "Asignaciones", "Nuevos casos"],
+    ["📩", Mock.notifications.filter(n => n.type === "cliente").length, "Cliente", "Respuestas recibidas"],
+    ["🔔", Mock.notifications.filter(n => n.unread).length, "No leídas", "Pendientes"]
+  ]);
+
+  setText("#notificationsSummaryTitle", `${Mock.notifications.filter(n => n.unread).length} alertas pendientes`);
+  setText("#notificationsSummaryText", `${rows.length} visibles según filtro.`);
+
+  setHTML("#advisorNotificationList", rows.map(n => `
+    <article class="notification-full-item ${n.unread ? "is-unread" : ""}">
+      <span class="notification-item__icon">${n.icon}</span>
+      <div>
+        <strong>${esc(n.title)}</strong>
+        <p>${esc(n.text)}</p>
+        <div class="case-meta">
+          <span>${esc(n.type)}</span>
+          <span>${esc(n.priority)}</span>
+          <span>${esc(n.caseId)}</span>
+          <span>${esc(n.date)}</span>
+          <span>${n.unread ? "No leída" : "Leída"}</span>
         </div>
-      `;
-  }
+      </div>
+      <button type="button" data-notification-id="${esc(n.id)}">Ver</button>
+    </article>
+  `).join(""));
 
-  openReusableModal("#confirmActionModal");
+  renderAi("#advisorNotificationsAiSummary", [
+    ["Atención inmediata", "Revisa primero alertas críticas y SLA."],
+    ["Cliente respondió", "Desbloquea casos pendientes revisando evidencia."],
+    ["Cierre posible", "Valida casos listos para cierre."]
+  ]);
+
+  renderChecklist("#advisorNotificationActionPlan", [
+    ["1", "Abrir alerta crítica", "Atender vencimientos cercanos."],
+    ["2", "Validar evidencia", "Revisar respuestas de cliente."],
+    ["3", "Cerrar pendientes", "Liberar casos listos para cierre."]
+  ]);
+
+  show($("#emptyAdvisorNotificationState"), !rows.length);
+
+  $$("[data-notification-id]").forEach(btn => {
+    btn.addEventListener("click", () => openNotification(btn.dataset.notificationId));
+  });
 }
 
-function openSuccessActionModal({
-  title = "Operación realizada",
-  text = "La información fue registrada correctamente."
-}) {
-  setReusableText("#successActionTitle", title);
-  setReusableText("#successActionText", text);
+function openNotification(id) {
+  const n = getNotification(id);
+  if (!n) return;
 
-  openReusableModal("#successActionModal");
+  State.selectedNotificationId = id;
+  setText("#notificationModalIcon", n.icon);
+  setText("#notificationModalTitle", n.title);
+  setText("#notificationModalText", n.text);
+  setHTML("#notificationModalSummary", summaryHTML([
+    ["Caso", n.caseId],
+    ["Tipo", n.type],
+    ["Prioridad", n.priority],
+    ["Fecha", n.date],
+    ["Estado", n.unread ? "No leída" : "Leída"]
+  ]));
+  openModal("#advisorNotificationModal");
 }
 
-function openWarningActionModal({
-  title = "Revisión requerida",
-  text = "Hay información pendiente o campos que necesitan validación."
-}) {
-  setReusableText("#warningActionTitle", title);
-  setReusableText("#warningActionText", text);
+/* =========================================================
+   RENDIMIENTO
+========================================================= */
 
-  openReusableModal("#warningActionModal");
+function initRendimiento() {
+  renderPerformance();
+
+  $("#performanceWeekBtn")?.addEventListener("click", () => {
+    State.performancePeriod = "semana";
+    renderPerformance();
+    toast("Vista semanal", "Se activó el periodo semanal.", "success");
+  });
+
+  $("#performanceMonthBtn")?.addEventListener("click", () => {
+    State.performancePeriod = "mes";
+    renderPerformance();
+    toast("Vista mensual", "Se activó el periodo mensual.", "success");
+  });
+
+  $("#performanceExportBtn")?.addEventListener("click", openPerformanceReport);
+  $("#performanceDownloadBtn")?.addEventListener("click", openPerformanceReport);
 }
 
-function openErrorActionModal({
-  title = "No se pudo completar la acción",
-  text = "Ocurrió un problema al procesar la solicitud."
-}) {
-  setReusableText("#errorActionTitle", title);
-  setReusableText("#errorActionText", text);
+function renderPerformance() {
+  renderKpis("#performanceKpiGrid", Mock.performance.kpis);
 
-  openReusableModal("#errorActionModal");
+  setText("#performanceSummaryTitle", "Rendimiento estable");
+  setText("#performanceSummaryText", `Periodo actual: ${State.performancePeriod}.`);
+  setText("#performanceTrendBadge", "Tendencia positiva");
+
+  const max = Math.max(...Mock.performance.chart.map(x => x[1]));
+
+  setHTML("#performanceChart", Mock.performance.chart.map(([day, value]) => `
+    <div class="bar-chart__row">
+      <span>${esc(day)}</span>
+      <div><i style="width:${(value / max) * 100}%"></i></div>
+      <strong>${esc(value)}</strong>
+    </div>
+  `).join(""));
+
+  setHTML("#performanceSlaDonut", `
+    <div class="donut-metric__ring">
+      <span>92%</span>
+    </div>
+    <p>La mayoría de casos se atienden dentro del plazo operativo definido.</p>
+  `);
+
+  const priorities = [
+    ["Crítica", Mock.cases.filter(c => c.priority === "Crítica").length],
+    ["Alta", Mock.cases.filter(c => c.priority === "Alta").length],
+    ["Media", Mock.cases.filter(c => c.priority === "Media").length],
+    ["Baja", Mock.cases.filter(c => c.priority === "Baja").length]
+  ];
+
+  setHTML("#performancePriorityStack", priorities.map(([label, value]) => `
+    <div>
+      <span>${esc(label)}</span>
+      <strong>${esc(value)}</strong>
+    </div>
+  `).join(""));
+
+  setHTML("#performanceTableBody", Mock.performance.table.map(row => `
+    <tr>
+      <td>${esc(row[0])}</td>
+      <td>${esc(row[1])}</td>
+      <td>${esc(row[2])}</td>
+      <td>${esc(row[3])}</td>
+      <td><span class="${pillClass(row[5])}">${esc(row[4])}</span></td>
+    </tr>
+  `).join(""));
+
+  renderAi("#performanceAiSummary", [
+    ["Fortaleza", "Buen nivel de cumplimiento SLA y cierre de casos."],
+    ["Oportunidad", "Reducir bloqueos por cliente con solicitudes más específicas."],
+    ["Recomendación", "Priorizar incidencias técnicas con vencimiento cercano."]
+  ]);
+
+  renderChecklist("#performanceActionPlan", [
+    ["1", "Revisar SLA temprano", "Abrir calendario al inicio del turno."],
+    ["2", "Reducir bloqueos", "Usar plantillas claras para pedir evidencia."],
+    ["3", "Cerrar con trazabilidad", "Validar respuesta final antes de cerrar."]
+  ]);
 }
 
-function openDeleteActionModal({
-  title = "¿Deseas eliminar este registro?",
-  text = "Esta acción puede afectar la información asociada.",
-  recordName = "Registro seleccionado",
-  onDelete = null
-}) {
-  reusableDeleteCallback = onDelete;
-
-  setReusableText("#deleteActionTitle", title);
-  setReusableText("#deleteActionText", text);
-  setReusableText("#deleteActionName", recordName);
-
-  openReusableModal("#deleteActionModal");
-}
-
-function openPreviewActionModal({
-  title = "Vista previa",
-  text = "Revisa la información antes de continuar.",
-  items = [],
-  onConfirm = null
-}) {
-  reusablePreviewCallback = onConfirm;
-
-  setReusableText("#previewActionTitle", title);
-  setReusableText("#previewActionText", text);
-
-  const content = document.querySelector("#previewActionContent");
-
-  if (content) {
-    content.innerHTML = items.length
-      ? items.map((item) => {
-          return `
-            <article>
-              <strong>${item.label}</strong>
-              <p>${item.value}</p>
-            </article>
-          `;
-        }).join("")
-      : `
-        <article>
-          <strong>Sin datos</strong>
-          <p>No se encontró información para mostrar.</p>
-        </article>
-      `;
-  }
-
-  openReusableModal("#previewActionModal");
-}
-
-function openLoadingActionModal({
-  title = "Procesando solicitud",
-  text = "Estamos registrando la información. Por favor espera unos segundos."
-}) {
-  setReusableText("#loadingActionTitle", title);
-  setReusableText("#loadingActionText", text);
-
-  openReusableModal("#loadingActionModal");
-}
-
-function openAiActionModal({
-  title = "Análisis inteligente",
-  text = "La IA ha generado una recomendación para esta operación.",
-  recommendations = []
-}) {
-  setReusableText("#aiActionTitle", title);
-  setReusableText("#aiActionText", text);
-
-  const container = document.querySelector("#aiActionRecommendations");
-
-  if (container) {
-    container.innerHTML = recommendations.length
-      ? recommendations.map((item) => {
-          return `
-            <article>
-              <strong>${item.title}</strong>
-              <p>${item.text}</p>
-            </article>
-          `;
-        }).join("")
-      : `
-        <article>
-          <strong>Recomendación</strong>
-          <p>Verifica los datos principales antes de confirmar la acción.</p>
-        </article>
-      `;
-  }
-
-  openReusableModal("#aiActionModal");
-}
-
-function setReusableText(selector, value) {
-  const element = document.querySelector(selector);
-
-  if (element) {
-    element.textContent = value;
-  }
+function openPerformanceReport() {
+  setText("#performanceReportTitle", "Reporte preparado");
+  setText("#performanceReportText", "El reporte se generará desde backend cuando se conecte la base de datos.");
+  setHTML("#performanceReportSummary", summaryHTML([
+    ["Periodo", State.performancePeriod],
+    ["Casos atendidos", "28"],
+    ["SLA cumplido", "92%"],
+    ["Satisfacción", "4.6"]
+  ]));
+  openModal("#performanceReportModal");
 }

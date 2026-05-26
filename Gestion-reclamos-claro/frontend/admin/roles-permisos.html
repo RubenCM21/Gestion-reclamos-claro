@@ -4,12 +4,12 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Integraciones | Claro Atención 360</title>
+  <title>Roles y permisos | Claro Atención 360</title>
 
   <link rel="stylesheet" href="../assets/css/admin.css" />
 </head>
 
-<body data-page="admin-integraciones">
+<body data-page="admin-roles-permisos">
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- SIDEBAR -->
@@ -34,7 +34,7 @@
         <small id="sidebarUserCount">0</small>
       </a>
 
-      <a href="roles-permisos.html" class="sidebar-link">
+      <a href="roles-permisos.html" class="sidebar-link active">
         <span>🔐</span>
         Roles y permisos
       </a>
@@ -54,7 +54,7 @@
         Indicadores y reportes
       </a>
 
-      <a href="integraciones.html" class="sidebar-link active">
+      <a href="integraciones.html" class="sidebar-link">
         <span>🔌</span>
         Integraciones
         <small id="sidebarIntegrationAlerts">0</small>
@@ -98,8 +98,8 @@
         </button>
 
         <div>
-          <span class="eyebrow eyebrow--red">Conectividad del sistema</span>
-          <h1>Integraciones</h1>
+          <span class="eyebrow eyebrow--red">Seguridad funcional</span>
+          <h1>Roles y permisos</h1>
         </div>
       </div>
 
@@ -127,7 +127,7 @@
           </button>
 
           <div class="user-menu__dropdown" id="userMenuDropdown">
-            <a href="indicadores-reportes.html">Indicadores y reportes</a>
+            <a href="usuarios.html">Usuarios</a>
             <a href="auditoria.html">Auditoría</a>
             <a href="configuracion-sistema.html">Configuración</a>
             <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
@@ -140,26 +140,26 @@
       <!-- HERO -->
       <section class="welcome-card">
         <div class="welcome-card__copy">
-          <span class="eyebrow eyebrow--red" id="integrationsHeroEyebrow">
-            Servicios conectados
+          <span class="eyebrow eyebrow--red" id="rolesHeroEyebrow">
+            Control de permisos
           </span>
 
-          <h2 id="integrationsHeroTitle">
-            Administra APIs, correo, autenticación, CRM, webhooks y notificaciones
+          <h2 id="rolesHeroTitle">
+            Administra perfiles, módulos y permisos por rol
           </h2>
 
-          <p id="integrationsHeroText">
-            Controla el estado de las integraciones externas, última sincronización,
-            credenciales, errores, servicios activos, webhooks y trazabilidad técnica.
+          <p id="rolesHeroText">
+            Configura qué puede ver, crear, editar, aprobar, exportar o auditar cada rol
+            dentro de la plataforma. Controla accesos para Cliente, Asesor, Supervisor y Administrador.
           </p>
 
           <div class="welcome-actions">
-            <button type="button" class="btn btn--primary" id="openCreateIntegrationBtn">
-              Nueva integración
+            <button type="button" class="btn btn--primary" id="openCreateRoleBtn">
+              Nuevo rol
             </button>
 
-            <button type="button" class="btn btn--soft" id="testAllIntegrationsBtn">
-              Probar conexiones
+            <button type="button" class="btn btn--soft" id="savePermissionMatrixBtn">
+              Guardar matriz
             </button>
 
             <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
@@ -174,79 +174,76 @@
           </div>
 
           <div>
-            <strong id="integrationsSummaryTitle">Integraciones dinámicas</strong>
-            <small id="integrationsSummaryText">Resumen pendiente de carga.</small>
+            <strong id="rolesSummaryTitle">Permisos dinámicos</strong>
+            <small id="rolesSummaryText">Resumen pendiente de carga.</small>
           </div>
         </aside>
       </section>
 
       <!-- KPIS -->
-      <section class="kpi-grid" id="integrationsKpiGrid" aria-label="Indicadores de integraciones"></section>
+      <section class="kpi-grid" id="rolesKpiGrid" aria-label="Indicadores de roles"></section>
 
-      <!-- GRÁFICOS -->
+      <!-- RESUMEN + GRÁFICO SIMPLE -->
       <section class="dashboard-grid dashboard-grid--secondary">
         <section class="panel-card">
           <div class="panel-card__header">
             <div>
-              <span class="eyebrow">Estado general</span>
-              <h2>Integraciones por estado</h2>
+              <span class="eyebrow">Distribución</span>
+              <h2>Usuarios por rol</h2>
               <p>
-                Distribución de integraciones activas, con alerta, en error o deshabilitadas.
+                Relación de usuarios asignados a cada perfil funcional del sistema.
               </p>
             </div>
 
-            <button type="button" class="panel-action" id="refreshIntegrationStatusBtn">
+            <button type="button" class="panel-action" id="refreshRolesChartBtn">
               Actualizar
             </button>
           </div>
 
-          <div class="donut-layout">
-            <div class="donut-card" id="integrationStatusDonut"></div>
-            <div class="donut-legend" id="integrationStatusLegend"></div>
-          </div>
+          <div class="bar-chart" id="rolesUsersChart"></div>
         </section>
 
         <section class="panel-card">
           <div class="panel-card__header">
             <div>
-              <span class="eyebrow">Sincronización</span>
-              <h2>Últimas ejecuciones</h2>
+              <span class="eyebrow">Riesgo de permisos</span>
+              <h2>Permisos sensibles</h2>
               <p>
-                Registro visual de sincronizaciones correctas, pendientes y fallidas.
+                Módulos con permisos administrativos, exportación, auditoría o configuración crítica.
               </p>
             </div>
 
-            <button type="button" class="panel-action" id="refreshIntegrationSyncBtn">
-              Actualizar
+            <button type="button" class="panel-action" id="analyzePermissionRiskBtn">
+              Analizar IA
             </button>
           </div>
 
-          <div class="bar-chart" id="integrationSyncChart"></div>
+          <div class="admin-alert-list" id="permissionRiskList"></div>
         </section>
       </section>
 
-      <!-- INTEGRACIONES + IA -->
+      <!-- MATRIZ + IA -->
       <section class="dashboard-grid">
         <section class="panel-card cases-panel">
           <div class="panel-card__header">
             <div>
-              <span class="eyebrow">Directorio técnico</span>
-              <h2>Integraciones configuradas</h2>
+              <span class="eyebrow">Matriz de permisos</span>
+              <h2>Permisos por módulo y rol</h2>
               <p>
-                Filtra servicios externos por tipo, estado, criticidad, última sincronización o responsable.
+                Activa o desactiva permisos de visualización, edición, gestión, exportación y auditoría.
               </p>
             </div>
 
             <div class="panel-header-actions">
-              <button type="button" class="panel-action" id="refreshIntegrationsBtn">
+              <button type="button" class="panel-action" id="refreshPermissionMatrixBtn">
                 Actualizar
               </button>
 
-              <button type="button" class="panel-action" id="toggleIntegrationsViewBtn">
-                Vista tabla
+              <button type="button" class="panel-action" id="resetPermissionMatrixBtn">
+                Restaurar
               </button>
 
-              <button type="button" class="panel-action" id="exportIntegrationsBtn">
+              <button type="button" class="panel-action" id="exportPermissionMatrixBtn">
                 Exportar
               </button>
             </div>
@@ -256,69 +253,60 @@
             <div class="search-box-large">
               <span>⌕</span>
               <input
-                id="integrationSearch"
+                id="permissionSearch"
                 type="search"
-                placeholder="Buscar integración, tipo, estado, endpoint, responsable o última sincronización..."
+                placeholder="Buscar módulo, rol, permiso o nivel de acceso..."
               />
             </div>
 
-            <div class="case-filters" id="integrationFilters">
-              <button type="button" class="filter-chip active" data-integration-filter="todos">
+            <div class="case-filters" id="permissionFilters">
+              <button type="button" class="filter-chip active" data-permission-filter="todos">
                 Todos
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="activas">
-                Activas
+              <button type="button" class="filter-chip" data-permission-filter="cliente">
+                Cliente
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="alerta">
-                Con alerta
+              <button type="button" class="filter-chip" data-permission-filter="asesor">
+                Asesor
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="error">
-                Error
+              <button type="button" class="filter-chip" data-permission-filter="supervisor">
+                Supervisor
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="api">
-                API
+              <button type="button" class="filter-chip" data-permission-filter="administrador">
+                Administrador
               </button>
 
-              <button type="button" class="filter-chip" data-integration-filter="webhook">
-                Webhooks
-              </button>
-
-              <button type="button" class="filter-chip" data-integration-filter="seguridad">
-                Seguridad
+              <button type="button" class="filter-chip" data-permission-filter="sensibles">
+                Sensibles
               </button>
             </div>
           </div>
 
-          <!-- VISTA CARDS -->
-          <div class="integration-card-grid" id="integrationCardList"></div>
-
-          <!-- VISTA TABLA -->
-          <div class="cases-table-wrap hidden" id="integrationTableWrap">
-            <table class="cases-table">
+          <div class="permission-matrix-wrap">
+            <table class="permission-matrix">
               <thead>
                 <tr>
-                  <th>Integración</th>
-                  <th>Tipo</th>
-                  <th>Estado</th>
-                  <th>Última sincronización</th>
-                  <th>Responsable</th>
-                  <th>Criticidad</th>
-                  <th>Acciones</th>
+                  <th>Módulo / permiso</th>
+                  <th>Cliente</th>
+                  <th>Asesor</th>
+                  <th>Supervisor</th>
+                  <th>Administrador</th>
+                  <th>Detalle</th>
                 </tr>
               </thead>
 
-              <tbody id="integrationTableBody"></tbody>
+              <tbody id="permissionMatrixBody"></tbody>
             </table>
           </div>
 
-          <div class="empty-state hidden" id="emptyIntegrationsState">
-            <span>🔌</span>
-            <h3>No hay integraciones con este filtro</h3>
-            <p>Cambia la búsqueda o selecciona otra categoría.</p>
+          <div class="empty-state hidden" id="emptyPermissionState">
+            <span>🔐</span>
+            <h3>No hay permisos con este filtro</h3>
+            <p>Cambia la búsqueda o selecciona otro rol.</p>
           </div>
         </section>
 
@@ -327,55 +315,55 @@
             <div class="ai-panel__header">
               <span>🤖</span>
               <div>
-                <h2>IA de integraciones</h2>
-                <p>Revisión de errores, alertas, servicios críticos y sincronización.</p>
+                <h2>IA de permisos</h2>
+                <p>Revisión de accesos sensibles y coherencia de roles.</p>
               </div>
             </div>
 
-            <div class="ai-summary" id="integrationsAiSummary"></div>
+            <div class="ai-summary" id="rolesAiSummary"></div>
 
-            <button type="button" class="btn btn--primary btn--full" id="analyzeIntegrationsBtn">
-              Analizar integraciones
+            <button type="button" class="btn btn--primary btn--full" id="analyzeRolesBtn">
+              Analizar permisos
             </button>
           </section>
 
           <section class="panel-card">
             <div class="panel-card__header">
               <div>
-                <span class="eyebrow">Plan técnico</span>
-                <h2>Acciones sugeridas</h2>
-                <p>Secuencia recomendada para mantener conectividad estable.</p>
+                <span class="eyebrow">Control recomendado</span>
+                <h2>Checklist de seguridad</h2>
+                <p>Validaciones mínimas antes de guardar cambios.</p>
               </div>
             </div>
 
-            <div class="checklist-grid" id="integrationsActionPlan"></div>
+            <div class="checklist-grid" id="rolesActionPlan"></div>
           </section>
         </aside>
       </section>
 
-      <!-- WEBHOOKS Y EVENTOS -->
+      <!-- ROLES CONFIGURADOS -->
       <section class="panel-card">
         <div class="panel-card__header">
           <div>
-            <span class="eyebrow">Eventos técnicos</span>
-            <h2>Webhooks y eventos recientes</h2>
+            <span class="eyebrow">Perfiles</span>
+            <h2>Roles configurados</h2>
             <p>
-              Últimas llamadas, respuestas, errores y eventos recibidos desde servicios conectados.
+              Lista de roles activos, descripción funcional, cantidad de usuarios y nivel de acceso.
             </p>
           </div>
 
           <div class="panel-header-actions">
-            <button type="button" class="panel-action" id="refreshWebhookEventsBtn">
+            <button type="button" class="panel-action" id="refreshRoleCardsBtn">
               Actualizar
             </button>
 
-            <button type="button" class="panel-action" id="exportWebhookEventsBtn">
-              Exportar eventos
+            <button type="button" class="panel-action" id="exportRolesBtn">
+              Exportar roles
             </button>
           </div>
         </div>
 
-        <div class="activity-timeline" id="webhookEventsTimeline"></div>
+        <div class="role-card-grid" id="roleCardGrid"></div>
       </section>
     </main>
   </div>
@@ -403,7 +391,7 @@
       <div>
         <span>🤖</span>
         <strong>Asistente IA</strong>
-        <small>Integraciones</small>
+        <small>Roles y permisos</small>
       </div>
 
       <button type="button" id="closeBotDrawer">×</button>
@@ -411,21 +399,21 @@
 
     <div class="bot-drawer__messages" id="botMessages">
       <div class="message message--bot">
-        Puedo ayudarte a revisar integraciones con error, alertas de sincronización, webhooks fallidos o servicios críticos.
+        Puedo ayudarte a detectar permisos excesivos, roles mal configurados o accesos sensibles.
       </div>
     </div>
 
     <div class="bot-drawer__quick">
-      <button type="button" data-bot-prompt="Qué integraciones tienen error">
-        Errores
+      <button type="button" data-bot-prompt="Revisa permisos sensibles">
+        Permisos sensibles
       </button>
 
-      <button type="button" data-bot-prompt="Qué integraciones críticas debo revisar">
-        Críticas
+      <button type="button" data-bot-prompt="Detecta roles con acceso excesivo">
+        Acceso excesivo
       </button>
 
-      <button type="button" data-bot-prompt="Resume últimas sincronizaciones">
-        Sincronización
+      <button type="button" data-bot-prompt="Recomienda matriz de permisos">
+        Recomendar matriz
       </button>
     </div>
 
@@ -438,111 +426,104 @@
   <div class="modal-backdrop" id="modalBackdrop"></div>
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
 
-  <!-- MODAL DETALLE INTEGRACIÓN -->
-  <section class="modal" id="integrationDetailModal" aria-hidden="true">
+  <!-- MODAL DETALLE PERMISO -->
+  <section class="modal" id="permissionDetailModal" aria-hidden="true">
     <div class="modal__content modal__content--wide">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon" id="integrationDetailIcon">🔌</div>
-      <span class="eyebrow eyebrow--red">Detalle de integración</span>
-      <h3 id="integrationDetailTitle">Integración seleccionada</h3>
-      <p id="integrationDetailText">Información técnica de la integración.</p>
+      <div class="modal__icon" id="permissionDetailIcon">🔐</div>
+      <span class="eyebrow eyebrow--red">Detalle de permiso</span>
+      <h3 id="permissionDetailTitle">Permiso seleccionado</h3>
+      <p id="permissionDetailText">Detalle funcional del permiso seleccionado.</p>
 
-      <div class="case-modal-summary" id="integrationDetailSummary"></div>
+      <div class="case-modal-summary" id="permissionDetailSummary"></div>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="integrationEditBtn">
-          Editar integración
+        <button type="button" class="btn btn--primary" id="editPermissionBtn">
+          Editar permiso
         </button>
 
-        <button type="button" class="btn btn--soft" id="integrationTestBtn">
-          Probar conexión
+        <button type="button" class="btn btn--soft" id="permissionAuditBtn">
+          Ver auditoría
         </button>
 
-        <button type="button" class="btn btn--ghost-dark" id="integrationLogsBtn">
-          Ver logs
+        <button type="button" class="btn btn--ghost-dark" data-close-modal>
+          Cerrar
         </button>
       </div>
     </div>
   </section>
 
-  <!-- MODAL CREAR / EDITAR INTEGRACIÓN -->
-  <section class="modal" id="integrationFormModal" aria-hidden="true">
+  <!-- MODAL CREAR / EDITAR ROL -->
+  <section class="modal" id="roleFormModal" aria-hidden="true">
     <div class="modal__content modal__content--wide">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon">🔌</div>
-      <span class="eyebrow eyebrow--red" id="integrationFormEyebrow">Integración</span>
-      <h3 id="integrationFormTitle">Nueva integración</h3>
-      <p id="integrationFormText">
-        Registra un servicio externo, API, webhook, autenticación o canal de notificación.
+      <div class="modal__icon">🔐</div>
+      <span class="eyebrow eyebrow--red" id="roleFormEyebrow">Rol</span>
+      <h3 id="roleFormTitle">Crear rol</h3>
+      <p id="roleFormText">
+        Define nombre, alcance, nivel de acceso y módulos asociados al rol.
       </p>
 
-      <form class="admin-form" id="integrationForm">
+      <form class="admin-form" id="roleForm">
         <div class="form-grid">
           <div class="form-group">
-            <label for="integrationName">Nombre de integración</label>
-            <input id="integrationName" type="text" placeholder="Ej. Servicio de correo transaccional" />
+            <label for="roleName">Nombre del rol</label>
+            <input id="roleName" type="text" placeholder="Ej. Supervisor de atención" />
           </div>
 
           <div class="form-group">
-            <label for="integrationType">Tipo</label>
-            <select id="integrationType">
+            <label for="roleScope">Alcance</label>
+            <select id="roleScope">
               <option value="">Seleccionar</option>
-              <option value="API">API</option>
-              <option value="Webhook">Webhook</option>
-              <option value="Correo">Correo</option>
-              <option value="Autenticación">Autenticación</option>
-              <option value="CRM">CRM</option>
-              <option value="Notificaciones">Notificaciones</option>
+              <option value="Cliente">Cliente</option>
+              <option value="Atención">Atención</option>
+              <option value="Supervisión">Supervisión</option>
+              <option value="Administración">Administración</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="integrationStatus">Estado</label>
-            <select id="integrationStatus">
+            <label for="roleAccessLevel">Nivel de acceso</label>
+            <select id="roleAccessLevel">
               <option value="">Seleccionar</option>
-              <option value="Activa">Activa</option>
-              <option value="Con alerta">Con alerta</option>
-              <option value="Error">Error</option>
-              <option value="Deshabilitada">Deshabilitada</option>
+              <option value="Básico">Básico</option>
+              <option value="Operativo">Operativo</option>
+              <option value="Supervisor">Supervisor</option>
+              <option value="Administrador">Administrador</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="integrationCriticality">Criticidad</label>
-            <select id="integrationCriticality">
+            <label for="roleStatus">Estado</label>
+            <select id="roleStatus">
               <option value="">Seleccionar</option>
-              <option value="Alta">Alta</option>
-              <option value="Media">Media</option>
-              <option value="Baja">Baja</option>
+              <option value="Activo">Activo</option>
+              <option value="Inactivo">Inactivo</option>
+              <option value="En revisión">En revisión</option>
             </select>
           </div>
         </div>
 
         <div class="form-group">
-          <label for="integrationEndpoint">Endpoint / URL</label>
-          <input id="integrationEndpoint" type="text" placeholder="https://api.servicio.com/v1/..." />
-        </div>
-
-        <div class="form-group">
-          <label for="integrationDescription">Descripción</label>
-          <textarea id="integrationDescription" placeholder="Describe el uso, dependencia y alcance de la integración."></textarea>
+          <label for="roleDescription">Descripción funcional</label>
+          <textarea id="roleDescription" placeholder="Describe qué puede hacer este rol dentro de la plataforma."></textarea>
         </div>
 
         <label class="form-check">
-          <input type="checkbox" id="integrationDeclaration" />
-          <span>Confirmo que la integración fue revisada y no expone credenciales visibles.</span>
+          <input type="checkbox" id="roleFormDeclaration" />
+          <span>Confirmo que el rol y su nivel de acceso fueron revisados.</span>
         </label>
       </form>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="saveIntegrationBtn">
-          Guardar integración
+        <button type="button" class="btn btn--primary" id="saveRoleBtn">
+          Guardar rol
         </button>
 
-        <button type="button" class="btn btn--soft" id="suggestIntegrationBtn">
-          Validar IA
+        <button type="button" class="btn btn--soft" id="suggestRolePermissionsBtn">
+          Sugerir permisos IA
         </button>
 
         <button type="button" class="btn btn--ghost-dark" data-close-modal>
@@ -552,25 +533,30 @@
     </div>
   </section>
 
-  <!-- MODAL LOGS INTEGRACIÓN -->
-  <section class="modal" id="integrationLogsModal" aria-hidden="true">
-    <div class="modal__content modal__content--wide">
+  <!-- MODAL CONFIRMAR MATRIZ -->
+  <section class="modal" id="savePermissionMatrixModal" aria-hidden="true">
+    <div class="modal__content">
       <button type="button" class="modal__close" data-close-modal>×</button>
 
-      <div class="modal__icon">📄</div>
-      <span class="eyebrow eyebrow--red">Logs técnicos</span>
-      <h3 id="integrationLogsTitle">Eventos de integración</h3>
-      <p>Últimos eventos registrados para el servicio seleccionado.</p>
+      <div class="modal__icon">✅</div>
+      <span class="eyebrow eyebrow--red">Confirmar cambios</span>
+      <h3>Guardar matriz de permisos</h3>
+      <p>
+        Los cambios afectarán el acceso de usuarios a módulos y acciones de la plataforma.
+      </p>
 
-      <div class="activity-timeline" id="integrationLogsTimeline"></div>
+      <label class="form-check">
+        <input type="checkbox" id="permissionMatrixDeclaration" />
+        <span>Confirmo que revisé los permisos antes de guardarlos.</span>
+      </label>
 
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" id="exportIntegrationLogsBtn">
-          Exportar logs
+        <button type="button" class="btn btn--primary" id="confirmSavePermissionMatrixBtn">
+          Guardar matriz
         </button>
 
         <button type="button" class="btn btn--ghost-dark" data-close-modal>
-          Cerrar
+          Cancelar
         </button>
       </div>
     </div>

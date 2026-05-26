@@ -1,1006 +1,1010 @@
 "use strict";
 
 /* =========================================================
-   ESTADO GLOBAL
+   CLARO ATENCIÓN 360 - ADMIN.JS
+   Módulo Administrador
+   ---------------------------------------------------------
+   Pantallas:
+   - dashboard.html
+   - usuarios.html
+   - roles-permisos.html
+   - catalogos.html
+   - reglas-sla.html
+   - indicadores-reportes.html
+   - integraciones.html
+   - auditoria.html
+   - respaldo.html
+   - configuracion-sistema.html
 ========================================================= */
-
-const AdminState = {
-  theme: localStorage.getItem("claro360-theme") || "light",
-  dashboardData: null,
-  currentSearch: ""
-};
 
 /* =========================================================
-   MOCK DATA - ELIMINAR CUANDO SE CONECTE AL BACKEND
+   MOCK DATA TEMPORAL
+   Luego se reemplaza por backend.
 ========================================================= */
 
-const MockAdminDashboard = {
+const Mock = {
   admin: {
-    id: 1,
-    nombre: "Administrador Demo",
-    iniciales: "AD",
-    rol: "Administrador General",
-    alcance: "Control global de plataforma",
-    estado: "Sistema operativo",
-    ultimoAcceso: "Último acceso: hoy 08:00"
+    id: "ADM-001",
+    name: "Administrador Demo",
+    initials: "AD",
+    role: "Administrador del sistema",
+    status: "Sistema operativo",
+    lastUpdate: "Última actualización: hoy 11:20"
   },
 
-  indicadores: [
+  users: [
     {
-      icono: "👤",
-      valor: 186,
-      titulo: "Usuarios",
-      descripcion: "Registrados en plataforma"
+      id: "USR-001",
+      initials: "CL",
+      name: "Cliente Demo",
+      email: "cliente.demo@claro360.com",
+      role: "Cliente",
+      area: "Portal cliente",
+      status: "Activo",
+      accessType: "Acceso estándar",
+      lastAccess: "Hoy 10:45",
+      createdAt: "12/05/2026",
+      risk: "Bajo",
+      activity: 18
     },
     {
-      icono: "🟢",
-      valor: 142,
-      titulo: "Usuarios activos",
-      descripcion: "Con acceso habilitado"
+      id: "USR-002",
+      initials: "AS",
+      name: "Asesor Comercial",
+      email: "asesor.comercial@claro360.com",
+      role: "Asesor",
+      area: "Atención al cliente",
+      status: "Activo",
+      accessType: "Acceso operativo",
+      lastAccess: "Hoy 10:35",
+      createdAt: "10/05/2026",
+      risk: "Medio",
+      activity: 42
     },
     {
-      icono: "🔌",
-      valor: 6,
-      titulo: "Integraciones",
-      descripcion: "Servicios conectados"
+      id: "USR-003",
+      initials: "AT",
+      name: "Asesor Técnico",
+      email: "asesor.tecnico@claro360.com",
+      role: "Asesor",
+      area: "Soporte técnico",
+      status: "Activo",
+      accessType: "Acceso operativo",
+      lastAccess: "Hoy 09:58",
+      createdAt: "09/05/2026",
+      risk: "Medio",
+      activity: 51
     },
     {
-      icono: "🛡️",
-      valor: 12,
-      titulo: "Eventos críticos",
-      descripcion: "Pendientes de revisión"
-    }
-  ],
-
-  modulos: [
-    {
-      icono: "🎫",
-      nombre: "Gestión de casos",
-      descripcion: "Reclamos, incidencias y seguimiento.",
-      estado: "Operativo",
-      estadoTipo: "success"
+      id: "USR-004",
+      initials: "SP",
+      name: "Supervisor Demo",
+      email: "supervisor.demo@claro360.com",
+      role: "Supervisor",
+      area: "Supervisión",
+      status: "Activo",
+      accessType: "Acceso supervisor",
+      lastAccess: "Hoy 11:00",
+      createdAt: "05/05/2026",
+      risk: "Medio",
+      activity: 37
     },
     {
-      icono: "👥",
-      nombre: "Usuarios y roles",
-      descripcion: "Control de accesos internos y clientes.",
-      estado: "Operativo",
-      estadoTipo: "success"
+      id: "USR-005",
+      initials: "AD",
+      name: "Administrador Demo",
+      email: "admin.demo@claro360.com",
+      role: "Administrador",
+      area: "Administración",
+      status: "Activo",
+      accessType: "Acceso administrativo",
+      lastAccess: "Hoy 11:20",
+      createdAt: "01/05/2026",
+      risk: "Alto",
+      activity: 29
     },
     {
-      icono: "🔔",
-      nombre: "Notificaciones",
-      descripcion: "Canales de correo, SMS y portal.",
-      estado: "Advertencia",
-      estadoTipo: "warning"
+      id: "USR-006",
+      initials: "BK",
+      name: "Backoffice Demo",
+      email: "backoffice.demo@claro360.com",
+      role: "Asesor",
+      area: "Backoffice",
+      status: "Inactivo",
+      accessType: "Acceso restringido",
+      lastAccess: "Hace 18 días",
+      createdAt: "21/04/2026",
+      risk: "Medio",
+      activity: 7
     },
     {
-      icono: "🔌",
-      nombre: "Integraciones",
-      descripcion: "Conectores externos y APIs.",
-      estado: "Revisión",
-      estadoTipo: "info"
-    }
-  ],
-
-  resumenIA: [
-    {
-      titulo: "Estado general",
-      texto: "La plataforma opera correctamente, pero conviene revisar alertas de notificación y eventos críticos."
-    },
-    {
-      titulo: "Accesos",
-      texto: "Existen usuarios bloqueados y cuentas pendientes que deben revisarse."
-    },
-    {
-      titulo: "Configuración",
-      texto: "Las reglas SLA y auditoría están activas; se recomienda mantener doble autenticación para usuarios internos."
-    }
-  ],
-
-  actividad: [
-    {
-      icono: "👤",
-      titulo: "Usuario actualizado",
-      descripcion: "Se modificó el rol de un usuario interno.",
-      fecha: "Hoy 09:20"
-    },
-    {
-      icono: "⚙️",
-      titulo: "Parámetro modificado",
-      descripcion: "Se actualizó una regla de alerta SLA.",
-      fecha: "Hoy 08:45"
-    },
-    {
-      icono: "🛡️",
-      titulo: "Evento de seguridad",
-      descripcion: "Se detectaron intentos fallidos de acceso.",
-      fecha: "Ayer 18:30"
-    }
-  ],
-
-  alertas: [
-    {
-      icono: "🚫",
-      titulo: "Usuarios bloqueados",
-      descripcion: "Hay cuentas bloqueadas pendientes de revisión.",
-      estado: "Atención",
-      estadoTipo: "warning"
-    },
-    {
-      icono: "🔔",
-      titulo: "Canal WhatsApp inactivo",
-      descripcion: "El canal no está habilitado para notificaciones.",
-      estado: "Configurar",
-      estadoTipo: "info"
-    },
-    {
-      icono: "🛡️",
-      titulo: "Eventos críticos",
-      descripcion: "Se recomienda revisar la auditoría de accesos.",
-      estado: "Crítico",
-      estadoTipo: "danger"
+      id: "USR-007",
+      initials: "BL",
+      name: "Usuario Bloqueado",
+      email: "bloqueado.demo@claro360.com",
+      role: "Cliente",
+      area: "Portal cliente",
+      status: "Bloqueado",
+      accessType: "Acceso estándar",
+      lastAccess: "Hace 3 días",
+      createdAt: "18/04/2026",
+      risk: "Alto",
+      activity: 3
     }
   ],
 
   roles: [
     {
-      icono: "👥",
-      rol: "Clientes",
-      cantidad: 120,
-      descripcion: "Usuarios externos con acceso al portal."
+      id: "ROL-001",
+      icon: "👤",
+      name: "Cliente",
+      scope: "Cliente",
+      accessLevel: "Básico",
+      status: "Activo",
+      users: 1,
+      description: "Acceso a registro, consulta, seguimiento y actualización de casos propios."
     },
     {
-      icono: "🎧",
-      rol: "Asesores",
-      cantidad: 42,
-      descripcion: "Personal encargado de atención de casos."
+      id: "ROL-002",
+      icon: "🎧",
+      name: "Asesor",
+      scope: "Atención",
+      accessLevel: "Operativo",
+      status: "Activo",
+      users: 3,
+      description: "Atención de casos, respuesta al cliente, uso de plantillas y seguimiento operativo."
     },
     {
-      icono: "📊",
-      rol: "Supervisores",
-      cantidad: 12,
-      descripcion: "Gestión de clasificación y asignación."
+      id: "ROL-003",
+      icon: "🧭",
+      name: "Supervisor",
+      scope: "Supervisión",
+      accessLevel: "Supervisor",
+      status: "Activo",
+      users: 1,
+      description: "Control de asignaciones, carga, SLA, indicadores, reportes y auditoría de casos."
     },
     {
-      icono: "🛡️",
-      rol: "Administradores",
-      cantidad: 12,
-      descripcion: "Control de configuración y seguridad."
+      id: "ROL-004",
+      icon: "🔐",
+      name: "Administrador",
+      scope: "Administración",
+      accessLevel: "Administrador",
+      status: "Activo",
+      users: 1,
+      description: "Gestión global de usuarios, roles, catálogos, SLA, integraciones, respaldo y configuración."
+    }
+  ],
+
+  permissions: [
+    {
+      id: "PER-001",
+      module: "Dashboard",
+      permission: "Visualizar resumen",
+      sensitive: false,
+      cliente: true,
+      asesor: true,
+      supervisor: true,
+      administrador: true,
+      description: "Permite visualizar el panel inicial del perfil."
+    },
+    {
+      id: "PER-002",
+      module: "Casos",
+      permission: "Registrar caso",
+      sensitive: false,
+      cliente: true,
+      asesor: true,
+      supervisor: false,
+      administrador: false,
+      description: "Permite crear reclamos o incidencias desde la plataforma."
+    },
+    {
+      id: "PER-003",
+      module: "Atención",
+      permission: "Actualizar atención",
+      sensitive: false,
+      cliente: false,
+      asesor: true,
+      supervisor: true,
+      administrador: false,
+      description: "Permite registrar avances, respuestas y evidencias de atención."
+    },
+    {
+      id: "PER-004",
+      module: "Supervisión",
+      permission: "Asignar y reasignar casos",
+      sensitive: true,
+      cliente: false,
+      asesor: false,
+      supervisor: true,
+      administrador: true,
+      description: "Permite modificar responsables y colas de atención."
+    },
+    {
+      id: "PER-005",
+      module: "Reportes",
+      permission: "Generar reportes",
+      sensitive: true,
+      cliente: false,
+      asesor: false,
+      supervisor: true,
+      administrador: true,
+      description: "Permite generar reportes operativos o administrativos."
+    },
+    {
+      id: "PER-006",
+      module: "Administración",
+      permission: "Gestionar usuarios",
+      sensitive: true,
+      cliente: false,
+      asesor: false,
+      supervisor: false,
+      administrador: true,
+      description: "Permite crear, editar, bloquear o restablecer usuarios."
+    },
+    {
+      id: "PER-007",
+      module: "Administración",
+      permission: "Modificar roles y permisos",
+      sensitive: true,
+      cliente: false,
+      asesor: false,
+      supervisor: false,
+      administrador: true,
+      description: "Permite modificar matriz de permisos del sistema."
+    },
+    {
+      id: "PER-008",
+      module: "Sistema",
+      permission: "Modificar configuración global",
+      sensitive: true,
+      cliente: false,
+      asesor: false,
+      supervisor: false,
+      administrador: true,
+      description: "Permite cambiar parámetros generales de seguridad, sesión y mantenimiento."
+    }
+  ],
+
+  catalogItems: [
+    {
+      id: "CAT-001",
+      icon: "🧩",
+      name: "Incidencia técnica",
+      type: "Categorías",
+      filterType: "categorias",
+      status: "Activo",
+      usage: "Registro de incidencias",
+      dependency: "Reglas SLA",
+      updatedAt: "Hoy 09:10",
+      description: "Clasifica problemas técnicos asociados al servicio."
+    },
+    {
+      id: "CAT-002",
+      icon: "🔥",
+      name: "Crítica",
+      type: "Prioridades",
+      filterType: "prioridades",
+      status: "Activo",
+      usage: "Prioridad de atención",
+      dependency: "Reglas SLA",
+      updatedAt: "Ayer 16:30",
+      description: "Prioridad máxima para casos con impacto severo o SLA corto."
+    },
+    {
+      id: "CAT-003",
+      icon: "📌",
+      name: "En atención",
+      type: "Estados",
+      filterType: "estados",
+      status: "Activo",
+      usage: "Seguimiento de caso",
+      dependency: "Reportes",
+      updatedAt: "18/05/2026",
+      description: "Estado usado cuando el asesor se encuentra gestionando el caso."
+    },
+    {
+      id: "CAT-004",
+      icon: "📱",
+      name: "App",
+      type: "Canales",
+      filterType: "canales",
+      status: "Activo",
+      usage: "Ingreso de casos",
+      dependency: "Reportes",
+      updatedAt: "17/05/2026",
+      description: "Canal digital para registro y consulta desde aplicativo móvil."
+    },
+    {
+      id: "CAT-005",
+      icon: "🏢",
+      name: "Facturación",
+      type: "Áreas",
+      filterType: "areas",
+      status: "Activo",
+      usage: "Derivaciones",
+      dependency: "Asignaciones",
+      updatedAt: "16/05/2026",
+      description: "Área destino para reclamos o incidencias de cobro."
+    },
+    {
+      id: "CAT-006",
+      icon: "📝",
+      name: "Evidencia incompleta",
+      type: "Motivos",
+      filterType: "motivos",
+      status: "En revisión",
+      usage: "Observaciones",
+      dependency: "Atención",
+      updatedAt: "15/05/2026",
+      description: "Motivo usado cuando el caso requiere evidencia adicional."
+    },
+    {
+      id: "CAT-007",
+      icon: "📞",
+      name: "Call center",
+      type: "Canales",
+      filterType: "canales",
+      status: "Activo",
+      usage: "Ingreso de casos",
+      dependency: "Integraciones",
+      updatedAt: "14/05/2026",
+      description: "Canal asistido para registro de reclamos o incidencias."
+    }
+  ],
+
+  slaRules: [
+    {
+      id: "SLA-001",
+      icon: "🚨",
+      name: "Incidencia crítica técnica",
+      caseType: "Incidencia",
+      priority: "Crítica",
+      channel: "Todos",
+      time: "4 horas",
+      alert: "1 hora antes",
+      area: "Soporte técnico",
+      status: "Activo",
+      description: "Regla aplicada a incidencias técnicas críticas con impacto alto."
+    },
+    {
+      id: "SLA-002",
+      icon: "🔥",
+      name: "Reclamo de facturación alta",
+      caseType: "Reclamo",
+      priority: "Alta",
+      channel: "Portal cliente",
+      time: "24 horas",
+      alert: "4 horas antes",
+      area: "Facturación",
+      status: "Activo",
+      description: "Regla para reclamos de facturación ingresados desde portal."
+    },
+    {
+      id: "SLA-003",
+      icon: "📌",
+      name: "Incidencia media móvil",
+      caseType: "Incidencia",
+      priority: "Media",
+      channel: "App",
+      time: "48 horas",
+      alert: "8 horas antes",
+      area: "Soporte técnico",
+      status: "Activo",
+      description: "Regla para incidencias móviles de impacto medio."
+    },
+    {
+      id: "SLA-004",
+      icon: "🧪",
+      name: "Solicitud estándar",
+      caseType: "Solicitud",
+      priority: "Baja",
+      channel: "Correo",
+      time: "72 horas",
+      alert: "24 horas antes",
+      area: "Atención al cliente",
+      status: "En revisión",
+      description: "Regla pendiente de validación para solicitudes generales."
+    }
+  ],
+
+  integrations: [
+    {
+      id: "INT-001",
+      icon: "📧",
+      name: "Correo transaccional",
+      type: "Correo",
+      filterType: "api",
+      status: "Activa",
+      lastSync: "Hoy 11:12",
+      owner: "Administración",
+      criticality: "Alta",
+      endpoint: "smtp.claro360.local",
+      description: "Servicio de envío de notificaciones por correo."
+    },
+    {
+      id: "INT-002",
+      icon: "🔐",
+      name: "Autenticación corporativa",
+      type: "Autenticación",
+      filterType: "seguridad",
+      status: "Activa",
+      lastSync: "Hoy 10:55",
+      owner: "Seguridad",
+      criticality: "Alta",
+      endpoint: "auth.claro360.local",
+      description: "Servicio de autenticación de usuarios internos."
+    },
+    {
+      id: "INT-003",
+      icon: "📡",
+      name: "Webhook CRM",
+      type: "Webhook",
+      filterType: "webhook",
+      status: "Con alerta",
+      lastSync: "Hoy 09:35",
+      owner: "Integraciones",
+      criticality: "Media",
+      endpoint: "https://crm.demo/webhook",
+      description: "Webhook para sincronización de datos de cliente."
+    },
+    {
+      id: "INT-004",
+      icon: "🧾",
+      name: "API de facturación",
+      type: "API",
+      filterType: "api",
+      status: "Error",
+      lastSync: "Ayer 19:10",
+      owner: "Backoffice",
+      criticality: "Alta",
+      endpoint: "https://billing.demo/api",
+      description: "Consulta de recibos, cargos y validación de facturación."
+    },
+    {
+      id: "INT-005",
+      icon: "🔔",
+      name: "Push notifications",
+      type: "Notificaciones",
+      filterType: "api",
+      status: "Activa",
+      lastSync: "Hoy 10:20",
+      owner: "Administración",
+      criticality: "Media",
+      endpoint: "push.claro360.local",
+      description: "Servicio de notificación push para clientes y asesores."
+    }
+  ],
+
+  adminMetrics: [
+    {
+      id: "MET-001",
+      icon: "👤",
+      title: "Usuarios activos",
+      value: "5",
+      target: "≥ 5",
+      progress: 82,
+      status: "success",
+      description: "Usuarios activos disponibles para operar la plataforma.",
+      cause: "La mayoría de usuarios se encuentra habilitada."
+    },
+    {
+      id: "MET-002",
+      icon: "📈",
+      title: "Casos registrados",
+      value: "128",
+      target: "120",
+      progress: 92,
+      status: "success",
+      description: "Volumen de casos registrados durante el periodo.",
+      cause: "Mayor ingreso por canal digital y call center."
+    },
+    {
+      id: "MET-003",
+      icon: "⏱️",
+      title: "SLA global",
+      value: "87%",
+      target: "95%",
+      progress: 87,
+      status: "warning",
+      description: "Cumplimiento global de atención dentro del plazo.",
+      cause: "Incidencias críticas y derivaciones elevan riesgo."
+    },
+    {
+      id: "MET-004",
+      icon: "🔌",
+      title: "Integraciones sanas",
+      value: "3/5",
+      target: "5/5",
+      progress: 60,
+      status: "danger",
+      description: "Servicios conectados sin alerta ni error.",
+      cause: "API de facturación presenta error y webhook CRM está en alerta."
+    },
+    {
+      id: "MET-005",
+      icon: "📊",
+      title: "Reportes generados",
+      value: "9",
+      target: "8",
+      progress: 96,
+      status: "success",
+      description: "Reportes administrativos generados en el periodo.",
+      cause: "Reportabilidad ejecutiva activa."
+    },
+    {
+      id: "MET-006",
+      icon: "🔐",
+      title: "Eventos sensibles",
+      value: "4",
+      target: "≤ 3",
+      progress: 68,
+      status: "warning",
+      description: "Cambios administrativos con impacto en seguridad o configuración.",
+      cause: "Cambios recientes de permisos y estado de usuarios."
+    }
+  ],
+
+  reports: [
+    {
+      id: "REP-ADM-001",
+      name: "Resumen administrativo semanal",
+      type: "Resumen ejecutivo",
+      period: "Semana actual",
+      format: "PDF",
+      status: "Generado",
+      owner: "Administrador Demo"
+    },
+    {
+      id: "REP-ADM-002",
+      name: "Auditoría de accesos",
+      type: "Seguridad y accesos",
+      period: "Mes actual",
+      format: "Excel",
+      status: "Disponible",
+      owner: "Administrador Demo"
+    },
+    {
+      id: "REP-ADM-003",
+      name: "Estado de integraciones",
+      type: "Integraciones",
+      period: "Semana actual",
+      format: "PDF",
+      status: "Programado",
+      owner: "Administrador Demo"
+    }
+  ],
+
+  audit: [
+    {
+      id: "AUD-ADM-001",
+      date: "Hoy 11:05",
+      module: "Usuarios",
+      type: "usuarios",
+      action: "Usuario bloqueado",
+      user: "Administrador Demo",
+      before: "Activo",
+      after: "Bloqueado",
+      result: "Exitoso",
+      critical: true,
+      ip: "192.168.10.21",
+      detail: "Se bloqueó cuenta por intentos fallidos repetidos."
+    },
+    {
+      id: "AUD-ADM-002",
+      date: "Hoy 10:40",
+      module: "Roles",
+      type: "roles",
+      action: "Permiso modificado",
+      user: "Administrador Demo",
+      before: "Sin acceso",
+      after: "Acceso lectura",
+      result: "Exitoso",
+      critical: true,
+      ip: "192.168.10.21",
+      detail: "Se actualizó permiso de consulta para supervisor."
+    },
+    {
+      id: "AUD-ADM-003",
+      date: "Hoy 09:55",
+      module: "Catálogos",
+      type: "catalogos",
+      action: "Elemento actualizado",
+      user: "Administrador Demo",
+      before: "En revisión",
+      after: "Activo",
+      result: "Exitoso",
+      critical: false,
+      ip: "192.168.10.21",
+      detail: "Se activó motivo de observación para evidencias incompletas."
+    },
+    {
+      id: "AUD-ADM-004",
+      date: "Ayer 18:20",
+      module: "SLA",
+      type: "sla",
+      action: "Regla SLA modificada",
+      user: "Administrador Demo",
+      before: "8 horas",
+      after: "4 horas",
+      result: "Exitoso",
+      critical: true,
+      ip: "192.168.10.21",
+      detail: "Se redujo SLA para incidencias críticas."
+    },
+    {
+      id: "AUD-ADM-005",
+      date: "Ayer 16:10",
+      module: "Integraciones",
+      type: "integraciones",
+      action: "Error de sincronización",
+      user: "Sistema",
+      before: "Activa",
+      after: "Error",
+      result: "Observado",
+      critical: true,
+      ip: "Sistema",
+      detail: "API de facturación no respondió durante sincronización."
+    }
+  ],
+
+  backups: [
+    {
+      id: "BKP-001",
+      date: "Hoy 02:00",
+      type: "Incremental",
+      status: "Completado",
+      size: "3.2 GB",
+      location: "Repositorio seguro",
+      validation: "Verificado",
+      owner: "Sistema"
+    },
+    {
+      id: "BKP-002",
+      date: "Ayer 02:00",
+      type: "Incremental",
+      status: "Completado",
+      size: "3.1 GB",
+      location: "Repositorio seguro",
+      validation: "Pendiente",
+      owner: "Sistema"
+    },
+    {
+      id: "BKP-003",
+      date: "Hace 2 días",
+      type: "Completo",
+      status: "Completado",
+      size: "18.7 GB",
+      location: "Repositorio seguro",
+      validation: "Verificado",
+      owner: "Sistema"
+    },
+    {
+      id: "BKP-004",
+      date: "Hace 3 días",
+      type: "Incremental",
+      status: "Fallido",
+      size: "0 GB",
+      location: "Repositorio seguro",
+      validation: "No aplica",
+      owner: "Sistema"
+    },
+    {
+      id: "BKP-005",
+      date: "Próximo 02:00",
+      type: "Incremental",
+      status: "Programado",
+      size: "Estimado",
+      location: "Repositorio seguro",
+      validation: "Pendiente",
+      owner: "Sistema"
+    }
+  ],
+
+  alerts: [
+    {
+      id: "ALT-001",
+      icon: "🔌",
+      title: "API de facturación con error",
+      text: "La integración presenta error desde la última sincronización.",
+      module: "integraciones",
+      severity: "Crítica",
+      date: "Hoy 10:50",
+      action: "Revisar integración",
+      href: "integraciones.html"
+    },
+    {
+      id: "ALT-002",
+      icon: "🔐",
+      title: "Usuario bloqueado",
+      text: "Existe una cuenta bloqueada por intentos fallidos.",
+      module: "usuarios",
+      severity: "Alta",
+      date: "Hoy 11:05",
+      action: "Revisar usuario",
+      href: "usuarios.html"
+    },
+    {
+      id: "ALT-003",
+      icon: "💾",
+      title: "Respaldo fallido reciente",
+      text: "Se detectó una copia fallida hace 3 días.",
+      module: "respaldo",
+      severity: "Media",
+      date: "Hace 3 días",
+      action: "Validar respaldo",
+      href: "respaldo.html"
+    }
+  ],
+
+  webhooks: [
+    {
+      icon: "📡",
+      title: "Evento recibido desde CRM",
+      text: "Actualización de cliente procesada correctamente.",
+      date: "Hoy 10:55"
+    },
+    {
+      icon: "⚠️",
+      title: "Webhook CRM con latencia",
+      text: "Respuesta superior al umbral configurado.",
+      date: "Hoy 09:35"
+    },
+    {
+      icon: "✅",
+      title: "Notificación push enviada",
+      text: "Evento de cambio de estado notificado al cliente.",
+      date: "Ayer 18:10"
+    }
+  ],
+
+  restoreEvents: [
+    {
+      icon: "🧪",
+      title: "Prueba de restauración parcial",
+      text: "Validación de integridad completada en ambiente de pruebas.",
+      date: "Hace 5 días"
+    },
+    {
+      icon: "💾",
+      title: "Copia completa verificada",
+      text: "Respaldo completo disponible para restauración.",
+      date: "Hace 2 días"
+    },
+    {
+      icon: "🗓️",
+      title: "Próxima prueba sugerida",
+      text: "Se recomienda programar prueba de restauración esta semana.",
+      date: "Pendiente"
     }
   ]
 };
 
-const MockAdminUsers = [
-  {
-    id: 1,
-    nombre: "Cliente Persona Demo",
-    email: "cliente.persona@demo.com",
-    rol: "Cliente",
-    equipo: "Personas",
-    estado: "Activo",
-    iniciales: "CP"
-  },
-  {
-    id: 2,
-    nombre: "Cliente Empresa Demo",
-    email: "cliente.empresa@demo.com",
-    rol: "Cliente",
-    equipo: "Empresas",
-    estado: "Activo",
-    iniciales: "CE"
-  },
-  {
-    id: 3,
-    nombre: "Asesor Demo",
-    email: "asesor@demo.com",
-    rol: "Asesor",
-    equipo: "Técnico Hogar",
-    estado: "Activo",
-    iniciales: "AS"
-  },
-  {
-    id: 4,
-    nombre: "Supervisor Demo",
-    email: "supervisor@demo.com",
-    rol: "Supervisor",
-    equipo: "Atención General",
-    estado: "Activo",
-    iniciales: "SD"
-  },
-  {
-    id: 5,
-    nombre: "Administrador Demo",
-    email: "admin@demo.com",
-    rol: "Administrador",
-    equipo: "Administración",
-    estado: "Activo",
-    iniciales: "AD"
-  },
-  {
-    id: 6,
-    nombre: "Usuario Bloqueado Demo",
-    email: "bloqueado@demo.com",
-    rol: "Asesor",
-    equipo: "Facturación",
-    estado: "Bloqueado",
-    iniciales: "UB"
-  }
-];
-
 /* =========================================================
-   API LAYER - CAMBIAR AQUÍ CUANDO EXISTA BACKEND
+   STATE
 ========================================================= */
 
-const AdminApi = {
-  async getDashboard() {
-    await delay(500);
-    return MockAdminDashboard;
+const State = {
+  page: document.body.dataset.page || "",
+  theme: localStorage.getItem("claro360-admin-theme") || "light",
 
-    /*
-    const response = await fetch("/api/admin/dashboard", {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      }
-    });
+  selectedUserId: null,
+  selectedRoleId: null,
+  selectedPermissionId: null,
+  selectedCatalogId: null,
+  selectedSlaRuleId: null,
+  selectedIntegrationId: null,
+  selectedMetricId: null,
+  selectedAlertId: null,
+  selectedAuditId: null,
+  selectedBackupId: null,
 
-    return await response.json();
-    */
-  },
+  userFilter: "todos",
+  usersView: "cards",
 
-  async getUsers() {
-    await delay(450);
-    return MockAdminUsers;
+  permissionFilter: "todos",
 
-    /*
-    const response = await fetch("/api/admin/usuarios", {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      }
-    });
+  catalogFilter: "todos",
+  catalogView: "cards",
 
-    return await response.json();
-    */
-  },
+  slaRuleFilter: "todos",
+  slaRuleView: "cards",
 
-  async saveUser(payload) {
-    await delay(700);
+  integrationFilter: "todos",
+  integrationView: "cards",
 
-    return {
-      ok: true,
-      user: payload
-    };
+  adminMetricCompact: false,
 
-    /*
-    const response = await fetch("/api/admin/usuarios", {
-      method: payload.id ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    return await response.json();
-    */
-  },
-
-  async saveSettings(payload) {
-    await delay(700);
-
-    return {
-      ok: true,
-      settings: payload
-    };
-
-    /*
-    const response = await fetch("/api/admin/configuracion", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      },
-      body: JSON.stringify(payload)
-    });
-
-    return await response.json();
-    */
-  }
+  auditFilter: "todos",
+  backupFilter: "todos"
 };
+
+/* =========================================================
+   HELPERS
+========================================================= */
+
+const $ = (selector, parent = document) => parent.querySelector(selector);
+const $$ = (selector, parent = document) => Array.from(parent.querySelectorAll(selector));
+
+function esc(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function setText(selector, value) {
+  const el = $(selector);
+  if (el) el.textContent = value ?? "";
+}
+
+function setHTML(selector, value) {
+  const el = $(selector);
+  if (el) el.innerHTML = value ?? "";
+}
+
+function getValue(selector) {
+  return $(selector)?.value?.trim() || "";
+}
+
+function isChecked(selector) {
+  return Boolean($(selector)?.checked);
+}
+
+function show(el, condition) {
+  if (!el) return;
+  el.classList.toggle("hidden", !condition);
+}
+
+function getUser(id) {
+  return Mock.users.find(item => item.id === id) || null;
+}
+
+function getRole(id) {
+  return Mock.roles.find(item => item.id === id) || null;
+}
+
+function getPermission(id) {
+  return Mock.permissions.find(item => item.id === id) || null;
+}
+
+function getCatalogItem(id) {
+  return Mock.catalogItems.find(item => item.id === id) || null;
+}
+
+function getSlaRule(id) {
+  return Mock.slaRules.find(item => item.id === id) || null;
+}
+
+function getIntegration(id) {
+  return Mock.integrations.find(item => item.id === id) || null;
+}
+
+function getMetric(id) {
+  return Mock.adminMetrics.find(item => item.id === id) || null;
+}
+
+function getAlert(id) {
+  return Mock.alerts.find(item => item.id === id) || null;
+}
+
+function getAudit(id) {
+  return Mock.audit.find(item => item.id === id) || null;
+}
+
+function getBackup(id) {
+  return Mock.backups.find(item => item.id === id) || null;
+}
+
+function statusType(status) {
+  const s = String(status || "").toLowerCase();
+
+  if (s.includes("error") || s.includes("fallido") || s.includes("bloqueado") || s.includes("crítica") || s.includes("critica")) {
+    return "danger";
+  }
+
+  if (s.includes("alerta") || s.includes("revisión") || s.includes("revision") || s.includes("pendiente") || s.includes("programado")) {
+    return "warning";
+  }
+
+  if (s.includes("activo") || s.includes("activa") || s.includes("completado") || s.includes("verificado") || s.includes("generado") || s.includes("exitoso")) {
+    return "success";
+  }
+
+  return "info";
+}
+
+function metricStatusType(status) {
+  if (status === "danger") return "danger";
+  if (status === "warning") return "warning";
+  if (status === "success") return "success";
+  return "info";
+}
+
+function pillClass(type) {
+  return `status-pill status-pill--${type || "info"}`;
+}
+
+function summaryHTML(items) {
+  return items.map(([label, value]) => `
+    <div>
+      <span>${esc(label)}</span>
+      <strong>${esc(value)}</strong>
+    </div>
+  `).join("");
+}
+
+function countBy(list, field) {
+  return list.reduce((acc, item) => {
+    const key = item[field] || "Sin dato";
+    acc[key] = (acc[key] || 0) + 1;
+    return acc;
+  }, {});
+}
+
+function toast(title, message, type = "info") {
+  const box = $("#toastContainer");
+
+  if (!box) {
+    alert(`${title}\n${message}`);
+    return;
+  }
+
+  const item = document.createElement("div");
+  item.className = `toast toast--${type}`;
+  item.innerHTML = `
+    <span>${type === "success" ? "✓" : type === "warning" ? "!" : type === "danger" ? "×" : "ℹ"}</span>
+    <div>
+      <strong>${esc(title)}</strong>
+      <p>${esc(message)}</p>
+    </div>
+  `;
+
+  box.appendChild(item);
+
+  setTimeout(() => {
+    item.style.opacity = "0";
+    item.style.transform = "translateX(18px)";
+    setTimeout(() => item.remove(), 260);
+  }, 3200);
+}
 
 /* =========================================================
    INIT
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
-  applyTheme(AdminState.theme);
-  bindLayout();
-  bindTheme();
-  bindUserMenu();
-  bindSearch();
-  bindBot();
-  bindModals();
-  bindLogout();
+  applyTheme(State.theme);
+  setupBaseUI();
+  setupGlobalEvents();
+  setupSearch();
+  setupBot();
+  updateGlobalBadges();
 
-  const page = document.body.dataset.page;
-
-  if (page === "admin-dashboard") {
-    initAdminDashboard();
-  }
-
-  if (page === "admin-usuarios") {
-    initAdminUsersPage();
-  }
-
-  if (page === "admin-configuracion") {
-    initAdminSettingsPage();
-  }
+  if (State.page === "admin-dashboard") initDashboard();
+  if (State.page === "admin-usuarios") initUsers();
+  if (State.page === "admin-roles-permisos") initRolesPermissions();
+  if (State.page === "admin-catalogos") initCatalogs();
+  if (State.page === "admin-reglas-sla") initSlaRules();
+  if (State.page === "admin-indicadores-reportes") initAdminIndicatorsReports();
+  if (State.page === "admin-integraciones") initIntegrations();
+  if (State.page === "admin-auditoria") initAdminAudit();
+  if (State.page === "admin-respaldo") initBackup();
+  if (State.page === "admin-configuracion-sistema") initSystemConfig();
 });
 
 /* =========================================================
-   UTILIDADES
+   BASE UI
 ========================================================= */
 
-function $(selector, parent = document) {
-  return parent.querySelector(selector);
-}
+function setupBaseUI() {
+  setText("#userNameTop", Mock.admin.name);
+  setText("#userRoleTop", Mock.admin.role);
+  setText("#userAvatar", Mock.admin.initials);
 
-function $all(selector, parent = document) {
-  return Array.from(parent.querySelectorAll(selector));
-}
-
-function delay(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
-
-function setText(selector, value) {
-  const element = $(selector);
-  if (element) element.textContent = value;
-}
-
-function showToast({ title, message, type = "info" }) {
-  const container = $("#toastContainer");
-  if (!container) return;
-
-  const toast = document.createElement("div");
-  toast.className = `toast toast--${type}`;
-  toast.innerHTML = `
-    <span>${type === "success" ? "✓" : type === "warning" ? "!" : type === "danger" ? "×" : "ℹ"}</span>
-    <div>
-      <strong>${title}</strong>
-      <p>${message}</p>
-    </div>
-  `;
-
-  container.appendChild(toast);
-
-  setTimeout(() => {
-    toast.style.opacity = "0";
-    toast.style.transform = "translateX(24px)";
-    setTimeout(() => toast.remove(), 250);
-  }, 4200);
-}
-
-/* =========================================================
-   DASHBOARD ADMIN
-========================================================= */
-
-async function initAdminDashboard() {
-  setText("#welcomeTitle", "Cargando administración...");
-  setText("#welcomeMessage", "Estamos preparando el estado general de la plataforma.");
-
-  const data = await AdminApi.getDashboard();
-
-  AdminState.dashboardData = data;
-
-  renderAdminDashboard(data);
-}
-
-function renderAdminDashboard(data) {
-  const admin = data.admin;
-
-  setText("#userAvatar", admin.iniciales);
-  setText("#userNameTop", admin.nombre);
-  setText("#userRoleTop", admin.rol);
-  setText("#adminScope", admin.alcance);
-  setText("#welcomeTitle", `Hola, ${admin.nombre}`);
-  setText(
-    "#welcomeMessage",
-    "Desde este panel puedes gestionar usuarios, configurar reglas de atención, revisar auditoría y administrar integraciones."
-  );
-  setText("#adminStatus", admin.estado);
-  setText("#adminLastAccess", admin.ultimoAcceso);
-
-  renderAdminKpis(data.indicadores);
-  renderModuleStatus(data.modulos);
-  renderAdminAi(data.resumenIA);
-  renderAdminActivity(data.actividad);
-  renderAdminAlerts(data.alertas);
-  renderRoleGrid(data.roles);
-}
-
-function renderAdminKpis(items) {
-  const grid = $("#adminKpiGrid");
-  if (!grid) return;
-
-  grid.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="kpi-card">
-          <span class="kpi-card__icon">${item.icono}</span>
-          <div>
-            <strong>${item.valor}</strong>
-            <p>${item.titulo}</p>
-            <small>${item.descripcion}</small>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  const users = items.find((item) => item.titulo === "Usuarios");
-  setText("#sidebarUsersCount", users ? users.valor : "");
-}
-
-function renderModuleStatus(items) {
-  const list = $("#moduleStatusList");
-  if (!list) return;
-
-  list.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="module-card">
-          <span class="module-icon">${item.icono}</span>
-          <div>
-            <strong>${item.nombre}</strong>
-            <p>${item.descripcion}</p>
-          </div>
-          <span class="status-pill status-pill--${item.estadoTipo}">
-            ${item.estado}
-          </span>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function renderAdminAi(items) {
-  const container = $("#adminAiSummary");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="ai-summary-item">
-          <strong>${item.titulo}</strong>
-          <p>${item.texto}</p>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderAdminActivity(items) {
-  const container = $("#adminActivityTimeline");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="activity-item">
-          <span class="activity-icon">${item.icono}</span>
-          <div class="activity-content">
-            <strong>${item.titulo}</strong>
-            <p>${item.descripcion}</p>
-            <small>${item.fecha}</small>
-          </div>
-        </div>
-      `;
-    })
-    .join("");
-}
-
-function renderAdminAlerts(items) {
-  const list = $("#adminAlertList");
-  if (!list) return;
-
-  list.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="alert-card">
-          <div class="module-card">
-            <span class="alert-icon">${item.icono}</span>
-            <div>
-              <strong>${item.titulo}</strong>
-              <p>${item.descripcion}</p>
-            </div>
-            <span class="status-pill status-pill--${item.estadoTipo}">
-              ${item.estado}
-            </span>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function renderRoleGrid(items) {
-  const grid = $("#roleGrid");
-  if (!grid) return;
-
-  grid.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="role-card">
-          <span class="role-icon">${item.icono}</span>
-          <div>
-            <strong>${item.rol}</strong>
-            <p>${item.descripcion}</p>
-            <small>${item.cantidad} usuarios</small>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-/* =========================================================
-   USUARIOS
-========================================================= */
-
-let UsersState = {
-  users: [],
-  filter: "todos",
-  search: ""
-};
-
-async function initAdminUsersPage() {
-  bindUsersEvents();
-
-  const users = await AdminApi.getUsers();
-
-  UsersState.users = users;
-
-  renderUsersList();
-}
-
-function bindUsersEvents() {
-  $("#usersSearchInput")?.addEventListener("input", (event) => {
-    UsersState.search = event.target.value.trim().toLowerCase();
-    renderUsersList();
-  });
-
-  $all("[data-user-filter]").forEach((button) => {
-    button.addEventListener("click", () => {
-      UsersState.filter = button.dataset.userFilter || "todos";
-
-      $all("[data-user-filter]").forEach((item) => item.classList.remove("active"));
-      button.classList.add("active");
-
-      renderUsersList();
-    });
-  });
-
-  $("#refreshUsersBtn")?.addEventListener("click", async () => {
-    UsersState.users = await AdminApi.getUsers();
-    renderUsersList();
-
-    showToast({
-      title: "Usuarios actualizados",
-      message: "Se actualizó el listado de usuarios.",
-      type: "success"
-    });
-  });
-
-  $("#syncUsersBtn")?.addEventListener("click", () => {
-    showToast({
-      title: "Sincronización simulada",
-      message: "Cuando exista backend, se sincronizará con el repositorio real de usuarios.",
-      type: "success"
-    });
-  });
-
-  $("#openCreateUserBtn")?.addEventListener("click", clearUserForm);
-  $("#clearUserFormBtn")?.addEventListener("click", clearUserForm);
-
-  $("#adminUserForm")?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    clearAdminFormErrors();
-
-    const payload = getUserFormPayload();
-    const validation = validateUserPayload(payload);
-
-    if (!validation.ok) {
-      showAdminFormErrors(validation.errors);
-
-      showToast({
-        title: "Formulario incompleto",
-        message: validation.firstMessage,
-        type: "warning"
-      });
-
-      return;
-    }
-
-    setAdminButtonLoading("#userSubmitBtn", true);
-
-    const result = await AdminApi.saveUser(payload);
-
-    setAdminButtonLoading("#userSubmitBtn", false);
-
-    if (result.ok) {
-      showToast({
-        title: "Usuario guardado",
-        message: "La información del usuario fue registrada correctamente.",
-        type: "success"
-      });
-
-      upsertLocalUser(payload);
-      clearUserForm();
-      renderUsersList();
-    }
-  });
-}
-
-function renderUsersList() {
-  const list = $("#usersList");
-  const empty = $("#emptyUsersState");
-
-  if (!list || !empty) return;
-
-  const filtered = getFilteredUsers();
-
-  setText("#usersSummaryStatus", `${filtered.length} usuarios visibles`);
-  setText("#usersSummaryText", `Filtro activo: ${UsersState.filter}`);
-  setText("#sidebarUsersCount", UsersState.users.length);
-
-  if (!filtered.length) {
-    list.innerHTML = "";
-    empty.classList.remove("hidden");
-    return;
-  }
-
-  empty.classList.add("hidden");
-
-  list.innerHTML = filtered
-    .map((user) => {
-      return `
-        <article class="user-row">
-          <span class="user-avatar-card">${user.iniciales}</span>
-
-          <div>
-            <strong>${user.nombre}</strong>
-            <p>${user.email} · ${user.rol} · ${user.equipo}</p>
-            <span class="status-pill ${user.estado === "Activo" ? "status-pill--success" : user.estado === "Bloqueado" ? "status-pill--danger" : "status-pill--warning"}">
-              ${user.estado}
-            </span>
-          </div>
-
-          <div class="user-row__actions">
-            <button type="button" data-edit-user="${user.id}">Editar</button>
-            <button type="button" data-lock-user="${user.id}">
-              ${user.estado === "Bloqueado" ? "Activar" : "Bloquear"}
-            </button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  $all("[data-edit-user]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = Number(button.dataset.editUser);
-      const user = UsersState.users.find((item) => item.id === id);
-      if (user) fillUserForm(user);
-    });
-  });
-
-  $all("[data-lock-user]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const id = Number(button.dataset.lockUser);
-      toggleUserStatus(id);
-    });
-  });
-}
-
-function getFilteredUsers() {
-  return UsersState.users.filter((user) => {
-    const q = UsersState.search;
-
-    const matchesSearch =
-      !q ||
-      user.nombre.toLowerCase().includes(q) ||
-      user.email.toLowerCase().includes(q) ||
-      user.rol.toLowerCase().includes(q) ||
-      user.equipo.toLowerCase().includes(q) ||
-      user.estado.toLowerCase().includes(q);
-
-    const filter = UsersState.filter;
-
-    const matchesFilter =
-      filter === "todos" ||
-      user.rol === filter ||
-      user.estado === filter;
-
-    return matchesSearch && matchesFilter;
-  });
-}
-
-function fillUserForm(user) {
-  setText("#userFormTitle", "Editar usuario");
-
-  $("#adminUserId").value = user.id;
-  $("#adminUserName").value = user.nombre;
-  $("#adminUserEmail").value = user.email;
-  $("#adminUserRole").value = user.rol;
-  $("#adminUserTeam").value = user.equipo;
-  $("#adminUserStatus").value = user.estado;
-
-  showToast({
-    title: "Usuario seleccionado",
-    message: "Puedes editar los datos en el formulario lateral.",
-    type: "success"
-  });
-}
-
-function clearUserForm() {
-  setText("#userFormTitle", "Nuevo usuario");
-
-  $("#adminUserId").value = "";
-  $("#adminUserName").value = "";
-  $("#adminUserEmail").value = "";
-  $("#adminUserRole").value = "";
-  $("#adminUserTeam").value = "";
-  $("#adminUserStatus").value = "";
-  $("#adminUserNotify").checked = true;
-
-  clearAdminFormErrors();
-}
-
-function getUserFormPayload() {
-  return {
-    id: $("#adminUserId")?.value ? Number($("#adminUserId").value) : Date.now(),
-    nombre: $("#adminUserName")?.value.trim(),
-    email: $("#adminUserEmail")?.value.trim(),
-    rol: $("#adminUserRole")?.value,
-    equipo: $("#adminUserTeam")?.value,
-    estado: $("#adminUserStatus")?.value,
-    notify: $("#adminUserNotify")?.checked,
-    iniciales: getInitials($("#adminUserName")?.value.trim())
-  };
-}
-
-function validateUserPayload(payload) {
-  const errors = {};
-
-  if (!payload.nombre) errors.adminUserName = "Ingresa el nombre del usuario.";
-  if (!payload.email) errors.adminUserEmail = "Ingresa el correo electrónico.";
-  if (!payload.rol) errors.adminUserRole = "Selecciona el rol.";
-  if (!payload.equipo) errors.adminUserTeam = "Selecciona el equipo o segmento.";
-  if (!payload.estado) errors.adminUserStatus = "Selecciona el estado.";
-
-  return buildAdminValidation(errors);
-}
-
-function upsertLocalUser(user) {
-  const index = UsersState.users.findIndex((item) => item.id === user.id);
-
-  if (index >= 0) {
-    UsersState.users[index] = user;
-  } else {
-    UsersState.users.unshift(user);
-  }
-}
-
-function toggleUserStatus(id) {
-  UsersState.users = UsersState.users.map((user) => {
-    if (user.id !== id) return user;
-
-    return {
-      ...user,
-      estado: user.estado === "Bloqueado" ? "Activo" : "Bloqueado"
-    };
-  });
-
-  renderUsersList();
-
-  showToast({
-    title: "Estado actualizado",
-    message: "El estado del usuario fue modificado.",
-    type: "success"
-  });
-}
-
-function getInitials(name) {
-  if (!name) return "US";
-
-  return name
-    .split(" ")
-    .filter(Boolean)
-    .slice(0, 2)
-    .map((word) => word[0].toUpperCase())
-    .join("");
-}
-
-/* =========================================================
-   CONFIGURACIÓN
-========================================================= */
-
-function initAdminSettingsPage() {
-  renderSettingsAi();
-
-  $("#settingsForm")?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    await saveSettings();
-  });
-
-  $("#saveSettingsTopBtn")?.addEventListener("click", saveSettings);
-  $("#previewSettingsBtn")?.addEventListener("click", previewSettings);
-
-  $("#restoreSettingsBtn")?.addEventListener("click", () => {
-    restoreSettingsDefaults();
-
-    showToast({
-      title: "Valores restaurados",
-      message: "Se restauraron los parámetros recomendados.",
-      type: "success"
-    });
-  });
-
-  $("#settingsAnalyzeBtn")?.addEventListener("click", () => {
-    openGenericModal({
-      icon: "🤖",
-      title: "Análisis IA",
-      text: "La configuración es consistente: SLA crítico activo, clasificación automática habilitada, auditoría obligatoria y doble autenticación para usuarios internos."
-    });
-  });
-}
-
-function renderSettingsAi() {
-  const container = $("#settingsAiSummary");
-  if (!container) return;
-
-  container.innerHTML = `
-    <div class="ai-summary-item">
-      <strong>Seguridad</strong>
-      <p>Mantén doble autenticación y auditoría activa para usuarios internos.</p>
-    </div>
-
-    <div class="ai-summary-item">
-      <strong>SLA</strong>
-      <p>El SLA crítico debe ser menor para servicios empresariales o incidencias masivas.</p>
-    </div>
-
-    <div class="ai-summary-item">
-      <strong>Automatización</strong>
-      <p>La clasificación automática ayuda a reducir tiempos de triage.</p>
-    </div>
-  `;
-}
-
-async function saveSettings() {
-  const payload = getSettingsPayload();
-
-  setAdminButtonLoading("#settingsSubmitBtn", true);
-
-  const result = await AdminApi.saveSettings(payload);
-
-  setAdminButtonLoading("#settingsSubmitBtn", false);
-
-  if (result.ok) {
-    openGenericModal({
-      icon: "✓",
-      title: "Configuración guardada",
-      text: "Los parámetros de la plataforma fueron registrados correctamente."
-    });
-  }
-}
-
-function getSettingsPayload() {
-  return {
-    standardClaimSla: $("#settingStandardClaimSla")?.value,
-    criticalIncidentSla: $("#settingCriticalIncidentSla")?.value,
-    autoClassification: $("#settingAutoClassification")?.checked,
-    smartAssignment: $("#settingSmartAssignment")?.checked,
-    slaAlertTime: $("#settingSlaAlertTime")?.value,
-    auditRequired: $("#settingAuditRequired")?.checked,
-    emailEnabled: $("#settingEmailEnabled")?.checked,
-    smsEnabled: $("#settingSmsEnabled")?.checked,
-    whatsappEnabled: $("#settingWhatsappEnabled")?.checked,
-    mfaEnabled: $("#settingMfaEnabled")?.checked,
-    sessionTimeout: $("#settingSessionTimeout")?.value,
-    loginAttempts: $("#settingLoginAttempts")?.value
-  };
-}
-
-function previewSettings() {
-  const payload = getSettingsPayload();
-  const summary = $("#settingsPreviewSummary");
-
-  if (summary) {
-    summary.innerHTML = `
-      <div>
-        <span>SLA reclamo estándar</span>
-        <strong>${payload.standardClaimSla}</strong>
-      </div>
-      <div>
-        <span>SLA incidencia crítica</span>
-        <strong>${payload.criticalIncidentSla}</strong>
-      </div>
-      <div>
-        <span>Clasificación automática</span>
-        <strong>${payload.autoClassification ? "Activa" : "Inactiva"}</strong>
-      </div>
-      <div>
-        <span>Asignación inteligente</span>
-        <strong>${payload.smartAssignment ? "Activa" : "Inactiva"}</strong>
-      </div>
-      <div>
-        <span>Doble autenticación</span>
-        <strong>${payload.mfaEnabled ? "Activa" : "Inactiva"}</strong>
-      </div>
-    `;
-  }
-
-  openModal("#settingsPreviewModal");
-}
-
-function restoreSettingsDefaults() {
-  $("#settingStandardClaimSla").value = "48h";
-  $("#settingCriticalIncidentSla").value = "4h";
-  $("#settingAutoClassification").checked = true;
-  $("#settingSmartAssignment").checked = true;
-  $("#settingSlaAlertTime").value = "1h";
-  $("#settingAuditRequired").checked = true;
-  $("#settingEmailEnabled").checked = true;
-  $("#settingSmsEnabled").checked = true;
-  $("#settingWhatsappEnabled").checked = false;
-  $("#settingMfaEnabled").checked = true;
-  $("#settingSessionTimeout").value = "30";
-  $("#settingLoginAttempts").value = "5";
-}
-
-/* =========================================================
-   VALIDACIÓN Y UTILIDADES DE FORMULARIO
-========================================================= */
-
-function buildAdminValidation(errors) {
-  const messages = Object.values(errors);
-
-  return {
-    ok: messages.length === 0,
-    errors,
-    firstMessage: messages[0] || ""
-  };
-}
-
-function showAdminFormErrors(errors) {
-  Object.entries(errors).forEach(([key, value]) => {
-    const element = $(`#${key}Error`);
-    if (element) element.textContent = value;
-  });
-}
-
-function clearAdminFormErrors() {
-  $all(".form-error").forEach((item) => {
-    item.textContent = "";
-  });
-}
-
-function setAdminButtonLoading(selector, value) {
-  const button = $(selector);
-  if (!button) return;
-
-  button.disabled = value;
-  button.classList.toggle("loading", value);
-}
-
-/* =========================================================
-   LAYOUT
-========================================================= */
-
-function bindLayout() {
   $("#menuBtn")?.addEventListener("click", () => {
     $("#sidebar")?.classList.add("open");
     $("#drawerBackdrop")?.classList.add("show");
@@ -1008,93 +1012,126 @@ function bindLayout() {
   });
 
   $("#drawerBackdrop")?.addEventListener("click", () => {
-    closeSidebar();
     closeBot();
+    closeSidebar();
   });
 
-  $("#refreshModulesBtn")?.addEventListener("click", () => {
-    if (AdminState.dashboardData) {
-      renderModuleStatus(AdminState.dashboardData.modulos);
-    }
-
-    showToast({
-      title: "Módulos actualizados",
-      message: "Se actualizó el estado de los módulos.",
-      type: "success"
-    });
+  $("#themeToggle")?.addEventListener("click", () => {
+    applyTheme(State.theme === "light" ? "dark" : "light");
+    toast(
+      "Tema actualizado",
+      `Se activó el modo ${State.theme === "dark" ? "oscuro" : "claro"}.`,
+      "success"
+    );
   });
 
-  $("#refreshAdminAlertsBtn")?.addEventListener("click", () => {
-    if (AdminState.dashboardData) {
-      renderAdminAlerts(AdminState.dashboardData.alertas);
-    }
-
-    showToast({
-      title: "Alertas actualizadas",
-      message: "Se refrescaron las alertas administrativas.",
-      type: "success"
-    });
+  $("#userMenuButton")?.addEventListener("click", event => {
+    event.stopPropagation();
+    $("#userMenuDropdown")?.classList.toggle("open");
   });
+
+  document.addEventListener("click", () => {
+    $("#userMenuDropdown")?.classList.remove("open");
+  });
+
+  $("#logoutBtn")?.addEventListener("click", logout);
+  $("#logoutDropdownBtn")?.addEventListener("click", logout);
+}
+
+function applyTheme(theme) {
+  State.theme = theme;
+  document.documentElement.dataset.theme = theme;
+  localStorage.setItem("claro360-admin-theme", theme);
 }
 
 function closeSidebar() {
   $("#sidebar")?.classList.remove("open");
-  $("#drawerBackdrop")?.classList.remove("show");
-  document.body.classList.remove("drawer-open");
+
+  if (!$("#botDrawer")?.classList.contains("open")) {
+    $("#drawerBackdrop")?.classList.remove("show");
+    document.body.classList.remove("drawer-open");
+  }
+}
+
+function logout() {
+  toast("Sesión cerrada", "Serás redirigido al login.", "success");
+
+  setTimeout(() => {
+    window.location.href = "../login.html";
+  }, 700);
+}
+
+function updateGlobalBadges() {
+  const activeUsers = Mock.users.filter(u => u.status === "Activo").length;
+  const integrationAlerts = Mock.integrations.filter(i => i.status !== "Activa").length;
+  const alertCount = Mock.alerts.length;
+
+  setText("#sidebarUserCount", activeUsers);
+  setText("#sidebarIntegrationAlerts", integrationAlerts);
+  setText("#notificationBadge", alertCount);
 }
 
 /* =========================================================
-   THEME
+   MODALS
 ========================================================= */
 
-function bindTheme() {
-  $("#themeToggle")?.addEventListener("click", () => {
-    const next = AdminState.theme === "light" ? "dark" : "light";
-    applyTheme(next);
-
-    showToast({
-      title: "Tema actualizado",
-      message: `Se activó el modo ${next === "dark" ? "oscuro" : "claro"}.`,
-      type: "success"
-    });
-  });
-}
-
-function applyTheme(theme) {
-  AdminState.theme = theme;
-  document.documentElement.setAttribute("data-theme", theme);
-  localStorage.setItem("claro360-theme", theme);
-}
-
-/* =========================================================
-   USER MENU
-========================================================= */
-
-function bindUserMenu() {
-  $("#userMenuButton")?.addEventListener("click", () => {
-    $("#userMenuDropdown")?.classList.toggle("open");
+function setupGlobalEvents() {
+  document.addEventListener("click", event => {
+    const closeBtn = event.target.closest("[data-close-modal]");
+    if (closeBtn) closeModals();
   });
 
-  document.addEventListener("click", (event) => {
-    const menu = $(".user-menu");
-    if (menu && !menu.contains(event.target)) {
-      $("#userMenuDropdown")?.classList.remove("open");
+  $("#modalBackdrop")?.addEventListener("click", closeModals);
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape") {
+      closeModals();
+      closeSearch();
+      closeBot();
+      closeSidebar();
     }
   });
+}
+
+function openModal(selector) {
+  const modal = $(selector);
+
+  if (!modal) {
+    toast("Modal no encontrado", `No existe ${selector}.`, "warning");
+    return;
+  }
+
+  modal.classList.add("show");
+  modal.setAttribute("aria-hidden", "false");
+  $("#modalBackdrop")?.classList.add("show");
+  document.body.classList.add("modal-open");
+}
+
+function closeModals() {
+  $$(".modal").forEach(modal => {
+    modal.classList.remove("show");
+    modal.setAttribute("aria-hidden", "true");
+  });
+
+  $("#modalBackdrop")?.classList.remove("show");
+  document.body.classList.remove("modal-open");
+}
+
+function genericModal(icon, title, text) {
+  setText("#genericModalIcon", icon);
+  setText("#genericModalTitle", title);
+  setText("#genericModalText", text);
+  openModal("#genericModal");
 }
 
 /* =========================================================
    SEARCH
 ========================================================= */
 
-function bindSearch() {
+function setupSearch() {
   $("#globalSearchBtn")?.addEventListener("click", openSearch);
   $("#closeSearchBtn")?.addEventListener("click", closeSearch);
-
-  $("#globalSearchInput")?.addEventListener("input", (event) => {
-    AdminState.currentSearch = event.target.value.trim().toLowerCase();
-    renderSearchResults();
-  });
+  $("#globalSearchInput")?.addEventListener("input", renderSearch);
 }
 
 function openSearch() {
@@ -1102,9 +1139,8 @@ function openSearch() {
   $("#searchModal")?.setAttribute("aria-hidden", "false");
   document.body.classList.add("search-open");
 
-  setTimeout(() => $("#globalSearchInput")?.focus(), 100);
-
-  renderSearchResults();
+  setTimeout(() => $("#globalSearchInput")?.focus(), 50);
+  renderSearch();
 }
 
 function closeSearch() {
@@ -1113,103 +1149,119 @@ function closeSearch() {
   document.body.classList.remove("search-open");
 }
 
-function renderSearchResults() {
-  const container = $("#searchResults");
-  if (!container) return;
+function renderSearch() {
+  const box = $("#searchResults");
+  if (!box) return;
 
-  const q = AdminState.currentSearch;
+  const query = getValue("#globalSearchInput").toLowerCase();
 
-  const users = MockAdminUsers.map((item) => ({
+  const pages = [
+    ["🏠", "Dashboard", "Vista general de administración del sistema.", "dashboard.html"],
+    ["👤", "Usuarios", "Gestión de cuentas, roles, estado y accesos.", "usuarios.html"],
+    ["🔐", "Roles y permisos", "Matriz de permisos por rol y módulo.", "roles-permisos.html"],
+    ["🧩", "Catálogos", "Categorías, prioridades, estados, canales y áreas.", "catalogos.html"],
+    ["⏱️", "Reglas SLA", "Configuración de tiempos de atención y alertas.", "reglas-sla.html"],
+    ["📈", "Indicadores y reportes", "Gestión, métricas y generación de reportes.", "indicadores-reportes.html"],
+    ["🔌", "Integraciones", "APIs, webhooks, correo, CRM y autenticación.", "integraciones.html"],
+    ["🕵️", "Auditoría", "Trazabilidad administrativa de cambios.", "auditoria.html"],
+    ["💾", "Respaldo", "Copias, restauración y continuidad.", "respaldo.html"],
+    ["⚙️", "Configuración", "Parámetros globales del sistema.", "configuracion-sistema.html"]
+  ].map(([icon, title, text, href]) => ({
+    icon,
+    title,
+    text,
+    href,
+    key: `${title} ${text}`
+  }));
+
+  const users = Mock.users.map(item => ({
     icon: "👤",
-    title: item.nombre,
-    text: `${item.email} · ${item.rol} · ${item.estado}`,
+    title: item.name,
+    text: `${item.email} · ${item.role} · ${item.status}`,
     href: "usuarios.html",
-    keywords: `${item.nombre} ${item.email} ${item.rol} ${item.equipo} ${item.estado}`.toLowerCase()
+    key: `${item.name} ${item.email} ${item.role} ${item.area} ${item.status}`
   }));
 
-  const modules = MockAdminDashboard.modulos.map((item) => ({
-    icon: item.icono,
-    title: item.nombre,
-    text: `${item.descripcion} · ${item.estado}`,
-    href: "dashboard.html",
-    keywords: `${item.nombre} ${item.descripcion} ${item.estado}`.toLowerCase()
+  const catalogs = Mock.catalogItems.map(item => ({
+    icon: item.icon,
+    title: item.name,
+    text: `${item.type} · ${item.status} · ${item.dependency}`,
+    href: "catalogos.html",
+    key: `${item.name} ${item.type} ${item.status} ${item.dependency} ${item.description}`
   }));
 
-  const all = [...users, ...modules];
+  const integrations = Mock.integrations.map(item => ({
+    icon: item.icon,
+    title: item.name,
+    text: `${item.type} · ${item.status} · ${item.lastSync}`,
+    href: "integraciones.html",
+    key: `${item.name} ${item.type} ${item.status} ${item.owner} ${item.endpoint}`
+  }));
 
-  const results = q ? all.filter((item) => item.keywords.includes(q)) : all.slice(0, 7);
+  const reports = Mock.reports.map(item => ({
+    icon: "📊",
+    title: item.name,
+    text: `${item.type} · ${item.period} · ${item.status}`,
+    href: "indicadores-reportes.html",
+    key: `${item.name} ${item.type} ${item.period} ${item.status}`
+  }));
 
-  if (!results.length) {
-    container.innerHTML = `<p class="muted">No se encontraron resultados.</p>`;
-    return;
-  }
+  const results = [...pages, ...users, ...catalogs, ...integrations, ...reports]
+    .filter(item => !query || item.key.toLowerCase().includes(query));
 
-  container.innerHTML = results
-    .map((item) => {
-      return `
-        <a href="${item.href}" class="search-result-item">
-          <span>${item.icon}</span>
-          <div>
-            <strong>${item.title}</strong>
-            <small>${item.text}</small>
-          </div>
-        </a>
-      `;
-    })
-    .join("");
+  box.innerHTML = results.length
+    ? results.map(item => `
+      <a href="${item.href}" class="search-result-item">
+        <span>${item.icon}</span>
+        <div>
+          <strong>${esc(item.title)}</strong>
+          <small>${esc(item.text)}</small>
+        </div>
+      </a>
+    `).join("")
+    : `<p class="muted">No se encontraron resultados.</p>`;
 }
 
 /* =========================================================
    BOT
 ========================================================= */
 
-function bindBot() {
+function setupBot() {
   $("#openBotSidebar")?.addEventListener("click", openBot);
   $("#openBotWelcome")?.addEventListener("click", openBot);
-
-  $("#analyzeAdminBtn")?.addEventListener("click", () => {
-    openBot();
-    addBotMessage("Resume el estado de la plataforma", "user");
-
-    setTimeout(() => {
-      addBotMessage(generateBotResponse("resume el estado de la plataforma"), "bot");
-    }, 500);
-  });
-
   $("#closeBotDrawer")?.addEventListener("click", closeBot);
 
-  $("#botForm")?.addEventListener("submit", async (event) => {
+  $("#botForm")?.addEventListener("submit", event => {
     event.preventDefault();
 
-    const input = $("#botInput");
-    const prompt = input?.value.trim();
-
+    const prompt = getValue("#botInput");
     if (!prompt) return;
 
-    addBotMessage(prompt, "user");
-    input.value = "";
-
-    const typing = addTyping();
-
-    await delay(500);
-
-    typing.remove();
-    addBotMessage(generateBotResponse(prompt), "bot");
+    $("#botInput").value = "";
+    askBot(prompt);
   });
 
-  $all("[data-bot-prompt]").forEach((button) => {
-    button.addEventListener("click", async () => {
-      const prompt = button.dataset.botPrompt || "";
+  $$("[data-bot-prompt]").forEach(button => {
+    button.addEventListener("click", () => askBot(button.dataset.botPrompt));
+  });
 
-      addBotMessage(prompt, "user");
+  const aiButtons = [
+    ["analyzeAdminSystemBtn", "Revisa el estado del sistema"],
+    ["analyzeUsersBtn", "Analiza usuarios"],
+    ["analyzeRolesBtn", "Analiza roles y permisos"],
+    ["analyzePermissionRiskBtn", "Revisa permisos sensibles"],
+    ["analyzeCatalogsBtn", "Analiza catálogos"],
+    ["analyzeSlaRulesBtn", "Analiza reglas SLA"],
+    ["analyzeAdminIndicatorsBtn", "Analiza indicadores administrativos"],
+    ["analyzeIntegrationsBtn", "Analiza integraciones"],
+    ["analyzeAdminAuditBtn", "Analiza auditoría administrativa"],
+    ["generateAdminAuditInsightBtn", "Genera análisis de auditoría"],
+    ["analyzeBackupBtn", "Analiza respaldo"],
+    ["analyzeSystemConfigBtn", "Analiza configuración del sistema"]
+  ];
 
-      const typing = addTyping();
-
-      await delay(500);
-
-      typing.remove();
-      addBotMessage(generateBotResponse(prompt), "bot");
-    });
+  aiButtons.forEach(([id, prompt]) => {
+    $(`#${id}`)?.addEventListener("click", () => askBot(prompt));
   });
 }
 
@@ -1221,1395 +1273,2890 @@ function openBot() {
 
 function closeBot() {
   $("#botDrawer")?.classList.remove("open");
-  $("#drawerBackdrop")?.classList.remove("show");
-  document.body.classList.remove("drawer-open");
-}
 
-function addBotMessage(text, sender) {
-  const container = $("#botMessages");
-  if (!container) return;
-
-  const message = document.createElement("div");
-  message.className = `message message--${sender}`;
-  message.textContent = text;
-
-  container.appendChild(message);
-  container.scrollTop = container.scrollHeight;
-}
-
-function addTyping() {
-  const container = $("#botMessages");
-  const message = document.createElement("div");
-
-  message.className = "message message--bot";
-  message.textContent = "IA Admin está analizando la configuración...";
-
-  container?.appendChild(message);
-
-  if (container) {
-    container.scrollTop = container.scrollHeight;
+  if (!$("#sidebar")?.classList.contains("open")) {
+    $("#drawerBackdrop")?.classList.remove("show");
+    document.body.classList.remove("drawer-open");
   }
-
-  return message;
 }
 
-function generateBotResponse(prompt) {
-  const text = prompt.toLowerCase();
+function askBot(prompt) {
+  openBot();
+  addMessage(prompt, "user");
 
-  if (text.includes("plataforma") || text.includes("resumen")) {
-    return "La plataforma está operativa. Se recomienda revisar usuarios bloqueados, eventos críticos y canales de notificación pendientes.";
-  }
-
-  if (text.includes("riesgo") || text.includes("seguridad")) {
-    return "Los principales riesgos están en usuarios bloqueados, intentos fallidos de acceso y canales de notificación sin configurar.";
-  }
-
-  if (text.includes("usuarios") || text.includes("acceso")) {
-    return "Revisa usuarios bloqueados, cuentas pendientes y roles administrativos con permisos elevados.";
-  }
-
-  if (text.includes("sla")) {
-    return "Para reclamos estándar puedes usar 48 horas, y para incidencias críticas conviene mantener 4 horas o menos.";
-  }
-
-  return "Puedo ayudarte con usuarios, roles, configuración, auditoría, integraciones o riesgos administrativos.";
-}
-
-/* =========================================================
-   MODALES
-========================================================= */
-
-function bindModals() {
-  $all("[data-close-modal]").forEach((button) => {
-    button.addEventListener("click", closeAllModals);
-  });
-
-  $("#modalBackdrop")?.addEventListener("click", closeAllModals);
-
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      closeAllModals();
-      closeSearch();
-      closeBot();
-      closeSidebar();
-    }
-  });
-}
-
-function openModal(selector) {
-  const modal = $(selector);
-  const backdrop = $("#modalBackdrop");
-
-  if (!modal || !backdrop) return;
-
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden", "false");
-  backdrop.classList.add("show");
-  document.body.classList.add("modal-open");
-}
-
-function closeAllModals() {
-  $all(".modal").forEach((modal) => {
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden", "true");
-  });
-
-  $("#modalBackdrop")?.classList.remove("show");
-  document.body.classList.remove("modal-open");
-}
-
-function openGenericModal({ icon = "ℹ", title = "Información", text = "" }) {
-  setText("#genericModalIcon", icon);
-  setText("#genericModalTitle", title);
-  setText("#genericModalText", text);
-  openModal("#genericModal");
-}
-
-/* =========================================================
-   LOGOUT
-========================================================= */
-
-function bindLogout() {
-  $("#logoutBtn")?.addEventListener("click", logout);
-  $("#logoutDropdownBtn")?.addEventListener("click", logout);
-}
-
-function logout() {
-  localStorage.removeItem("claro360-token");
-  localStorage.removeItem("claro360-session");
-
-  showToast({
-    title: "Sesión cerrada",
-    message: "Serás redirigido al inicio de sesión.",
-    type: "success"
-  });
+  const typing = document.createElement("div");
+  typing.className = "message message--bot typing";
+  typing.textContent = "Analizando";
+  $("#botMessages")?.appendChild(typing);
 
   setTimeout(() => {
-    window.location.href = "../login.html";
-  }, 700);
+    typing.remove();
+    addMessage(botAnswer(prompt), "bot");
+  }, 450);
+}
+
+function addMessage(text, who) {
+  const box = $("#botMessages");
+  if (!box) return;
+
+  const message = document.createElement("div");
+  message.className = `message message--${who}`;
+  message.textContent = text;
+
+  box.appendChild(message);
+  box.scrollTop = box.scrollHeight;
+}
+
+function botAnswer(prompt) {
+  const text = String(prompt || "").toLowerCase();
+
+  const blockedUsers = Mock.users.filter(u => u.status === "Bloqueado");
+  const inactiveUsers = Mock.users.filter(u => u.status === "Inactivo");
+  const integrationErrors = Mock.integrations.filter(i => i.status === "Error" || i.status === "Con alerta");
+  const sensitiveEvents = Mock.audit.filter(a => a.critical);
+  const backupFailures = Mock.backups.filter(b => b.status === "Fallido");
+
+  if (text.includes("usuario") || text.includes("bloqueado") || text.includes("inactivo")) {
+    return `Debes revisar ${blockedUsers.length} usuario bloqueado y ${inactiveUsers.length} usuario inactivo. Recomendación: validar motivo de bloqueo, último acceso y rol asignado antes de reactivar.`;
+  }
+
+  if (text.includes("permiso") || text.includes("rol") || text.includes("acceso")) {
+    return "Los permisos más sensibles son: gestionar usuarios, modificar roles, generar reportes y cambiar configuración global. Revisa que solo el administrador tenga acceso completo.";
+  }
+
+  if (text.includes("catálogo") || text.includes("catalogo") || text.includes("duplicado")) {
+    return "Los catálogos se ven estables. Revisa elementos en revisión y dependencias con reglas SLA antes de inactivarlos.";
+  }
+
+  if (text.includes("sla") || text.includes("umbral") || text.includes("tiempo")) {
+    return "Hay reglas SLA críticas configuradas a 4 horas. Verifica que la alerta preventiva no sea demasiado tardía y que el área responsable esté definida.";
+  }
+
+  if (text.includes("integración") || text.includes("integracion") || text.includes("api") || text.includes("webhook")) {
+    return `Existen ${integrationErrors.length} integraciones con alerta o error. La prioridad es revisar la API de facturación y el webhook CRM.`;
+  }
+
+  if (text.includes("auditor") || text.includes("trazabilidad") || text.includes("cambio")) {
+    return `La auditoría muestra ${sensitiveEvents.length} eventos sensibles. Prioriza cambios de usuarios, permisos, SLA e integraciones.`;
+  }
+
+  if (text.includes("respaldo") || text.includes("backup") || text.includes("restaur")) {
+    return `Se detectó ${backupFailures.length} respaldo fallido reciente. Valida el último respaldo completado y programa una prueba de restauración parcial.`;
+  }
+
+  if (text.includes("reporte") || text.includes("indicador") || text.includes("gestión") || text.includes("gestion")) {
+    return "El reporte recomendado debe incluir usuarios activos, eventos sensibles, SLA global, estado de integraciones, respaldos y auditoría administrativa.";
+  }
+
+  if (text.includes("config") || text.includes("seguridad") || text.includes("sesión") || text.includes("sesion")) {
+    return "La configuración es adecuada, pero conviene revisar expiración de sesión, intentos fallidos, MFA y alertas de integración o respaldo.";
+  }
+
+  return "Puedo ayudarte a revisar usuarios, roles, catálogos, reglas SLA, indicadores, reportes, integraciones, auditoría, respaldo y configuración del sistema.";
 }
 
 /* =========================================================
-   PÁGINAS ADMIN: AUDITORÍA E INTEGRACIONES
+   COMPONENTS
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
-  const page = document.body.dataset.page;
+function renderKpis(selector, data) {
+  setHTML(selector, data.map(([icon, value, title, text]) => `
+    <article class="kpi-card">
+      <span class="kpi-card__icon">${icon}</span>
+      <div>
+        <strong>${esc(value)}</strong>
+        <p>${esc(title)}</p>
+        <small>${esc(text)}</small>
+      </div>
+    </article>
+  `).join(""));
+}
 
-  if (page === "admin-auditoria") {
-    initAdminAuditPage();
+function renderAi(selector, rows) {
+  setHTML(selector, rows.map(([title, text]) => `
+    <div class="ai-summary-item">
+      <strong>${esc(title)}</strong>
+      <p>${esc(text)}</p>
+    </div>
+  `).join(""));
+}
+
+function renderChecklist(selector, rows) {
+  setHTML(selector, rows.map(([icon, title, text]) => `
+    <article class="check-item">
+      <span class="check-icon">${icon}</span>
+      <div>
+        <strong>${esc(title)}</strong>
+        <p>${esc(text)}</p>
+      </div>
+    </article>
+  `).join(""));
+}
+
+function renderActivity(selector, rows) {
+  setHTML(selector, rows.map(item => `
+    <article class="activity-item">
+      <span class="activity-icon">${item.icon || "🕘"}</span>
+      <div class="activity-content">
+        <strong>${esc(item.title || item.action)}</strong>
+        <p>${esc(item.text || item.detail)}</p>
+        <small>${esc(item.date)}</small>
+      </div>
+    </article>
+  `).join(""));
+}
+
+function renderBarChart(selector, rows) {
+  const max = Math.max(...rows.map(row => Number(row.value) || 0), 1);
+
+  setHTML(selector, rows.map(row => `
+    <div class="bar-chart__row">
+      <span>${esc(row.label)}</span>
+      <div>
+        <i style="width:${Math.max(8, (Number(row.value) / max) * 100)}%"></i>
+      </div>
+      <strong>${esc(row.value)}</strong>
+    </div>
+  `).join(""));
+}
+
+function renderDonut(selector, legendSelector, rows, totalLabel = "Total") {
+  const total = rows.reduce((sum, row) => sum + Number(row.value || 0), 0) || 1;
+  let current = 0;
+
+  const colors = [
+    "var(--claro-red)",
+    "var(--warning)",
+    "var(--info)",
+    "var(--success)",
+    "var(--purple)"
+  ];
+
+  const slices = rows.map((row, index) => {
+    const start = current;
+    const end = current + (Number(row.value) / total) * 100;
+    current = end;
+    return `${colors[index % colors.length]} ${start}% ${end}%`;
+  }).join(", ");
+
+  const donut = $(selector);
+
+  if (donut) {
+    donut.style.background = `conic-gradient(${slices})`;
+    donut.dataset.label = `${total}\n${totalLabel}`;
   }
 
-  if (page === "admin-integraciones") {
-    initAdminIntegrationsPage();
-  }
-});
+  setHTML(legendSelector, rows.map((row, index) => `
+    <div class="donut-legend__item">
+      <span class="donut-legend__dot" style="background:${colors[index % colors.length]}"></span>
+      <span>${esc(row.label)}</span>
+      <strong>${esc(row.value)}</strong>
+    </div>
+  `).join(""));
+}
+
+function renderMetricCard(item) {
+  const compactClass = State.adminMetricCompact ? " indicator-card--compact" : "";
+
+  return `
+    <article class="indicator-card${compactClass}">
+      <div class="indicator-card__top">
+        <div>
+          <h3>${esc(item.title)}</h3>
+          <strong>${esc(item.value)}</strong>
+        </div>
+        <span class="indicator-card__icon">${esc(item.icon)}</span>
+      </div>
+
+      <p>${esc(item.description)}</p>
+
+      <div class="indicator-card__bar">
+        <span style="width:${Math.min(item.progress, 100)}%"></span>
+      </div>
+
+      <div class="indicator-card__footer">
+        <span class="${pillClass(metricStatusType(item.status))}">
+          Meta ${esc(item.target)}
+        </span>
+        <button type="button" data-admin-metric-id="${esc(item.id)}">Detalle</button>
+      </div>
+    </article>
+  `;
+}
+
+function bindMetricButtons(root = document) {
+  $$("[data-admin-metric-id]", root).forEach(button => {
+    button.addEventListener("click", () => openAdminMetricDetail(button.dataset.adminMetricId));
+  });
+}
+
+function openAdminMetricDetail(id) {
+  const item = getMetric(id);
+  if (!item) return;
+
+  State.selectedMetricId = id;
+
+  setText("#adminMetricDetailIcon", item.icon);
+  setText("#adminMetricDetailTitle", item.title);
+  setText("#adminMetricDetailText", item.description);
+
+  setHTML("#adminMetricDetailSummary", summaryHTML([
+    ["Valor actual", item.value],
+    ["Meta", item.target],
+    ["Avance", `${item.progress}%`],
+    ["Estado", item.status],
+    ["Causa probable", item.cause],
+    ["Recomendación", "Revisar el módulo relacionado y generar reporte si la desviación persiste."]
+  ]));
+
+  setText("#adminIndicatorDetailIcon", item.icon);
+  setText("#adminIndicatorDetailTitle", item.title);
+  setText("#adminIndicatorDetailText", item.description);
+
+  setHTML("#adminIndicatorDetailSummary", summaryHTML([
+    ["Valor actual", item.value],
+    ["Meta", item.target],
+    ["Avance", `${item.progress}%`],
+    ["Estado", item.status],
+    ["Causa probable", item.cause],
+    ["Recomendación", "Revisar el módulo relacionado y generar reporte si la desviación persiste."]
+  ]));
+
+  if ($("#adminIndicatorDetailModal")) openModal("#adminIndicatorDetailModal");
+  else openModal("#adminMetricDetailModal");
+}
 
 /* =========================================================
-   MOCK DATA - ELIMINAR CUANDO SE CONECTE AL BACKEND
+   DASHBOARD
 ========================================================= */
 
-const MockAdminAudit = {
-  kpis: [
-    {
-      icono: "🛡️",
-      valor: 248,
-      titulo: "Eventos",
-      descripcion: "Registrados en el periodo"
-    },
-    {
-      icono: "🚨",
-      valor: 12,
-      titulo: "Críticos",
-      descripcion: "Requieren revisión"
-    },
-    {
-      icono: "👤",
-      valor: 34,
-      titulo: "Usuarios auditados",
-      descripcion: "Con actividad reciente"
-    },
-    {
-      icono: "🔐",
-      valor: 9,
-      titulo: "Accesos fallidos",
-      descripcion: "Intentos no exitosos"
-    }
-  ],
+function initDashboard() {
+  setText("#adminSystemStatus", Mock.admin.status);
+  setText("#adminLastUpdate", Mock.admin.lastUpdate);
 
-  eventos: [
-    {
-      id: 1,
-      icono: "🔐",
-      tipo: "Acceso",
-      usuario: "admin@demo.com",
-      accion: "Inicio de sesión exitoso",
-      modulo: "Autenticación",
-      ip: "192.168.1.10",
-      resultado: "Exitoso",
-      riesgo: "Bajo",
-      fecha: "21/05/2026 09:10",
-      descripcion: "Acceso correcto desde navegador registrado."
-    },
-    {
-      id: 2,
-      icono: "🚫",
-      tipo: "Seguridad",
-      usuario: "bloqueado@demo.com",
-      accion: "Intentos fallidos consecutivos",
-      modulo: "Autenticación",
-      ip: "192.168.1.44",
-      resultado: "Bloqueado",
-      riesgo: "Crítico",
-      fecha: "21/05/2026 08:40",
-      descripcion: "El usuario superó el número permitido de intentos fallidos."
-    },
-    {
-      id: 3,
-      icono: "⚙️",
-      tipo: "Configuración",
-      usuario: "admin@demo.com",
-      accion: "Cambio de SLA crítico",
-      modulo: "Configuración",
-      ip: "192.168.1.10",
-      resultado: "Aplicado",
-      riesgo: "Alto",
-      fecha: "20/05/2026 17:25",
-      descripcion: "Se modificó un parámetro de SLA para incidencias críticas."
-    },
-    {
-      id: 4,
-      icono: "👤",
-      tipo: "Usuario",
-      usuario: "supervisor@demo.com",
-      accion: "Actualización de rol",
-      modulo: "Usuarios",
-      ip: "192.168.1.22",
-      resultado: "Aplicado",
-      riesgo: "Medio",
-      fecha: "20/05/2026 16:10",
-      descripcion: "Se actualizó el rol de un usuario interno."
-    },
-    {
-      id: 5,
-      icono: "🔌",
-      tipo: "Integración",
-      usuario: "sistema",
-      accion: "Prueba de conexión API",
-      modulo: "Integraciones",
-      ip: "internal",
-      resultado: "Advertencia",
-      riesgo: "Medio",
-      fecha: "20/05/2026 15:05",
-      descripcion: "Una integración respondió con latencia mayor a la esperada."
-    }
-  ],
+  renderDashboardKpis();
+  renderDashboardCharts();
+  renderDashboardIntegrations();
+  renderDashboardAlerts();
+  renderDashboardAudit();
+  renderDashboardBackup();
 
-  resumenIA: [
-    {
-      titulo: "Evento crítico",
-      texto: "El principal riesgo está en intentos fallidos consecutivos y bloqueo de usuario."
-    },
-    {
-      titulo: "Cambios sensibles",
-      texto: "Los cambios de SLA y roles deben revisarse por impacto operativo."
-    },
-    {
-      titulo: "Acción recomendada",
-      texto: "Validar usuario bloqueado, confirmar cambio de SLA y revisar latencia de integración."
-    }
-  ],
+  renderAi("#adminDashboardAiSummary", [
+    ["Prioridad administrativa", "Revisar integración de facturación, usuario bloqueado y respaldo fallido reciente."],
+    ["Gestión del sistema", "La plataforma está operativa, pero hay alertas técnicas que requieren seguimiento."],
+    ["Reporte sugerido", "Generar resumen administrativo semanal con usuarios, SLA, integraciones, respaldo y auditoría."]
+  ]);
 
-  riesgos: [
-    { nombre: "Bajo", cantidad: 82, porcentaje: 45 },
-    { nombre: "Medio", cantidad: 96, porcentaje: 52 },
-    { nombre: "Alto", cantidad: 58, porcentaje: 66 },
-    { nombre: "Crítico", cantidad: 12, porcentaje: 85 }
-  ],
+  renderChecklist("#adminActionPlan", [
+    ["1", "Revisar alertas", "Atender primero integraciones con error y usuarios bloqueados."],
+    ["2", "Validar respaldo", "Confirmar que el último respaldo completado sea recuperable."],
+    ["3", "Generar reporte", "Preparar reporte administrativo con indicadores y auditoría."]
+  ]);
 
-  modulos: [
-    { nombre: "Autenticación", valor: 88, detalle: "Mayor cantidad de eventos de acceso" },
-    { nombre: "Usuarios", valor: 64, detalle: "Cambios de roles y estados" },
-    { nombre: "Configuración", valor: 38, detalle: "Parámetros modificados" },
-    { nombre: "Integraciones", valor: 42, detalle: "Pruebas y advertencias técnicas" }
-  ]
-};
+  $("#refreshCaseTrendBtn")?.addEventListener("click", () => {
+    renderDashboardCharts();
+    toast("Gráfico actualizado", "Se actualizó la actividad semanal del sistema.", "success");
+  });
 
-const MockAdminIntegrations = {
-  kpis: [
-    {
-      icono: "🔌",
-      valor: 8,
-      titulo: "Integraciones",
-      descripcion: "Configuradas"
-    },
-    {
-      icono: "🟢",
-      valor: 6,
-      titulo: "Activas",
-      descripcion: "Servicios disponibles"
-    },
-    {
-      icono: "⚠️",
-      valor: 2,
-      titulo: "En revisión",
-      descripcion: "Con advertencias"
-    },
-    {
-      icono: "⏱️",
-      valor: "180ms",
-      titulo: "Latencia media",
-      descripcion: "Respuesta estimada"
-    }
-  ],
+  $("#caseTrendDetailBtn")?.addEventListener("click", () => {
+    openAdminMetricDetail("MET-002");
+  });
 
-  integraciones: [
-    {
-      id: 1,
-      icono: "🔐",
-      nombre: "SSO Corporativo",
-      tipo: "Autenticación",
-      endpoint: "https://auth.demo.local",
-      auth: "OAuth 2.0",
-      estado: "Activa",
-      estadoTipo: "success",
-      latencia: "120ms",
-      disponibilidad: 99
-    },
-    {
-      id: 2,
-      icono: "📧",
-      nombre: "Servicio de correo",
-      tipo: "Notificaciones",
-      endpoint: "https://mail.demo.local",
-      auth: "API Key",
-      estado: "Activa",
-      estadoTipo: "success",
-      latencia: "180ms",
-      disponibilidad: 97
-    },
-    {
-      id: 3,
-      icono: "💬",
-      nombre: "WhatsApp Gateway",
-      tipo: "Notificaciones",
-      endpoint: "https://wa.demo.local",
-      auth: "JWT",
-      estado: "En prueba",
-      estadoTipo: "warning",
-      latencia: "340ms",
-      disponibilidad: 89
-    },
-    {
-      id: 4,
-      icono: "🤖",
-      nombre: "Motor IA",
-      tipo: "IA",
-      endpoint: "https://ai.demo.local",
-      auth: "API Key",
-      estado: "Activa",
-      estadoTipo: "success",
-      latencia: "260ms",
-      disponibilidad: 95
-    },
-    {
-      id: 5,
-      icono: "📊",
-      nombre: "Analytics BI",
-      tipo: "Analítica",
-      endpoint: "https://bi.demo.local",
-      auth: "Interna",
-      estado: "Activa",
-      estadoTipo: "success",
-      latencia: "210ms",
-      disponibilidad: 96
-    },
-    {
-      id: 6,
-      icono: "🗄️",
-      nombre: "Base operacional",
-      tipo: "Base de datos",
-      endpoint: "db://operacional",
-      auth: "Interna",
-      estado: "Activa",
-      estadoTipo: "success",
-      latencia: "90ms",
-      disponibilidad: 99
-    }
-  ],
+  $("#refreshCaseStatusBtn")?.addEventListener("click", () => {
+    renderDashboardCharts();
+    toast("Estado actualizado", "Se actualizó la distribución de casos.", "success");
+  });
 
-  resumenIA: [
-    {
-      titulo: "Estado general",
-      texto: "Las integraciones principales están activas, pero WhatsApp Gateway requiere validación."
-    },
-    {
-      titulo: "Disponibilidad",
-      texto: "SSO y base operacional presentan el mejor comportamiento."
-    },
-    {
-      titulo: "Recomendación",
-      texto: "Monitorear latencia de servicios de IA y notificaciones antes de producción."
-    }
-  ]
-};
+  $("#refreshAdminAlertsBtn")?.addEventListener("click", () => {
+    renderDashboardAlerts();
+    toast("Alertas actualizadas", "Se actualizó la lista de alertas administrativas.", "success");
+  });
+
+  $("#adminAlertResolveBtn")?.addEventListener("click", () => {
+    closeModals();
+    toast("Alerta revisada", "La alerta fue marcada como revisada.", "success");
+  });
+
+  $("#adminAlertGoBtn")?.addEventListener("click", () => {
+    const alert = getAlert(State.selectedAlertId);
+    if (alert) window.location.href = alert.href;
+  });
+
+  $("#adminMetricAiBtn")?.addEventListener("click", () => {
+    const metric = getMetric(State.selectedMetricId);
+    askBot(`Analiza la métrica ${metric?.title || ""}`);
+  });
+}
+
+function renderDashboardKpis() {
+  renderKpis("#adminDashboardKpiGrid", [
+    ["👤", Mock.users.filter(u => u.status === "Activo").length, "Usuarios activos", "Cuentas habilitadas"],
+    ["🔐", Mock.roles.length, "Roles", "Perfiles configurados"],
+    ["🔌", Mock.integrations.filter(i => i.status === "Activa").length, "Integraciones sanas", "Servicios operativos"],
+    ["⚠️", Mock.alerts.length, "Alertas", "Requieren revisión"]
+  ]);
+}
+
+function renderDashboardCharts() {
+  renderBarChart("#adminCasesTrendChart", [
+    { label: "Lun", value: 18 },
+    { label: "Mar", value: 22 },
+    { label: "Mié", value: 19 },
+    { label: "Jue", value: 31 },
+    { label: "Vie", value: 26 },
+    { label: "Sáb", value: 8 }
+  ]);
+
+  renderDonut("#caseStatusDonut", "#caseStatusLegend", [
+    { label: "En atención", value: 44 },
+    { label: "Pendientes", value: 28 },
+    { label: "Cerrados", value: 39 },
+    { label: "Vencidos", value: 7 }
+  ], "Casos");
+
+  renderBarChart("#roleActivityChart", [
+    { label: "Cliente", value: 32 },
+    { label: "Asesor", value: 88 },
+    { label: "Supervisor", value: 47 },
+    { label: "Admin", value: 29 }
+  ]);
+}
+
+function renderDashboardIntegrations() {
+  setHTML("#integrationStatusGrid", Mock.integrations.map(item => `
+    <article class="integration-status-item">
+      <span class="integration-status-item__icon">${esc(item.icon)}</span>
+      <div>
+        <strong>${esc(item.name)}</strong>
+        <p>${esc(item.type)} · ${esc(item.lastSync)}</p>
+      </div>
+      <span class="${pillClass(statusType(item.status))}">${esc(item.status)}</span>
+    </article>
+  `).join(""));
+}
+
+function renderDashboardAlerts() {
+  setHTML("#adminAlertList", Mock.alerts.map(item => `
+    <article class="admin-alert-item">
+      <span class="admin-alert-item__icon">${esc(item.icon)}</span>
+      <div>
+        <strong>${esc(item.title)}</strong>
+        <p>${esc(item.text)}</p>
+        <small>${esc(item.date)} · Severidad ${esc(item.severity)}</small>
+      </div>
+      <button type="button" data-admin-alert-id="${esc(item.id)}">Revisar</button>
+    </article>
+  `).join(""));
+
+  show($("#emptyAdminAlertsState"), !Mock.alerts.length);
+
+  $$("[data-admin-alert-id]").forEach(button => {
+    button.addEventListener("click", () => openAdminAlert(button.dataset.adminAlertId));
+  });
+}
+
+function openAdminAlert(id) {
+  const item = getAlert(id);
+  if (!item) return;
+
+  State.selectedAlertId = id;
+
+  setText("#adminAlertModalIcon", item.icon);
+  setText("#adminAlertModalTitle", item.title);
+  setText("#adminAlertModalText", item.text);
+
+  setHTML("#adminAlertModalSummary", summaryHTML([
+    ["Módulo", item.module],
+    ["Severidad", item.severity],
+    ["Fecha", item.date],
+    ["Acción sugerida", item.action],
+    ["Destino", item.href]
+  ]));
+
+  openModal("#adminAlertModal");
+}
+
+function renderDashboardAudit() {
+  const rows = Mock.audit.slice(0, 5).map(item => ({
+    icon: auditIcon(item.type),
+    title: `${item.action} · ${item.module}`,
+    text: `${item.before} → ${item.after}. ${item.detail}`,
+    date: item.date
+  }));
+
+  renderActivity("#adminAuditTimeline", rows);
+  show($("#emptyAdminAuditState"), !rows.length);
+}
+
+function renderDashboardBackup() {
+  const latest = Mock.backups[0];
+  const failed = Mock.backups.find(item => item.status === "Fallido");
+
+  setHTML("#backupSummary", `
+    <article class="backup-summary-item">
+      <span class="backup-summary-item__icon">✅</span>
+      <div>
+        <strong>Último respaldo</strong>
+        <p>${esc(latest.date)} · ${esc(latest.type)} · ${esc(latest.validation)}</p>
+      </div>
+    </article>
+
+    <article class="backup-summary-item">
+      <span class="backup-summary-item__icon">🗓️</span>
+      <div>
+        <strong>Próxima ejecución</strong>
+        <p>${esc(Mock.backups.find(b => b.status === "Programado")?.date || "No programada")}</p>
+      </div>
+    </article>
+
+    <article class="backup-summary-item">
+      <span class="backup-summary-item__icon">⚠️</span>
+      <div>
+        <strong>Observación</strong>
+        <p>${failed ? `Existe respaldo fallido: ${failed.date}` : "Sin fallas recientes"}</p>
+      </div>
+    </article>
+  `);
+}
 
 /* =========================================================
-   API LAYER - AUDITORÍA / INTEGRACIONES
+   USUARIOS
 ========================================================= */
 
-const AdminAuditApi = {
-  async getAudit() {
-    await delay(450);
-    return MockAdminAudit;
+function initUsers() {
+  renderUsersPage();
 
-    /*
-    const response = await fetch("/api/admin/auditoria", {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      }
+  $("#userSearch")?.addEventListener("input", renderUsersPage);
+
+  $$("[data-user-filter]").forEach(button => {
+    button.addEventListener("click", () => {
+      State.userFilter = button.dataset.userFilter;
+      $$("[data-user-filter]").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderUsersPage();
     });
-    return await response.json();
-    */
-  }
-};
+  });
 
-const AdminIntegrationsApi = {
-  async getIntegrations() {
-    await delay(450);
-    return MockAdminIntegrations;
+  $("#toggleUsersViewBtn")?.addEventListener("click", () => {
+    State.usersView = State.usersView === "cards" ? "table" : "cards";
+    $("#toggleUsersViewBtn").textContent = State.usersView === "cards" ? "Vista tabla" : "Vista cards";
+    renderUsersPage();
+  });
 
-    /*
-    const response = await fetch("/api/admin/integraciones", {
-      headers: {
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      }
-    });
-    return await response.json();
-    */
-  },
+  $("#refreshUsersBtn")?.addEventListener("click", () => {
+    renderUsersPage();
+    toast("Usuarios actualizados", "Se actualizó el directorio de usuarios.", "success");
+  });
 
-  async saveIntegration(payload) {
-    await delay(700);
+  $("#refreshUsersByRoleBtn")?.addEventListener("click", () => {
+    renderUsersCharts();
+    toast("Gráfico actualizado", "Se actualizó la distribución por rol.", "success");
+  });
 
-    return {
-      ok: true,
-      integration: payload
-    };
+  $("#refreshUserStatusChartBtn")?.addEventListener("click", () => {
+    renderUsersCharts();
+    toast("Gráfico actualizado", "Se actualizó el estado de cuentas.", "success");
+  });
 
-    /*
-    const response = await fetch("/api/admin/integraciones", {
-      method: payload.id ? "PUT" : "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      },
-      body: JSON.stringify(payload)
-    });
-    return await response.json();
-    */
-  },
+  $("#openCreateUserBtn")?.addEventListener("click", openCreateUserModal);
 
-  async testIntegration(payload) {
-    await delay(600);
+  $("#exportUsersBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Exportación preparada", "El directorio de usuarios fue preparado para exportación.");
+  });
 
-    return {
-      ok: true,
-      latency: "185ms",
-      status: "Conexión exitosa",
-      payload
-    };
+  $("#bulkUserActionBtn")?.addEventListener("click", () => {
+    openModal("#bulkUserActionModal");
+  });
 
-    /*
-    const response = await fetch("/api/admin/integraciones/probar", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${localStorage.getItem("claro360-token")}`
-      },
-      body: JSON.stringify(payload)
-    });
-    return await response.json();
-    */
-  }
-};
+  $("#confirmBulkUserActionBtn")?.addEventListener("click", confirmBulkUserAction);
 
-/* =========================================================
-   AUDITORÍA
-========================================================= */
+  $("#saveUserBtn")?.addEventListener("click", confirmSaveUser);
 
-let AuditState = {
-  data: null,
-  search: "",
-  type: "todos",
-  risk: "todos"
-};
+  $("#suggestUserRoleBtn")?.addEventListener("click", () => {
+    const area = getValue("#userArea");
 
-async function initAdminAuditPage() {
-  bindAuditEvents();
+    if (area === "Supervisión") $("#userRole").value = "Supervisor";
+    else if (area === "Administración") $("#userRole").value = "Administrador";
+    else if (area === "Atención al cliente" || area === "Soporte técnico" || area === "Backoffice") $("#userRole").value = "Asesor";
+    else $("#userRole").value = "Cliente";
 
-  const data = await AdminAuditApi.getAudit();
+    $("#userAccessType").value =
+      $("#userRole").value === "Administrador" ? "Acceso administrativo" :
+      $("#userRole").value === "Cliente" ? "Acceso estándar" :
+      "Acceso restringido";
 
-  AuditState.data = data;
+    toast("Rol sugerido", "La IA completó una propuesta de rol y tipo de acceso.", "success");
+  });
 
-  renderAuditPage(data);
+  $("#userEditBtn")?.addEventListener("click", () => {
+    closeModals();
+    openEditUserModal(State.selectedUserId);
+  });
+
+  $("#userResetAccessBtn")?.addEventListener("click", () => {
+    closeModals();
+    openResetAccessModal(State.selectedUserId);
+  });
+
+  $("#userToggleStatusBtn")?.addEventListener("click", () => {
+    closeModals();
+    openChangeUserStatusModal(State.selectedUserId);
+  });
+
+  $("#userAuditBtn")?.addEventListener("click", () => {
+    window.location.href = "auditoria.html";
+  });
+
+  $("#confirmResetAccessBtn")?.addEventListener("click", confirmResetAccess);
+  $("#confirmChangeUserStatusBtn")?.addEventListener("click", confirmChangeUserStatus);
+
+  renderAi("#usersAiSummary", [
+    ["Revisión prioritaria", "Validar usuarios bloqueados e inactivos con último acceso antiguo."],
+    ["Seguridad", "Cuentas administrativas deben mantenerse con acceso controlado y trazabilidad."],
+    ["Acción sugerida", "Restablecer acceso solo después de validar identidad y motivo."]
+  ]);
+
+  renderChecklist("#usersActionPlan", [
+    ["1", "Revisar bloqueados", "Validar causa del bloqueo antes de reactivar."],
+    ["2", "Depurar inactivos", "Identificar cuentas sin uso reciente."],
+    ["3", "Validar roles", "Confirmar que el rol corresponda al área funcional."]
+  ]);
 }
 
-function bindAuditEvents() {
-  $("#auditSearchInput")?.addEventListener("input", (event) => {
-    AuditState.search = event.target.value.trim().toLowerCase();
-    renderAuditList();
-  });
+function usersFiltered() {
+  const query = getValue("#userSearch").toLowerCase();
 
-  $("#auditTypeFilter")?.addEventListener("change", (event) => {
-    AuditState.type = event.target.value;
-    renderAuditList();
-  });
+  return Mock.users.filter(user => {
+    const text = `${user.name} ${user.email} ${user.role} ${user.area} ${user.status} ${user.lastAccess}`.toLowerCase();
+    const matchesSearch = !query || text.includes(query);
+    const filter = State.userFilter;
 
-  $("#auditRiskFilter")?.addEventListener("change", (event) => {
-    AuditState.risk = event.target.value;
-    renderAuditList();
-  });
+    const matchesFilter =
+      filter === "todos" ||
+      (filter === "activos" && user.status === "Activo") ||
+      (filter === "bloqueados" && user.status === "Bloqueado") ||
+      (filter === "inactivos" && user.status === "Inactivo") ||
+      (filter === "asesores" && user.role === "Asesor") ||
+      (filter === "supervisores" && user.role === "Supervisor") ||
+      (filter === "admins" && user.role === "Administrador");
 
-  $("#applyAuditFiltersBtn")?.addEventListener("click", renderAuditList);
-
-  $("#refreshAuditBtn")?.addEventListener("click", async () => {
-    AuditState.data = await AdminAuditApi.getAudit();
-    renderAuditPage(AuditState.data);
-
-    showToast({
-      title: "Auditoría actualizada",
-      message: "Se actualizó la bitácora de eventos.",
-      type: "success"
-    });
-  });
-
-  $("#auditAnalyzeBtn")?.addEventListener("click", openAuditAnalysis);
-  $("#auditAiBtn")?.addEventListener("click", openAuditAnalysis);
-
-  $("#auditExportBtn")?.addEventListener("click", () => {
-    openGenericModal({
-      icon: "📄",
-      title: "Exportación preparada",
-      text: "Cuando se conecte el backend, se exportará la bitácora filtrada en Excel o PDF."
-    });
+    return matchesSearch && matchesFilter;
   });
 }
 
-function renderAuditPage(data) {
-  renderAuditKpis(data.kpis);
-  renderAuditList();
-  renderAuditAi(data.resumenIA);
-  renderAuditRisks(data.riesgos);
-  renderAuditModules(data.modulos);
+function renderUsersPage() {
+  const rows = usersFiltered();
 
-  setText("#auditSummaryStatus", `${data.eventos.length} eventos cargados`);
-  setText("#auditSummaryText", "Auditoría disponible");
+  setText("#usersSummaryTitle", `${Mock.users.filter(u => u.status === "Activo").length} usuarios activos`);
+  setText("#usersSummaryText", `${rows.length} usuarios visibles según filtro.`);
+
+  renderKpis("#usersKpiGrid", [
+    ["👤", Mock.users.length, "Usuarios", "Total registrado"],
+    ["✅", Mock.users.filter(u => u.status === "Activo").length, "Activos", "Cuentas habilitadas"],
+    ["🔒", Mock.users.filter(u => u.status === "Bloqueado").length, "Bloqueados", "Requieren revisión"],
+    ["🕘", Mock.users.filter(u => u.status === "Inactivo").length, "Inactivos", "Sin actividad reciente"]
+  ]);
+
+  renderUsersCharts();
+
+  setHTML("#usersCardList", rows.map(userCard).join(""));
+  setHTML("#usersTableBody", rows.map(userTableRow).join(""));
+
+  show($("#usersCardList"), State.usersView === "cards");
+  show($("#usersTableWrap"), State.usersView === "table");
+  show($("#emptyUsersState"), !rows.length);
+
+  bindUserActions($("#usersCardList"));
+  bindUserActions($("#usersTableBody"));
 }
 
-function renderAuditKpis(items) {
-  const grid = $("#auditKpiGrid");
-  if (!grid) return;
+function renderUsersCharts() {
+  const byRole = countBy(Mock.users, "role");
+  const byStatus = countBy(Mock.users, "status");
 
-  grid.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="kpi-card">
-          <span class="kpi-card__icon">${item.icono}</span>
-          <div>
-            <strong>${item.valor}</strong>
-            <p>${item.titulo}</p>
-            <small>${item.descripcion}</small>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+  renderDonut("#usersByRoleDonut", "#usersByRoleLegend", Object.entries(byRole).map(([label, value]) => ({ label, value })), "Usuarios");
+
+  renderBarChart("#userStatusChart", Object.entries(byStatus).map(([label, value]) => ({ label, value })));
 }
 
-function renderAuditList() {
-  const list = $("#auditList");
-  const empty = $("#emptyAuditState");
+function userCard(user) {
+  return `
+    <article class="user-card">
+      <div class="user-card__top">
+        <span class="user-card__avatar">${esc(user.initials)}</span>
+        <div>
+          <h3>${esc(user.name)}</h3>
+          <p>${esc(user.email)}</p>
+        </div>
+        <span class="${pillClass(statusType(user.status))}">${esc(user.status)}</span>
+      </div>
 
-  if (!list || !empty || !AuditState.data) return;
+      <div class="user-card__meta">
+        <span>${esc(user.role)}</span>
+        <span>${esc(user.area)}</span>
+        <span>${esc(user.accessType)}</span>
+        <span>Último acceso: ${esc(user.lastAccess)}</span>
+      </div>
 
-  const events = getFilteredAuditEvents();
+      <div class="user-card__actions">
+        <button type="button" data-action="view-user" data-user-id="${esc(user.id)}">Ver</button>
+        <button type="button" data-action="edit-user" data-user-id="${esc(user.id)}">Editar</button>
+        <button type="button" data-action="status-user" data-user-id="${esc(user.id)}">Estado</button>
+      </div>
+    </article>
+  `;
+}
 
-  setText("#auditSummaryStatus", `${events.length} eventos visibles`);
-  setText("#auditSummaryText", `Tipo: ${AuditState.type} · Riesgo: ${AuditState.risk}`);
+function userTableRow(user) {
+  return `
+    <tr>
+      <td>${esc(user.name)}</td>
+      <td>${esc(user.email)}</td>
+      <td>${esc(user.role)}</td>
+      <td>${esc(user.area)}</td>
+      <td><span class="${pillClass(statusType(user.status))}">${esc(user.status)}</span></td>
+      <td>${esc(user.lastAccess)}</td>
+      <td>
+        <button type="button" data-action="view-user" data-user-id="${esc(user.id)}">Ver</button>
+        <button type="button" data-action="edit-user" data-user-id="${esc(user.id)}">Editar</button>
+      </td>
+    </tr>
+  `;
+}
 
-  if (!events.length) {
-    list.innerHTML = "";
-    empty.classList.remove("hidden");
+function bindUserActions(root = document) {
+  $$("[data-action='view-user']", root).forEach(button => {
+    button.addEventListener("click", () => openUserDetail(button.dataset.userId));
+  });
+
+  $$("[data-action='edit-user']", root).forEach(button => {
+    button.addEventListener("click", () => openEditUserModal(button.dataset.userId));
+  });
+
+  $$("[data-action='status-user']", root).forEach(button => {
+    button.addEventListener("click", () => openChangeUserStatusModal(button.dataset.userId));
+  });
+}
+
+function userSummary(user) {
+  return summaryHTML([
+    ["Código", user.id],
+    ["Nombre", user.name],
+    ["Correo", user.email],
+    ["Rol", user.role],
+    ["Área", user.area],
+    ["Estado", user.status],
+    ["Tipo de acceso", user.accessType],
+    ["Último acceso", user.lastAccess],
+    ["Riesgo", user.risk]
+  ]);
+}
+
+function openUserDetail(id) {
+  const user = getUser(id);
+  if (!user) return;
+
+  State.selectedUserId = id;
+
+  setText("#userDetailIcon", user.initials);
+  setText("#userDetailTitle", user.name);
+  setText("#userDetailText", `${user.email} · ${user.role} · ${user.status}`);
+  setHTML("#userDetailSummary", userSummary(user));
+
+  openModal("#userDetailModal");
+}
+
+function openCreateUserModal() {
+  State.selectedUserId = null;
+
+  setText("#userFormEyebrow", "Nuevo usuario");
+  setText("#userFormTitle", "Crear usuario");
+  setText("#userFormText", "Completa la información de la cuenta, rol, área y estado de acceso.");
+
+  ["#userFullName", "#userEmail", "#userComment"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  ["#userRole", "#userArea", "#userStatus", "#userAccessType"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  if ($("#userFormDeclaration")) $("#userFormDeclaration").checked = false;
+
+  openModal("#userFormModal");
+}
+
+function openEditUserModal(id) {
+  const user = getUser(id);
+  if (!user) return;
+
+  State.selectedUserId = id;
+
+  setText("#userFormEyebrow", "Editar usuario");
+  setText("#userFormTitle", user.name);
+  setText("#userFormText", "Modifica los datos administrativos de la cuenta seleccionada.");
+
+  if ($("#userFullName")) $("#userFullName").value = user.name;
+  if ($("#userEmail")) $("#userEmail").value = user.email;
+  if ($("#userRole")) $("#userRole").value = user.role;
+  if ($("#userArea")) $("#userArea").value = user.area;
+  if ($("#userStatus")) $("#userStatus").value = user.status;
+  if ($("#userAccessType")) $("#userAccessType").value = user.accessType;
+  if ($("#userComment")) $("#userComment").value = `Actualización administrativa de ${user.name}.`;
+  if ($("#userFormDeclaration")) $("#userFormDeclaration").checked = false;
+
+  openModal("#userFormModal");
+}
+
+function confirmSaveUser() {
+  if (
+    !getValue("#userFullName") ||
+    !getValue("#userEmail") ||
+    !getValue("#userRole") ||
+    !getValue("#userArea") ||
+    !getValue("#userStatus") ||
+    !getValue("#userAccessType") ||
+    !isChecked("#userFormDeclaration")
+  ) {
+    toast("Faltan datos", "Completa nombre, correo, rol, área, estado, acceso y confirmación.", "warning");
     return;
   }
 
-  empty.classList.add("hidden");
+  closeModals();
+  toast("Usuario guardado", "La cuenta fue registrada correctamente.", "success");
+  renderUsersPage();
+}
 
-  list.innerHTML = events
-    .map((event) => {
-      return `
-        <article class="audit-item">
-          <span class="audit-item__icon">${event.icono}</span>
+function openResetAccessModal(id) {
+  const user = getUser(id);
+  if (!user) return;
 
-          <div>
-            <h3>${event.accion}</h3>
-            <p>${event.descripcion}</p>
+  State.selectedUserId = id;
+  setHTML("#resetAccessSummary", userSummary(user));
 
-            <div class="audit-meta">
-              <span>${event.tipo}</span>
-              <span>${event.usuario}</span>
-              <span>${event.modulo}</span>
-              <span>${event.ip}</span>
-              <span>${event.fecha}</span>
-            </div>
-          </div>
+  if ($("#resetAccessDeclaration")) $("#resetAccessDeclaration").checked = false;
 
-          <div class="audit-item__actions">
-            <span class="status-pill ${getRiskClass(event.riesgo)}">${event.riesgo}</span>
-            <button type="button" data-audit-id="${event.id}">Ver</button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+  openModal("#resetAccessModal");
+}
 
-  $all("[data-audit-id]").forEach((button) => {
+function confirmResetAccess() {
+  if (!isChecked("#resetAccessDeclaration")) {
+    toast("Confirmación requerida", "Debes confirmar el restablecimiento de acceso.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Acceso restablecido", "Se generó el restablecimiento de acceso.", "success");
+}
+
+function openChangeUserStatusModal(id) {
+  const user = getUser(id);
+  if (!user) return;
+
+  State.selectedUserId = id;
+
+  setHTML("#changeUserStatusSummary", userSummary(user));
+  if ($("#newUserStatus")) $("#newUserStatus").value = "";
+  if ($("#changeUserStatusReason")) $("#changeUserStatusReason").value = "";
+  if ($("#changeUserStatusDeclaration")) $("#changeUserStatusDeclaration").checked = false;
+
+  openModal("#changeUserStatusModal");
+}
+
+function confirmChangeUserStatus() {
+  if (
+    !getValue("#newUserStatus") ||
+    !getValue("#changeUserStatusReason") ||
+    !isChecked("#changeUserStatusDeclaration")
+  ) {
+    toast("Faltan datos", "Completa nuevo estado, motivo y confirmación.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Estado actualizado", "El cambio quedó registrado en auditoría.", "success");
+  renderUsersPage();
+}
+
+function confirmBulkUserAction() {
+  if (
+    !getValue("#bulkUserScope") ||
+    !getValue("#bulkUserAction") ||
+    !isChecked("#bulkUserDeclaration")
+  ) {
+    toast("Faltan datos", "Selecciona alcance, acción y confirmación.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Acción preparada", "La acción masiva quedó preparada para revisión.", "success");
+}
+
+/* =========================================================
+   ROLES Y PERMISOS
+========================================================= */
+
+function initRolesPermissions() {
+  renderRolesPermissionsPage();
+
+  $("#permissionSearch")?.addEventListener("input", renderPermissionMatrix);
+
+  $$("[data-permission-filter]").forEach(button => {
     button.addEventListener("click", () => {
-      const id = Number(button.dataset.auditId);
-      const event = AuditState.data.eventos.find((item) => item.id === id);
-      if (event) openAuditDetail(event);
+      State.permissionFilter = button.dataset.permissionFilter;
+      $$("[data-permission-filter]").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderPermissionMatrix();
+    });
+  });
+
+  $("#openCreateRoleBtn")?.addEventListener("click", openCreateRoleModal);
+
+  $("#savePermissionMatrixBtn")?.addEventListener("click", () => {
+    openModal("#savePermissionMatrixModal");
+  });
+
+  $("#confirmSavePermissionMatrixBtn")?.addEventListener("click", confirmSavePermissionMatrix);
+
+  $("#refreshPermissionMatrixBtn")?.addEventListener("click", () => {
+    renderPermissionMatrix();
+    toast("Matriz actualizada", "Se actualizó la matriz de permisos.", "success");
+  });
+
+  $("#resetPermissionMatrixBtn")?.addEventListener("click", () => {
+    renderPermissionMatrix();
+    toast("Matriz restaurada", "Se restauró la vista actual de permisos.", "success");
+  });
+
+  $("#exportPermissionMatrixBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Exportación preparada", "La matriz de permisos fue preparada para exportación.");
+  });
+
+  $("#refreshRolesChartBtn")?.addEventListener("click", () => {
+    renderRolesChart();
+    toast("Gráfico actualizado", "Se actualizó la distribución de usuarios por rol.", "success");
+  });
+
+  $("#refreshRoleCardsBtn")?.addEventListener("click", () => {
+    renderRoleCards();
+    toast("Roles actualizados", "Se actualizó la lista de roles configurados.", "success");
+  });
+
+  $("#exportRolesBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Roles preparados", "La lista de roles fue preparada para exportación.");
+  });
+
+  $("#editPermissionBtn")?.addEventListener("click", () => {
+    closeModals();
+    openModal("#savePermissionMatrixModal");
+  });
+
+  $("#permissionAuditBtn")?.addEventListener("click", () => {
+    window.location.href = "auditoria.html";
+  });
+
+  $("#saveRoleBtn")?.addEventListener("click", confirmSaveRole);
+
+  $("#suggestRolePermissionsBtn")?.addEventListener("click", () => {
+    const scope = getValue("#roleScope");
+
+    if (scope === "Cliente") $("#roleAccessLevel").value = "Básico";
+    else if (scope === "Atención") $("#roleAccessLevel").value = "Operativo";
+    else if (scope === "Supervisión") $("#roleAccessLevel").value = "Supervisor";
+    else if (scope === "Administración") $("#roleAccessLevel").value = "Administrador";
+
+    $("#roleStatus").value = "Activo";
+    $("#roleDescription").value =
+      "La IA sugiere un rol con permisos acordes al alcance funcional seleccionado, evitando accesos administrativos innecesarios.";
+
+    toast("Permisos sugeridos", "Se completó una propuesta base para el rol.", "success");
+  });
+
+  renderAi("#rolesAiSummary", [
+    ["Permisos sensibles", "Solo el rol Administrador debe modificar usuarios, roles, configuración global y catálogos críticos."],
+    ["Control preventivo", "Evita otorgar permisos de exportación o auditoría a roles operativos sin justificación."],
+    ["Revisión sugerida", "Auditar cambios en roles después de cada ajuste de matriz."]
+  ]);
+
+  renderChecklist("#rolesActionPlan", [
+    ["1", "Validar mínimos", "Cada rol debe tener solo los permisos necesarios."],
+    ["2", "Revisar sensibles", "Cambios de usuarios, roles y configuración deben quedar limitados."],
+    ["3", "Guardar con sustento", "Todo cambio debe quedar registrado para auditoría."]
+  ]);
+}
+
+function renderRolesPermissionsPage() {
+  setText("#rolesSummaryTitle", `${Mock.roles.length} roles configurados`);
+  setText("#rolesSummaryText", `${Mock.permissions.length} permisos funcionales en matriz.`);
+
+  renderKpis("#rolesKpiGrid", [
+    ["🔐", Mock.roles.length, "Roles", "Perfiles activos"],
+    ["🧩", Mock.permissions.length, "Permisos", "Acciones configuradas"],
+    ["⚠️", Mock.permissions.filter(p => p.sensitive).length, "Sensibles", "Requieren control"],
+    ["👤", Mock.users.length, "Usuarios", "Cuentas asignadas"]
+  ]);
+
+  renderRolesChart();
+  renderPermissionRisk();
+  renderPermissionMatrix();
+  renderRoleCards();
+}
+
+function renderRolesChart() {
+  const byRole = countBy(Mock.users, "role");
+  renderBarChart("#rolesUsersChart", Object.entries(byRole).map(([label, value]) => ({ label, value })));
+}
+
+function renderPermissionRisk() {
+  const rows = Mock.permissions.filter(permission => permission.sensitive);
+
+  setHTML("#permissionRiskList", rows.map(item => `
+    <article class="admin-alert-item">
+      <span class="admin-alert-item__icon">🔐</span>
+      <div>
+        <strong>${esc(item.module)} · ${esc(item.permission)}</strong>
+        <p>${esc(item.description)}</p>
+        <small>Permiso sensible · Requiere control administrativo</small>
+      </div>
+      <button type="button" data-permission-id="${esc(item.id)}">Ver</button>
+    </article>
+  `).join(""));
+
+  $$("[data-permission-id]").forEach(button => {
+    button.addEventListener("click", () => openPermissionDetail(button.dataset.permissionId));
+  });
+}
+
+function permissionFiltered() {
+  const query = getValue("#permissionSearch").toLowerCase();
+
+  return Mock.permissions.filter(permission => {
+    const text = `${permission.module} ${permission.permission} ${permission.description}`.toLowerCase();
+    const matchesSearch = !query || text.includes(query);
+
+    const filter = State.permissionFilter;
+
+    const matchesFilter =
+      filter === "todos" ||
+      (filter === "cliente" && permission.cliente) ||
+      (filter === "asesor" && permission.asesor) ||
+      (filter === "supervisor" && permission.supervisor) ||
+      (filter === "administrador" && permission.administrador) ||
+      (filter === "sensibles" && permission.sensitive);
+
+    return matchesSearch && matchesFilter;
+  });
+}
+
+function renderPermissionMatrix() {
+  const rows = permissionFiltered();
+
+  setHTML("#permissionMatrixBody", rows.map(permission => `
+    <tr>
+      <td>
+        <strong>${esc(permission.module)}</strong><br />
+        <small>${esc(permission.permission)}</small>
+      </td>
+
+      <td>
+        <button type="button" class="permission-toggle ${permission.cliente ? "is-on" : ""}" data-toggle-permission="${esc(permission.id)}" data-role="cliente"></button>
+      </td>
+
+      <td>
+        <button type="button" class="permission-toggle ${permission.asesor ? "is-on" : ""}" data-toggle-permission="${esc(permission.id)}" data-role="asesor"></button>
+      </td>
+
+      <td>
+        <button type="button" class="permission-toggle ${permission.supervisor ? "is-on" : ""}" data-toggle-permission="${esc(permission.id)}" data-role="supervisor"></button>
+      </td>
+
+      <td>
+        <button type="button" class="permission-toggle ${permission.administrador ? "is-on" : ""}" data-toggle-permission="${esc(permission.id)}" data-role="administrador"></button>
+      </td>
+
+      <td>
+        <button type="button" class="permission-detail-btn" data-permission-detail="${esc(permission.id)}">Ver</button>
+      </td>
+    </tr>
+  `).join(""));
+
+  show($("#emptyPermissionState"), !rows.length);
+
+  $$("[data-toggle-permission]").forEach(button => {
+    button.addEventListener("click", () => {
+      button.classList.toggle("is-on");
+      toast("Permiso modificado", "Cambio temporal aplicado. Guarda la matriz para confirmar.", "success");
+    });
+  });
+
+  $$("[data-permission-detail]").forEach(button => {
+    button.addEventListener("click", () => openPermissionDetail(button.dataset.permissionDetail));
+  });
+}
+
+function openPermissionDetail(id) {
+  const permission = getPermission(id);
+  if (!permission) return;
+
+  State.selectedPermissionId = id;
+
+  setText("#permissionDetailIcon", permission.sensitive ? "⚠️" : "🔐");
+  setText("#permissionDetailTitle", `${permission.module} · ${permission.permission}`);
+  setText("#permissionDetailText", permission.description);
+
+  setHTML("#permissionDetailSummary", summaryHTML([
+    ["Módulo", permission.module],
+    ["Permiso", permission.permission],
+    ["Sensible", permission.sensitive ? "Sí" : "No"],
+    ["Cliente", permission.cliente ? "Permitido" : "No permitido"],
+    ["Asesor", permission.asesor ? "Permitido" : "No permitido"],
+    ["Supervisor", permission.supervisor ? "Permitido" : "No permitido"],
+    ["Administrador", permission.administrador ? "Permitido" : "No permitido"]
+  ]));
+
+  openModal("#permissionDetailModal");
+}
+
+function renderRoleCards() {
+  setHTML("#roleCardGrid", Mock.roles.map(role => `
+    <article class="role-card">
+      <div class="role-card__top">
+        <span class="role-card__icon">${esc(role.icon)}</span>
+        <div>
+          <h3>${esc(role.name)}</h3>
+          <p>${esc(role.description)}</p>
+        </div>
+        <span class="${pillClass(statusType(role.status))}">${esc(role.status)}</span>
+      </div>
+
+      <div class="role-card__meta">
+        <span>${esc(role.scope)}</span>
+        <span>${esc(role.accessLevel)}</span>
+        <span>${esc(role.users)} usuarios</span>
+      </div>
+
+      <div class="role-card__actions">
+        <button type="button" data-action="edit-role" data-role-id="${esc(role.id)}">Editar</button>
+        <button type="button" data-action="audit-role" data-role-id="${esc(role.id)}">Auditoría</button>
+      </div>
+    </article>
+  `).join(""));
+
+  $$("[data-action='edit-role']").forEach(button => {
+    button.addEventListener("click", () => openEditRoleModal(button.dataset.roleId));
+  });
+
+  $$("[data-action='audit-role']").forEach(button => {
+    button.addEventListener("click", () => {
+      window.location.href = "auditoria.html";
     });
   });
 }
 
-function getFilteredAuditEvents() {
-  return AuditState.data.eventos.filter((event) => {
-    const q = AuditState.search;
+function openCreateRoleModal() {
+  State.selectedRoleId = null;
 
-    const matchesSearch =
-      !q ||
-      event.usuario.toLowerCase().includes(q) ||
-      event.accion.toLowerCase().includes(q) ||
-      event.modulo.toLowerCase().includes(q) ||
-      event.ip.toLowerCase().includes(q) ||
-      event.resultado.toLowerCase().includes(q);
+  setText("#roleFormEyebrow", "Nuevo rol");
+  setText("#roleFormTitle", "Crear rol");
+  setText("#roleFormText", "Define nombre, alcance, nivel de acceso y módulos asociados al rol.");
 
-    const matchesType = AuditState.type === "todos" || event.tipo === AuditState.type;
-    const matchesRisk = AuditState.risk === "todos" || event.riesgo === AuditState.risk;
-
-    return matchesSearch && matchesType && matchesRisk;
+  ["#roleName", "#roleDescription"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
   });
+
+  ["#roleScope", "#roleAccessLevel", "#roleStatus"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  if ($("#roleFormDeclaration")) $("#roleFormDeclaration").checked = false;
+
+  openModal("#roleFormModal");
 }
 
-function renderAuditAi(items) {
-  const container = $("#auditAiSummary");
-  if (!container) return;
+function openEditRoleModal(id) {
+  const role = getRole(id);
+  if (!role) return;
 
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="ai-summary-item">
-          <strong>${item.titulo}</strong>
-          <p>${item.texto}</p>
-        </div>
-      `;
-    })
-    .join("");
+  State.selectedRoleId = id;
+
+  setText("#roleFormEyebrow", "Editar rol");
+  setText("#roleFormTitle", role.name);
+  setText("#roleFormText", "Modifica el alcance y descripción del rol seleccionado.");
+
+  if ($("#roleName")) $("#roleName").value = role.name;
+  if ($("#roleScope")) $("#roleScope").value = role.scope;
+  if ($("#roleAccessLevel")) $("#roleAccessLevel").value = role.accessLevel;
+  if ($("#roleStatus")) $("#roleStatus").value = role.status;
+  if ($("#roleDescription")) $("#roleDescription").value = role.description;
+  if ($("#roleFormDeclaration")) $("#roleFormDeclaration").checked = false;
+
+  openModal("#roleFormModal");
 }
 
-function renderAuditRisks(items) {
-  const container = $("#auditRiskDistribution");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="risk-card">
-          <div class="risk-card__top">
-            <div>
-              <strong>${item.nombre}</strong>
-              <p>${item.cantidad} evento(s)</p>
-            </div>
-            <span class="status-pill ${getRiskClass(item.nombre)}">${item.nombre}</span>
-          </div>
-
-          <div class="risk-bar">
-            <span style="width:${item.porcentaje}%"></span>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function renderAuditModules(items) {
-  const container = $("#auditModuleRanking");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="metric-row">
-          <div class="metric-row__top">
-            <div>
-              <strong>${item.nombre}</strong>
-              <small>${item.detalle}</small>
-            </div>
-            <span class="status-pill status-pill--info">${item.valor}</span>
-          </div>
-
-          <div class="metric-bar">
-            <span style="width:${item.valor}%"></span>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function openAuditDetail(event) {
-  setText("#auditModalIcon", event.icono);
-  setText("#auditModalTitle", event.accion);
-  setText("#auditModalText", event.descripcion);
-
-  const summary = $("#auditModalSummary");
-
-  if (summary) {
-    summary.innerHTML = `
-      <div>
-        <span>Usuario</span>
-        <strong>${event.usuario}</strong>
-      </div>
-      <div>
-        <span>Tipo</span>
-        <strong>${event.tipo}</strong>
-      </div>
-      <div>
-        <span>Módulo</span>
-        <strong>${event.modulo}</strong>
-      </div>
-      <div>
-        <span>Resultado</span>
-        <strong>${event.resultado}</strong>
-      </div>
-      <div>
-        <span>Riesgo</span>
-        <strong>${event.riesgo}</strong>
-      </div>
-      <div>
-        <span>Fecha</span>
-        <strong>${event.fecha}</strong>
-      </div>
-    `;
+function confirmSaveRole() {
+  if (
+    !getValue("#roleName") ||
+    !getValue("#roleScope") ||
+    !getValue("#roleAccessLevel") ||
+    !getValue("#roleStatus") ||
+    !getValue("#roleDescription") ||
+    !isChecked("#roleFormDeclaration")
+  ) {
+    toast("Faltan datos", "Completa nombre, alcance, nivel, estado, descripción y confirmación.", "warning");
+    return;
   }
 
-  openModal("#auditDetailModal");
+  closeModals();
+  toast("Rol guardado", "El rol fue registrado correctamente.", "success");
+  renderRoleCards();
 }
 
-function openAuditAnalysis() {
-  openGenericModal({
-    icon: "🤖",
-    title: "Análisis IA de auditoría",
-    text: "Se identifican eventos críticos por intentos fallidos, cambios sensibles de SLA y modificaciones de roles. Se recomienda revisar usuarios bloqueados y confirmar cambios administrativos recientes."
+function confirmSavePermissionMatrix() {
+  if (!isChecked("#permissionMatrixDeclaration")) {
+    toast("Confirmación requerida", "Debes confirmar que revisaste los permisos.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Matriz guardada", "Los permisos fueron guardados correctamente.", "success");
+}
+
+/* =========================================================
+   CATÁLOGOS
+========================================================= */
+
+function initCatalogs() {
+  renderCatalogsPage();
+
+  $("#catalogSearch")?.addEventListener("input", renderCatalogsPage);
+
+  $$("[data-catalog-filter]").forEach(button => {
+    button.addEventListener("click", () => {
+      State.catalogFilter = button.dataset.catalogFilter;
+      $$("[data-catalog-filter]").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderCatalogsPage();
+    });
+  });
+
+  $("#toggleCatalogViewBtn")?.addEventListener("click", () => {
+    State.catalogView = State.catalogView === "cards" ? "table" : "cards";
+    $("#toggleCatalogViewBtn").textContent = State.catalogView === "cards" ? "Vista tabla" : "Vista cards";
+    renderCatalogsPage();
+  });
+
+  $("#openCreateCatalogItemBtn")?.addEventListener("click", openCreateCatalogModal);
+
+  $("#refreshCatalogsBtn")?.addEventListener("click", () => {
+    renderCatalogsPage();
+    toast("Catálogos actualizados", "Se actualizó la lista de elementos.", "success");
+  });
+
+  $("#exportCatalogsBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Catálogos preparados", "Los catálogos fueron preparados para exportación.");
+  });
+
+  $("#validateCatalogsBtn")?.addEventListener("click", () => {
+    askBot("Valida inconsistencias de catálogos");
+  });
+
+  $("#refreshCatalogChartBtn")?.addEventListener("click", () => {
+    renderCatalogCharts();
+    toast("Gráfico actualizado", "Se actualizó la distribución de catálogos.", "success");
+  });
+
+  $("#refreshCatalogStatusBtn")?.addEventListener("click", () => {
+    renderCatalogCharts();
+    toast("Estado actualizado", "Se actualizó el estado de catálogos.", "success");
+  });
+
+  $("#catalogEditBtn")?.addEventListener("click", () => {
+    closeModals();
+    openEditCatalogModal(State.selectedCatalogId);
+  });
+
+  $("#catalogToggleStatusBtn")?.addEventListener("click", () => {
+    closeModals();
+    openCatalogStatusModal(State.selectedCatalogId);
+  });
+
+  $("#catalogAuditBtn")?.addEventListener("click", () => {
+    window.location.href = "auditoria.html";
+  });
+
+  $("#saveCatalogItemBtn")?.addEventListener("click", confirmSaveCatalogItem);
+
+  $("#catalogSuggestBtn")?.addEventListener("click", () => {
+    $("#catalogItemStatus").value = "Activo";
+    $("#catalogItemDependency").value = "Reglas SLA";
+    $("#catalogItemDescription").value =
+      "La IA sugiere validar que este elemento no duplique catálogos existentes y que su dependencia funcional esté documentada.";
+    toast("Validación sugerida", "La IA completó una recomendación para el catálogo.", "success");
+  });
+
+  $("#confirmCatalogStatusBtn")?.addEventListener("click", confirmCatalogStatus);
+
+  renderAi("#catalogAiSummary", [
+    ["Dependencias críticas", "Prioridades, categorías y canales impactan directamente en reglas SLA y reportes."],
+    ["Elementos en revisión", "No deben usarse en producción hasta validar dependencia y duplicidad."],
+    ["Acción sugerida", "Antes de inactivar elementos, revisar si son usados por SLA, asignaciones o reportes."]
+  ]);
+
+  renderChecklist("#catalogActionPlan", [
+    ["1", "Validar duplicados", "Evitar elementos equivalentes con nombres distintos."],
+    ["2", "Revisar dependencias", "Confirmar impacto en SLA, asignaciones y reportes."],
+    ["3", "Auditar cambios", "Registrar sustento al activar o inactivar catálogos."]
+  ]);
+}
+
+function catalogFiltered() {
+  const query = getValue("#catalogSearch").toLowerCase();
+
+  return Mock.catalogItems.filter(item => {
+    const text = `${item.name} ${item.type} ${item.status} ${item.usage} ${item.dependency} ${item.description}`.toLowerCase();
+    const matchesSearch = !query || text.includes(query);
+
+    const matchesFilter =
+      State.catalogFilter === "todos" ||
+      item.filterType === State.catalogFilter;
+
+    return matchesSearch && matchesFilter;
   });
 }
 
-function getRiskClass(risk) {
-  if (risk === "Crítico") return "status-pill--danger";
-  if (risk === "Alto") return "status-pill--warning";
-  if (risk === "Medio") return "status-pill--info";
-  return "status-pill--success";
+function renderCatalogsPage() {
+  const rows = catalogFiltered();
+
+  setText("#catalogSummaryTitle", `${Mock.catalogItems.length} elementos configurados`);
+  setText("#catalogSummaryText", `${rows.length} elementos visibles según filtro.`);
+
+  renderKpis("#catalogKpiGrid", [
+    ["🧩", Mock.catalogItems.length, "Elementos", "Total configurado"],
+    ["✅", Mock.catalogItems.filter(i => i.status === "Activo").length, "Activos", "Disponibles"],
+    ["🕘", Mock.catalogItems.filter(i => i.status === "En revisión").length, "En revisión", "Pendientes"],
+    ["⏱️", Mock.catalogItems.filter(i => i.dependency === "Reglas SLA").length, "Impactan SLA", "Dependencia crítica"]
+  ]);
+
+  renderCatalogCharts();
+
+  setHTML("#catalogCardList", rows.map(catalogCard).join(""));
+  setHTML("#catalogTableBody", rows.map(catalogTableRow).join(""));
+
+  show($("#catalogCardList"), State.catalogView === "cards");
+  show($("#catalogTableWrap"), State.catalogView === "table");
+  show($("#emptyCatalogState"), !rows.length);
+
+  bindCatalogActions($("#catalogCardList"));
+  bindCatalogActions($("#catalogTableBody"));
+}
+
+function renderCatalogCharts() {
+  const byType = countBy(Mock.catalogItems, "type");
+  const byStatus = countBy(Mock.catalogItems, "status");
+
+  renderBarChart("#catalogDistributionChart", Object.entries(byType).map(([label, value]) => ({ label, value })));
+  renderDonut("#catalogStatusDonut", "#catalogStatusLegend", Object.entries(byStatus).map(([label, value]) => ({ label, value })), "Elementos");
+}
+
+function catalogCard(item) {
+  return `
+    <article class="catalog-card">
+      <div class="catalog-card__top">
+        <span class="catalog-card__icon">${esc(item.icon)}</span>
+        <div>
+          <h3>${esc(item.name)}</h3>
+          <p>${esc(item.description)}</p>
+        </div>
+        <span class="${pillClass(statusType(item.status))}">${esc(item.status)}</span>
+      </div>
+
+      <div class="catalog-card__meta">
+        <span>${esc(item.type)}</span>
+        <span>${esc(item.usage)}</span>
+        <span>${esc(item.dependency)}</span>
+        <span>${esc(item.updatedAt)}</span>
+      </div>
+
+      <div class="catalog-card__actions">
+        <button type="button" data-action="view-catalog" data-catalog-id="${esc(item.id)}">Ver</button>
+        <button type="button" data-action="edit-catalog" data-catalog-id="${esc(item.id)}">Editar</button>
+        <button type="button" data-action="status-catalog" data-catalog-id="${esc(item.id)}">Estado</button>
+      </div>
+    </article>
+  `;
+}
+
+function catalogTableRow(item) {
+  return `
+    <tr>
+      <td>${esc(item.name)}</td>
+      <td>${esc(item.type)}</td>
+      <td><span class="${pillClass(statusType(item.status))}">${esc(item.status)}</span></td>
+      <td>${esc(item.usage)}</td>
+      <td>${esc(item.dependency)}</td>
+      <td>${esc(item.updatedAt)}</td>
+      <td>
+        <button type="button" data-action="view-catalog" data-catalog-id="${esc(item.id)}">Ver</button>
+        <button type="button" data-action="edit-catalog" data-catalog-id="${esc(item.id)}">Editar</button>
+      </td>
+    </tr>
+  `;
+}
+
+function bindCatalogActions(root = document) {
+  $$("[data-action='view-catalog']", root).forEach(button => {
+    button.addEventListener("click", () => openCatalogDetail(button.dataset.catalogId));
+  });
+
+  $$("[data-action='edit-catalog']", root).forEach(button => {
+    button.addEventListener("click", () => openEditCatalogModal(button.dataset.catalogId));
+  });
+
+  $$("[data-action='status-catalog']", root).forEach(button => {
+    button.addEventListener("click", () => openCatalogStatusModal(button.dataset.catalogId));
+  });
+}
+
+function catalogSummary(item) {
+  return summaryHTML([
+    ["Código", item.id],
+    ["Nombre", item.name],
+    ["Tipo", item.type],
+    ["Estado", item.status],
+    ["Uso", item.usage],
+    ["Dependencia", item.dependency],
+    ["Última actualización", item.updatedAt],
+    ["Descripción", item.description]
+  ]);
+}
+
+function openCatalogDetail(id) {
+  const item = getCatalogItem(id);
+  if (!item) return;
+
+  State.selectedCatalogId = id;
+
+  setText("#catalogDetailIcon", item.icon);
+  setText("#catalogDetailTitle", item.name);
+  setText("#catalogDetailText", item.description);
+  setHTML("#catalogDetailSummary", catalogSummary(item));
+
+  openModal("#catalogDetailModal");
+}
+
+function openCreateCatalogModal() {
+  State.selectedCatalogId = null;
+
+  setText("#catalogFormEyebrow", "Nuevo catálogo");
+  setText("#catalogFormTitle", "Nuevo elemento de catálogo");
+  setText("#catalogFormText", "Registra un elemento funcional que será usado por los módulos de atención.");
+
+  ["#catalogItemName", "#catalogItemDescription"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  ["#catalogItemType", "#catalogItemStatus", "#catalogItemDependency"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  if ($("#catalogFormDeclaration")) $("#catalogFormDeclaration").checked = false;
+
+  openModal("#catalogFormModal");
+}
+
+function openEditCatalogModal(id) {
+  const item = getCatalogItem(id);
+  if (!item) return;
+
+  State.selectedCatalogId = id;
+
+  setText("#catalogFormEyebrow", "Editar catálogo");
+  setText("#catalogFormTitle", item.name);
+  setText("#catalogFormText", "Modifica la información funcional del elemento seleccionado.");
+
+  if ($("#catalogItemName")) $("#catalogItemName").value = item.name;
+  if ($("#catalogItemType")) $("#catalogItemType").value = item.type;
+  if ($("#catalogItemStatus")) $("#catalogItemStatus").value = item.status;
+  if ($("#catalogItemDependency")) $("#catalogItemDependency").value = item.dependency;
+  if ($("#catalogItemDescription")) $("#catalogItemDescription").value = item.description;
+  if ($("#catalogFormDeclaration")) $("#catalogFormDeclaration").checked = false;
+
+  openModal("#catalogFormModal");
+}
+
+function confirmSaveCatalogItem() {
+  if (
+    !getValue("#catalogItemName") ||
+    !getValue("#catalogItemType") ||
+    !getValue("#catalogItemStatus") ||
+    !getValue("#catalogItemDependency") ||
+    !getValue("#catalogItemDescription") ||
+    !isChecked("#catalogFormDeclaration")
+  ) {
+    toast("Faltan datos", "Completa nombre, tipo, estado, dependencia, descripción y confirmación.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Elemento guardado", "El catálogo fue registrado correctamente.", "success");
+  renderCatalogsPage();
+}
+
+function openCatalogStatusModal(id) {
+  const item = getCatalogItem(id);
+  if (!item) return;
+
+  State.selectedCatalogId = id;
+
+  setHTML("#catalogStatusSummary", catalogSummary(item));
+
+  if ($("#newCatalogStatus")) $("#newCatalogStatus").value = "";
+  if ($("#catalogStatusReason")) $("#catalogStatusReason").value = "";
+  if ($("#catalogStatusDeclaration")) $("#catalogStatusDeclaration").checked = false;
+
+  openModal("#catalogStatusModal");
+}
+
+function confirmCatalogStatus() {
+  if (
+    !getValue("#newCatalogStatus") ||
+    !getValue("#catalogStatusReason") ||
+    !isChecked("#catalogStatusDeclaration")
+  ) {
+    toast("Faltan datos", "Completa nuevo estado, motivo y confirmación.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Estado actualizado", "El cambio de catálogo fue registrado.", "success");
+  renderCatalogsPage();
+}
+
+/* =========================================================
+   REGLAS SLA
+========================================================= */
+
+function initSlaRules() {
+  renderSlaRulesPage();
+
+  $("#slaRuleSearch")?.addEventListener("input", renderSlaRulesPage);
+
+  $$("[data-sla-rule-filter]").forEach(button => {
+    button.addEventListener("click", () => {
+      State.slaRuleFilter = button.dataset.slaRuleFilter;
+      $$("[data-sla-rule-filter]").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderSlaRulesPage();
+    });
+  });
+
+  $("#toggleSlaRulesViewBtn")?.addEventListener("click", () => {
+    State.slaRuleView = State.slaRuleView === "cards" ? "table" : "cards";
+    $("#toggleSlaRulesViewBtn").textContent = State.slaRuleView === "cards" ? "Vista tabla" : "Vista cards";
+    renderSlaRulesPage();
+  });
+
+  $("#openCreateSlaRuleBtn")?.addEventListener("click", openCreateSlaRuleModal);
+
+  $("#refreshSlaRulesBtn")?.addEventListener("click", () => {
+    renderSlaRulesPage();
+    toast("Reglas actualizadas", "Se actualizó la matriz SLA.", "success");
+  });
+
+  $("#exportSlaRulesBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Exportación preparada", "Las reglas SLA fueron preparadas para exportación.");
+  });
+
+  $("#validateSlaRulesBtn")?.addEventListener("click", () => {
+    askBot("Valida inconsistencias SLA");
+  });
+
+  $("#refreshSlaPriorityChartBtn")?.addEventListener("click", () => {
+    renderSlaCharts();
+    toast("Gráfico actualizado", "Se actualizó el SLA por prioridad.", "success");
+  });
+
+  $("#refreshSlaStatusChartBtn")?.addEventListener("click", () => {
+    renderSlaCharts();
+    toast("Estado actualizado", "Se actualizó el estado de reglas SLA.", "success");
+  });
+
+  $("#slaRuleEditBtn")?.addEventListener("click", () => {
+    closeModals();
+    openEditSlaRuleModal(State.selectedSlaRuleId);
+  });
+
+  $("#slaRuleDuplicateBtn")?.addEventListener("click", () => {
+    closeModals();
+    openDuplicateSlaRuleModal(State.selectedSlaRuleId);
+  });
+
+  $("#slaRuleAuditBtn")?.addEventListener("click", () => {
+    window.location.href = "auditoria.html";
+  });
+
+  $("#saveSlaRuleBtn")?.addEventListener("click", confirmSaveSlaRule);
+
+  $("#suggestSlaRuleBtn")?.addEventListener("click", () => {
+    const priority = getValue("#slaRulePriority");
+
+    if (priority === "Crítica") {
+      $("#slaRuleTime").value = "4 horas";
+      $("#slaRuleAlert").value = "1 hora antes";
+      $("#slaRuleArea").value = "Soporte técnico";
+    } else if (priority === "Alta") {
+      $("#slaRuleTime").value = "24 horas";
+      $("#slaRuleAlert").value = "4 horas antes";
+    } else if (priority === "Media") {
+      $("#slaRuleTime").value = "48 horas";
+      $("#slaRuleAlert").value = "8 horas antes";
+    } else {
+      $("#slaRuleTime").value = "72 horas";
+      $("#slaRuleAlert").value = "24 horas antes";
+    }
+
+    $("#slaRuleStatus").value = "Activo";
+    $("#slaRuleDescription").value =
+      "La IA sugiere esta configuración considerando prioridad, tiempo de atención, alerta preventiva y área responsable.";
+
+    toast("SLA sugerido", "Se completó una recomendación de regla SLA.", "success");
+  });
+
+  renderAi("#slaRulesAiSummary", [
+    ["Reglas críticas", "Las incidencias críticas deben tener tiempos cortos y alerta preventiva temprana."],
+    ["Inconsistencias", "Evita reglas duplicadas por tipo de caso, prioridad y canal."],
+    ["Escalamiento", "Toda regla crítica debe tener área responsable y criterio de alerta."]
+  ]);
+
+  renderChecklist("#slaRulesActionPlan", [
+    ["1", "Validar duplicados", "Revisar si existe una regla equivalente antes de crear otra."],
+    ["2", "Revisar alerta", "La alerta preventiva debe activarse antes del vencimiento real."],
+    ["3", "Confirmar área", "Cada regla SLA debe tener responsable claro."]
+  ]);
+}
+
+function slaRulesFiltered() {
+  const query = getValue("#slaRuleSearch").toLowerCase();
+
+  return Mock.slaRules.filter(rule => {
+    const text = `${rule.name} ${rule.caseType} ${rule.priority} ${rule.channel} ${rule.time} ${rule.alert} ${rule.area} ${rule.status}`.toLowerCase();
+    const matchesSearch = !query || text.includes(query);
+
+    const filter = State.slaRuleFilter;
+
+    const matchesFilter =
+      filter === "todos" ||
+      (filter === "reclamos" && rule.caseType === "Reclamo") ||
+      (filter === "incidencias" && rule.caseType === "Incidencia") ||
+      (filter === "criticas" && rule.priority === "Crítica") ||
+      (filter === "activas" && rule.status === "Activo") ||
+      (filter === "revision" && rule.status === "En revisión");
+
+    return matchesSearch && matchesFilter;
+  });
+}
+
+function renderSlaRulesPage() {
+  const rows = slaRulesFiltered();
+
+  setText("#slaRulesSummaryTitle", `${Mock.slaRules.length} reglas SLA`);
+  setText("#slaRulesSummaryText", `${rows.length} reglas visibles según filtro.`);
+
+  renderKpis("#slaRulesKpiGrid", [
+    ["⏱️", Mock.slaRules.length, "Reglas", "Total configurado"],
+    ["✅", Mock.slaRules.filter(r => r.status === "Activo").length, "Activas", "En operación"],
+    ["🚨", Mock.slaRules.filter(r => r.priority === "Crítica").length, "Críticas", "Atención inmediata"],
+    ["🕘", Mock.slaRules.filter(r => r.status === "En revisión").length, "En revisión", "Pendientes"]
+  ]);
+
+  renderSlaCharts();
+
+  setHTML("#slaRuleCardList", rows.map(slaRuleCard).join(""));
+  setHTML("#slaRuleTableBody", rows.map(slaRuleTableRow).join(""));
+
+  show($("#slaRuleCardList"), State.slaRuleView === "cards");
+  show($("#slaRuleTableWrap"), State.slaRuleView === "table");
+  show($("#emptySlaRulesState"), !rows.length);
+
+  bindSlaRuleActions($("#slaRuleCardList"));
+  bindSlaRuleActions($("#slaRuleTableBody"));
+}
+
+function renderSlaCharts() {
+  const priorityHours = Mock.slaRules.map(rule => ({
+    label: rule.priority,
+    value: parseInt(rule.time, 10) || 0
+  }));
+
+  const byStatus = countBy(Mock.slaRules, "status");
+
+  renderBarChart("#slaPriorityChart", priorityHours);
+  renderDonut("#slaStatusDonut", "#slaStatusLegend", Object.entries(byStatus).map(([label, value]) => ({ label, value })), "Reglas");
+}
+
+function slaRuleCard(rule) {
+  return `
+    <article class="sla-rule-card">
+      <div class="sla-rule-card__top">
+        <span class="sla-rule-card__icon">${esc(rule.icon)}</span>
+        <div>
+          <h3>${esc(rule.name)}</h3>
+          <p>${esc(rule.description)}</p>
+        </div>
+        <span class="${pillClass(statusType(rule.status))}">${esc(rule.status)}</span>
+      </div>
+
+      <div class="sla-rule-card__meta">
+        <span>${esc(rule.caseType)}</span>
+        <span>${esc(rule.priority)}</span>
+        <span>${esc(rule.channel)}</span>
+        <span>${esc(rule.time)}</span>
+        <span>Alerta: ${esc(rule.alert)}</span>
+        <span>${esc(rule.area)}</span>
+      </div>
+
+      <div class="sla-rule-card__actions">
+        <button type="button" data-action="view-sla-rule" data-sla-rule-id="${esc(rule.id)}">Ver</button>
+        <button type="button" data-action="edit-sla-rule" data-sla-rule-id="${esc(rule.id)}">Editar</button>
+        <button type="button" data-action="duplicate-sla-rule" data-sla-rule-id="${esc(rule.id)}">Duplicar</button>
+      </div>
+    </article>
+  `;
+}
+
+function slaRuleTableRow(rule) {
+  return `
+    <tr>
+      <td>${esc(rule.name)}</td>
+      <td>${esc(rule.caseType)}</td>
+      <td>${esc(rule.priority)}</td>
+      <td>${esc(rule.channel)}</td>
+      <td>${esc(rule.time)}</td>
+      <td>${esc(rule.alert)}</td>
+      <td><span class="${pillClass(statusType(rule.status))}">${esc(rule.status)}</span></td>
+      <td>
+        <button type="button" data-action="view-sla-rule" data-sla-rule-id="${esc(rule.id)}">Ver</button>
+        <button type="button" data-action="edit-sla-rule" data-sla-rule-id="${esc(rule.id)}">Editar</button>
+      </td>
+    </tr>
+  `;
+}
+
+function bindSlaRuleActions(root = document) {
+  $$("[data-action='view-sla-rule']", root).forEach(button => {
+    button.addEventListener("click", () => openSlaRuleDetail(button.dataset.slaRuleId));
+  });
+
+  $$("[data-action='edit-sla-rule']", root).forEach(button => {
+    button.addEventListener("click", () => openEditSlaRuleModal(button.dataset.slaRuleId));
+  });
+
+  $$("[data-action='duplicate-sla-rule']", root).forEach(button => {
+    button.addEventListener("click", () => openDuplicateSlaRuleModal(button.dataset.slaRuleId));
+  });
+}
+
+function slaRuleSummary(rule) {
+  return summaryHTML([
+    ["Código", rule.id],
+    ["Regla", rule.name],
+    ["Tipo de caso", rule.caseType],
+    ["Prioridad", rule.priority],
+    ["Canal", rule.channel],
+    ["Tiempo SLA", rule.time],
+    ["Alerta preventiva", rule.alert],
+    ["Área responsable", rule.area],
+    ["Estado", rule.status]
+  ]);
+}
+
+function openSlaRuleDetail(id) {
+  const rule = getSlaRule(id);
+  if (!rule) return;
+
+  State.selectedSlaRuleId = id;
+
+  setText("#slaRuleDetailIcon", rule.icon);
+  setText("#slaRuleDetailTitle", rule.name);
+  setText("#slaRuleDetailText", rule.description);
+  setHTML("#slaRuleDetailSummary", slaRuleSummary(rule));
+
+  openModal("#slaRuleDetailModal");
+}
+
+function openCreateSlaRuleModal() {
+  State.selectedSlaRuleId = null;
+
+  setText("#slaRuleFormEyebrow", "Nueva regla");
+  setText("#slaRuleFormTitle", "Nueva regla SLA");
+  setText("#slaRuleFormText", "Define las condiciones y tiempos de atención para la regla SLA.");
+
+  ["#slaRuleName", "#slaRuleDescription"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  [
+    "#slaRuleCaseType",
+    "#slaRulePriority",
+    "#slaRuleChannel",
+    "#slaRuleTime",
+    "#slaRuleAlert",
+    "#slaRuleArea",
+    "#slaRuleStatus"
+  ].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  if ($("#slaRuleDeclaration")) $("#slaRuleDeclaration").checked = false;
+
+  openModal("#slaRuleFormModal");
+}
+
+function openEditSlaRuleModal(id) {
+  const rule = getSlaRule(id);
+  if (!rule) return;
+
+  State.selectedSlaRuleId = id;
+
+  setText("#slaRuleFormEyebrow", "Editar regla");
+  setText("#slaRuleFormTitle", rule.name);
+  setText("#slaRuleFormText", "Modifica las condiciones y tiempos de atención de la regla SLA.");
+
+  if ($("#slaRuleName")) $("#slaRuleName").value = rule.name;
+  if ($("#slaRuleCaseType")) $("#slaRuleCaseType").value = rule.caseType;
+  if ($("#slaRulePriority")) $("#slaRulePriority").value = rule.priority;
+  if ($("#slaRuleChannel")) $("#slaRuleChannel").value = rule.channel;
+  if ($("#slaRuleTime")) $("#slaRuleTime").value = rule.time;
+  if ($("#slaRuleAlert")) $("#slaRuleAlert").value = rule.alert;
+  if ($("#slaRuleArea")) $("#slaRuleArea").value = rule.area;
+  if ($("#slaRuleStatus")) $("#slaRuleStatus").value = rule.status;
+  if ($("#slaRuleDescription")) $("#slaRuleDescription").value = rule.description;
+  if ($("#slaRuleDeclaration")) $("#slaRuleDeclaration").checked = false;
+
+  openModal("#slaRuleFormModal");
+}
+
+function openDuplicateSlaRuleModal(id) {
+  const rule = getSlaRule(id);
+  if (!rule) return;
+
+  State.selectedSlaRuleId = null;
+
+  setText("#slaRuleFormEyebrow", "Duplicar regla");
+  setText("#slaRuleFormTitle", `Copia de ${rule.name}`);
+  setText("#slaRuleFormText", "Ajusta los datos antes de guardar una nueva regla basada en esta configuración.");
+
+  if ($("#slaRuleName")) $("#slaRuleName").value = `Copia de ${rule.name}`;
+  if ($("#slaRuleCaseType")) $("#slaRuleCaseType").value = rule.caseType;
+  if ($("#slaRulePriority")) $("#slaRulePriority").value = rule.priority;
+  if ($("#slaRuleChannel")) $("#slaRuleChannel").value = rule.channel;
+  if ($("#slaRuleTime")) $("#slaRuleTime").value = rule.time;
+  if ($("#slaRuleAlert")) $("#slaRuleAlert").value = rule.alert;
+  if ($("#slaRuleArea")) $("#slaRuleArea").value = rule.area;
+  if ($("#slaRuleStatus")) $("#slaRuleStatus").value = "En revisión";
+  if ($("#slaRuleDescription")) $("#slaRuleDescription").value = rule.description;
+  if ($("#slaRuleDeclaration")) $("#slaRuleDeclaration").checked = false;
+
+  openModal("#slaRuleFormModal");
+}
+
+function confirmSaveSlaRule() {
+  if (
+    !getValue("#slaRuleName") ||
+    !getValue("#slaRuleCaseType") ||
+    !getValue("#slaRulePriority") ||
+    !getValue("#slaRuleChannel") ||
+    !getValue("#slaRuleTime") ||
+    !getValue("#slaRuleAlert") ||
+    !getValue("#slaRuleArea") ||
+    !getValue("#slaRuleStatus") ||
+    !getValue("#slaRuleDescription") ||
+    !isChecked("#slaRuleDeclaration")
+  ) {
+    toast("Faltan datos", "Completa todos los campos de la regla SLA y confirma la revisión.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Regla SLA guardada", "La configuración SLA fue registrada correctamente.", "success");
+  renderSlaRulesPage();
+}
+
+/* =========================================================
+   INDICADORES Y REPORTES
+========================================================= */
+
+function initAdminIndicatorsReports() {
+  renderAdminIndicatorsPage();
+
+  [
+    "#adminIndicatorPeriod",
+    "#adminIndicatorModule",
+    "#adminIndicatorRole",
+    "#adminIndicatorChannel"
+  ].forEach(selector => {
+    $(selector)?.addEventListener("change", renderAdminIndicatorsPage);
+  });
+
+  $("#refreshAdminIndicatorsBtn")?.addEventListener("click", () => {
+    renderAdminIndicatorsPage();
+    toast("Indicadores actualizados", "Se recalcularon los indicadores administrativos.", "success");
+  });
+
+  $("#exportAdminIndicatorsBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Indicadores preparados", "Los indicadores fueron preparados para exportación.");
+  });
+
+  $("#refreshAdminCaseEvolutionBtn")?.addEventListener("click", () => {
+    renderAdminIndicatorCharts();
+    toast("Gráfico actualizado", "Se actualizó la evolución de casos.", "success");
+  });
+
+  $("#refreshAdminChannelDonutBtn")?.addEventListener("click", () => {
+    renderAdminIndicatorCharts();
+    toast("Canales actualizados", "Se actualizó la distribución por canal.", "success");
+  });
+
+  $("#refreshAdminMetricCardsBtn")?.addEventListener("click", () => {
+    renderAdminMetricCards();
+    toast("Métricas actualizadas", "Se actualizaron las métricas administrativas.", "success");
+  });
+
+  $("#toggleAdminMetricViewBtn")?.addEventListener("click", () => {
+    State.adminMetricCompact = !State.adminMetricCompact;
+    $("#toggleAdminMetricViewBtn").textContent = State.adminMetricCompact ? "Vista amplia" : "Vista compacta";
+    renderAdminMetricCards();
+  });
+
+  $("#openAdminReportModalBtn")?.addEventListener("click", openAdminReportModal);
+  $("#adminIndicatorReportBtn")?.addEventListener("click", () => {
+    closeModals();
+    openAdminReportModal();
+  });
+
+  $("#compareAdminIndicatorsBtn")?.addEventListener("click", () => {
+    genericModal("📊", "Comparación preparada", "Se preparó una comparación contra el periodo anterior.");
+  });
+
+  $("#confirmGenerateAdminReportBtn")?.addEventListener("click", confirmGenerateAdminReport);
+
+  $("#suggestAdminReportBtn")?.addEventListener("click", () => {
+    $("#adminReportType").value = "Resumen ejecutivo";
+    $("#adminReportPeriod").value = "Semana actual";
+    $("#adminReportFormat").value = "PDF";
+    $("#adminReportScope").value = "Todos los módulos";
+    $("#adminReportIncludeCharts").checked = true;
+    $("#adminReportIncludeAudit").checked = true;
+    $("#adminReportIncludeSla").checked = true;
+    $("#adminReportIncludeSecurity").checked = true;
+    $("#adminReportComment").value =
+      "Reporte sugerido por IA con visión ejecutiva de usuarios, accesos, SLA, integraciones, respaldo y auditoría.";
+    toast("Reporte sugerido", "La IA completó una configuración recomendada.", "success");
+  });
+
+  $("#refreshAdminReportsBtn")?.addEventListener("click", () => {
+    renderAdminReportsTable();
+    toast("Reportes actualizados", "Se actualizó la lista de reportes administrativos.", "success");
+  });
+
+  $("#scheduleAdminReportBtn")?.addEventListener("click", () => {
+    openModal("#scheduleAdminReportModal");
+  });
+
+  $("#confirmScheduleAdminReportBtn")?.addEventListener("click", confirmScheduleAdminReport);
+
+  $("#adminIndicatorAiBtn")?.addEventListener("click", () => {
+    const metric = getMetric(State.selectedMetricId);
+    askBot(`Analiza indicador ${metric?.title || ""}`);
+  });
+
+  renderAi("#adminIndicatorsAiSummary", [
+    ["Desviación principal", "El SLA global y las integraciones sanas requieren atención administrativa."],
+    ["Reporte recomendado", "Generar resumen ejecutivo semanal con indicadores, auditoría, seguridad y respaldo."],
+    ["Acción", "Revisar integraciones con error antes de cerrar el reporte ejecutivo."]
+  ]);
+
+  renderChecklist("#adminReportActionPlan", [
+    ["1", "Incluir KPIs", "Usuarios, casos, SLA, integraciones, reportes y eventos sensibles."],
+    ["2", "Agregar gráficos", "Evolución de casos y distribución por canal."],
+    ["3", "Cerrar con alertas", "Incluir observaciones administrativas y acciones recomendadas."]
+  ]);
+}
+
+function renderAdminIndicatorsPage() {
+  setText("#adminIndicatorsSummaryTitle", "Indicadores actualizados");
+  setText("#adminIndicatorsSummaryText", "Vista administrativa con filtros aplicados.");
+
+  renderKpis("#adminIndicatorsKpiGrid", [
+    ["👤", Mock.users.filter(u => u.status === "Activo").length, "Usuarios activos", "Cuentas disponibles"],
+    ["📈", "128", "Casos registrados", "Volumen del periodo"],
+    ["⏱️", "87%", "SLA global", "Cumplimiento operativo"],
+    ["🔌", "3/5", "Integraciones sanas", "Servicios sin alerta"]
+  ]);
+
+  renderAdminIndicatorCharts();
+  renderAdminMetricCards();
+  renderAdminReportsTable();
+}
+
+function renderAdminIndicatorCharts() {
+  renderBarChart("#adminCaseEvolutionChart", [
+    { label: "Lun", value: 18 },
+    { label: "Mar", value: 22 },
+    { label: "Mié", value: 19 },
+    { label: "Jue", value: 31 },
+    { label: "Vie", value: 26 },
+    { label: "Sáb", value: 12 }
+  ]);
+
+  renderDonut("#adminChannelDonut", "#adminChannelLegend", [
+    { label: "Portal", value: 42 },
+    { label: "Call center", value: 36 },
+    { label: "App", value: 31 },
+    { label: "Correo", value: 19 }
+  ], "Casos");
+}
+
+function renderAdminMetricCards() {
+  setHTML("#adminMetricGrid", Mock.adminMetrics.map(renderMetricCard).join(""));
+  show($("#emptyAdminMetricsState"), !Mock.adminMetrics.length);
+  bindMetricButtons($("#adminMetricGrid"));
+}
+
+function renderAdminReportsTable() {
+  setHTML("#adminReportsTableBody", Mock.reports.map(report => `
+    <tr>
+      <td>${esc(report.name)}</td>
+      <td>${esc(report.type)}</td>
+      <td>${esc(report.period)}</td>
+      <td>${esc(report.format)}</td>
+      <td><span class="${pillClass(statusType(report.status))}">${esc(report.status)}</span></td>
+      <td>${esc(report.owner)}</td>
+      <td>
+        <button type="button" data-admin-report-id="${esc(report.id)}">Ver</button>
+      </td>
+    </tr>
+  `).join(""));
+
+  $$("[data-admin-report-id]").forEach(button => {
+    button.addEventListener("click", () => {
+      const report = Mock.reports.find(item => item.id === button.dataset.adminReportId);
+      if (!report) return;
+
+      genericModal(
+        "📊",
+        report.name,
+        `Tipo: ${report.type}. Periodo: ${report.period}. Formato: ${report.format}. Estado: ${report.status}.`
+      );
+    });
+  });
+}
+
+function openAdminReportModal() {
+  [
+    "#adminReportType",
+    "#adminReportPeriod",
+    "#adminReportFormat",
+    "#adminReportScope"
+  ].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  [
+    "#adminReportIncludeCharts",
+    "#adminReportIncludeAudit",
+    "#adminReportIncludeSla",
+    "#adminReportIncludeSecurity"
+  ].forEach(selector => {
+    if ($(selector)) $(selector).checked = false;
+  });
+
+  if ($("#adminReportComment")) $("#adminReportComment").value = "";
+
+  openModal("#adminReportModal");
+}
+
+function confirmGenerateAdminReport() {
+  if (
+    !getValue("#adminReportType") ||
+    !getValue("#adminReportPeriod") ||
+    !getValue("#adminReportFormat") ||
+    !getValue("#adminReportScope")
+  ) {
+    toast("Faltan datos", "Completa tipo, periodo, formato y alcance del reporte.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Reporte generado", "El reporte administrativo fue generado correctamente.", "success");
+}
+
+function confirmScheduleAdminReport() {
+  if (
+    !getValue("#scheduleAdminReportFrequency") ||
+    !getValue("#scheduleAdminReportRecipients") ||
+    !isChecked("#scheduleAdminReportDeclaration")
+  ) {
+    toast("Faltan datos", "Completa frecuencia, destinatarios y confirmación.", "warning");
+    return;
+  }
+
+  closeModals();
+  toast("Reporte programado", "La programación del reporte fue registrada.", "success");
 }
 
 /* =========================================================
    INTEGRACIONES
 ========================================================= */
 
-let IntegrationState = {
-  data: null,
-  integrations: []
-};
+function initIntegrations() {
+  renderIntegrationsPage();
 
-async function initAdminIntegrationsPage() {
-  bindIntegrationEvents();
+  $("#integrationSearch")?.addEventListener("input", renderIntegrationsPage);
 
-  const data = await AdminIntegrationsApi.getIntegrations();
-
-  IntegrationState.data = data;
-  IntegrationState.integrations = data.integraciones;
-
-  renderIntegrationsPage(data);
-}
-
-function bindIntegrationEvents() {
-  $("#refreshIntegrationsBtn")?.addEventListener("click", async () => {
-    const data = await AdminIntegrationsApi.getIntegrations();
-
-    IntegrationState.data = data;
-    IntegrationState.integrations = data.integraciones;
-
-    renderIntegrationsPage(data);
-
-    showToast({
-      title: "Integraciones actualizadas",
-      message: "Se actualizó el estado de los conectores.",
-      type: "success"
-    });
-  });
-
-  $("#integrationNewBtn")?.addEventListener("click", clearIntegrationForm);
-  $("#clearIntegrationFormBtn")?.addEventListener("click", clearIntegrationForm);
-
-  $("#integrationTestAllBtn")?.addEventListener("click", () => {
-    openGenericModal({
-      icon: "🔌",
-      title: "Prueba de conexiones",
-      text: "Las conexiones principales respondieron correctamente. WhatsApp Gateway mantiene advertencia por latencia."
-    });
-  });
-
-  $("#integrationAnalyzeBtn")?.addEventListener("click", () => {
-    openGenericModal({
-      icon: "🤖",
-      title: "Análisis IA de integraciones",
-      text: "La mayoría de integraciones está operativa. Se recomienda revisar latencia de WhatsApp Gateway y monitorear servicios de IA y notificaciones."
-    });
-  });
-
-  $("#testIntegrationBtn")?.addEventListener("click", async () => {
-    const payload = getIntegrationPayload();
-
-    if (!payload.name || !payload.endpoint) {
-      openGenericModal({
-        icon: "🔌",
-        title: "Datos insuficientes",
-        text: "Ingresa al menos el nombre y endpoint para probar la integración."
-      });
-      return;
-    }
-
-    const result = await AdminIntegrationsApi.testIntegration(payload);
-
-    if (result.ok) {
-      openGenericModal({
-        icon: "✓",
-        title: "Conexión exitosa",
-        text: `La integración respondió correctamente. Latencia estimada: ${result.latency}.`
-      });
-    }
-  });
-
-  $("#integrationForm")?.addEventListener("submit", async (event) => {
-    event.preventDefault();
-
-    clearAdminFormErrors();
-
-    const payload = getIntegrationPayload();
-    const validation = validateIntegrationPayload(payload);
-
-    if (!validation.ok) {
-      showAdminFormErrors(validation.errors);
-
-      showToast({
-        title: "Formulario incompleto",
-        message: validation.firstMessage,
-        type: "warning"
-      });
-
-      return;
-    }
-
-    setAdminButtonLoading("#integrationSubmitBtn", true);
-
-    const result = await AdminIntegrationsApi.saveIntegration(payload);
-
-    setAdminButtonLoading("#integrationSubmitBtn", false);
-
-    if (result.ok) {
-      upsertLocalIntegration(payload);
-      clearIntegrationForm();
-      renderIntegrationsPage({
-        ...IntegrationState.data,
-        integraciones: IntegrationState.integrations
-      });
-
-      showToast({
-        title: "Integración guardada",
-        message: "La integración fue registrada correctamente.",
-        type: "success"
-      });
-    }
-  });
-}
-
-function renderIntegrationsPage(data) {
-  setText("#integrationSummaryStatus", `${data.integraciones.length} integraciones`);
-  setText("#integrationSummaryText", "Servicios preparados para monitoreo");
-
-  renderIntegrationKpis(data.kpis);
-  renderIntegrationGrid(data.integraciones);
-  renderIntegrationHealth(data.integraciones);
-  renderIntegrationAi(data.resumenIA);
-}
-
-function renderIntegrationKpis(items) {
-  const grid = $("#integrationKpiGrid");
-  if (!grid) return;
-
-  grid.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="kpi-card">
-          <span class="kpi-card__icon">${item.icono}</span>
-          <div>
-            <strong>${item.valor}</strong>
-            <p>${item.titulo}</p>
-            <small>${item.descripcion}</small>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-}
-
-function renderIntegrationGrid(items) {
-  const grid = $("#integrationGrid");
-  if (!grid) return;
-
-  grid.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="integration-card">
-          <div class="integration-card__top">
-            <div class="integration-card__identity">
-              <span class="integration-card__icon">${item.icono}</span>
-              <div>
-                <h3>${item.nombre}</h3>
-                <p>${item.tipo}</p>
-              </div>
-            </div>
-
-            <span class="status-pill status-pill--${item.estadoTipo}">
-              ${item.estado}
-            </span>
-          </div>
-
-          <div class="integration-card__meta">
-            <span>${item.auth}</span>
-            <span>${item.latencia}</span>
-            <span>${item.disponibilidad}% disponible</span>
-          </div>
-
-          <p>${item.endpoint}</p>
-
-          <div class="integration-card__actions">
-            <button type="button" data-integration-view="${item.id}">Ver</button>
-            <button type="button" data-integration-edit="${item.id}">Editar</button>
-            <button type="button" data-integration-test="${item.id}">Probar</button>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
-
-  $all("[data-integration-view]").forEach((button) => {
+  $$("[data-integration-filter]").forEach(button => {
     button.addEventListener("click", () => {
-      const item = getIntegrationById(Number(button.dataset.integrationView));
-      if (item) openIntegrationDetail(item);
+      State.integrationFilter = button.dataset.integrationFilter;
+      $$("[data-integration-filter]").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderIntegrationsPage();
     });
   });
 
-  $all("[data-integration-edit]").forEach((button) => {
-    button.addEventListener("click", () => {
-      const item = getIntegrationById(Number(button.dataset.integrationEdit));
-      if (item) fillIntegrationForm(item);
-    });
+  $("#toggleIntegrationsViewBtn")?.addEventListener("click", () => {
+    State.integrationView = State.integrationView === "cards" ? "table" : "cards";
+    $("#toggleIntegrationsViewBtn").textContent =
+      State.integrationView === "cards" ? "Vista tabla" : "Vista cards";
+    renderIntegrationsPage();
   });
 
-  $all("[data-integration-test]").forEach((button) => {
+  $("#openCreateIntegrationBtn")?.addEventListener("click", openCreateIntegrationModal);
+
+  $("#refreshIntegrationsBtn")?.addEventListener("click", () => {
+    renderIntegrationsPage();
+    toast("Integraciones actualizadas", "Se actualizó el directorio de servicios conectados.", "success");
+  });
+
+  $("#exportIntegrationsBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Integraciones preparadas", "La información fue preparada para exportación.");
+  });
+
+  $("#testAllIntegrationsBtn")?.addEventListener("click", () => {
+    genericModal("🔌", "Prueba ejecutada", "Se ejecutó una prueba general de conectividad. Hay servicios con alerta que requieren revisión.");
+  });
+
+  $("#refreshIntegrationStatusBtn")?.addEventListener("click", () => {
+    renderIntegrationCharts();
+    toast("Estado actualizado", "Se actualizó el estado de integraciones.", "success");
+  });
+
+  $("#refreshIntegrationSyncBtn")?.addEventListener("click", () => {
+    renderIntegrationCharts();
+    toast("Sincronización actualizada", "Se actualizó el resumen de sincronizaciones.", "success");
+  });
+
+  $("#integrationEditBtn")?.addEventListener("click", () => {
+    closeModals();
+    openEditIntegrationModal(State.selectedIntegrationId);
+  });
+
+  $("#integrationTestBtn")?.addEventListener("click", () => {
+    const integration = getIntegration(State.selectedIntegrationId);
+    closeModals();
+
+    if (integration?.status === "Error") {
+      toast("Prueba con error", `${integration.name} no respondió correctamente.`, "danger");
+    } else if (integration?.status === "Con alerta") {
+      toast("Prueba con alerta", `${integration.name} respondió con latencia elevada.`, "warning");
+    } else {
+      toast("Conexión exitosa", `${integration?.name || "La integración"} respondió correctamente.`, "success");
+    }
+  });
+
+  $("#integrationLogsBtn")?.addEventListener("click", () => {
+    closeModals();
+    openIntegrationLogsModal(State.selectedIntegrationId);
+  });
+
+  $("#saveIntegrationBtn")?.addEventListener("click", confirmSaveIntegration);
+
+  $("#suggestIntegrationBtn")?.addEventListener("click", () => {
+    $("#integrationStatus").value = "Activa";
+    $("#integrationCriticality").value = "Alta";
+    $("#integrationDescription").value =
+      "La IA sugiere validar endpoint, criticidad, trazabilidad, responsable técnico y que no existan credenciales visibles.";
+    toast("Validación sugerida", "La IA completó una recomendación técnica.", "success");
+  });
+
+  $("#exportIntegrationLogsBtn")?.addEventListener("click", () => {
+    genericModal("📄", "Logs preparados", "Los logs de integración fueron preparados para exportación.");
+  });
+
+  $("#refreshWebhookEventsBtn")?.addEventListener("click", () => {
+    renderActivity("#webhookEventsTimeline", Mock.webhooks);
+    toast("Eventos actualizados", "Se actualizaron los eventos de webhooks.", "success");
+  });
+
+  $("#exportWebhookEventsBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Eventos preparados", "Los eventos de webhooks fueron preparados para exportación.");
+  });
+
+  renderAi("#integrationsAiSummary", [
+    ["Prioridad técnica", "Revisar primero la API de facturación por estar en error y ser de criticidad alta."],
+    ["Alerta activa", "El webhook CRM presenta latencia y requiere validación de endpoint o cola de eventos."],
+    ["Control recomendado", "Probar conexión, revisar logs y confirmar última sincronización."]
+  ]);
+
+  renderChecklist("#integrationsActionPlan", [
+    ["1", "Probar conexión", "Ejecutar prueba sobre servicios con error o alerta."],
+    ["2", "Revisar logs", "Validar respuesta, latencia y código de error."],
+    ["3", "Escalar responsable", "Derivar a responsable técnico si el error persiste."]
+  ]);
+}
+
+function integrationsFiltered() {
+  const query = getValue("#integrationSearch").toLowerCase();
+
+  return Mock.integrations.filter(item => {
+    const text = `${item.name} ${item.type} ${item.status} ${item.lastSync} ${item.owner} ${item.criticality} ${item.endpoint}`.toLowerCase();
+    const matchesSearch = !query || text.includes(query);
+
+    const filter = State.integrationFilter;
+
+    const matchesFilter =
+      filter === "todos" ||
+      (filter === "activas" && item.status === "Activa") ||
+      (filter === "alerta" && item.status === "Con alerta") ||
+      (filter === "error" && item.status === "Error") ||
+      (filter === "api" && item.filterType === "api") ||
+      (filter === "webhook" && item.filterType === "webhook") ||
+      (filter === "seguridad" && item.filterType === "seguridad");
+
+    return matchesSearch && matchesFilter;
+  });
+}
+
+function renderIntegrationsPage() {
+  const rows = integrationsFiltered();
+
+  setText("#integrationsSummaryTitle", `${Mock.integrations.filter(i => i.status === "Activa").length} integraciones activas`);
+  setText("#integrationsSummaryText", `${rows.length} integraciones visibles según filtro.`);
+
+  renderKpis("#integrationsKpiGrid", [
+    ["🔌", Mock.integrations.length, "Integraciones", "Servicios configurados"],
+    ["✅", Mock.integrations.filter(i => i.status === "Activa").length, "Activas", "Sin observación"],
+    ["⚠️", Mock.integrations.filter(i => i.status === "Con alerta").length, "Con alerta", "Requieren revisión"],
+    ["🚨", Mock.integrations.filter(i => i.status === "Error").length, "Error", "Atención inmediata"]
+  ]);
+
+  renderIntegrationCharts();
+
+  setHTML("#integrationCardList", rows.map(integrationCard).join(""));
+  setHTML("#integrationTableBody", rows.map(integrationTableRow).join(""));
+
+  show($("#integrationCardList"), State.integrationView === "cards");
+  show($("#integrationTableWrap"), State.integrationView === "table");
+  show($("#emptyIntegrationsState"), !rows.length);
+
+  bindIntegrationActions($("#integrationCardList"));
+  bindIntegrationActions($("#integrationTableBody"));
+
+  renderActivity("#webhookEventsTimeline", Mock.webhooks);
+}
+
+function renderIntegrationCharts() {
+  const byStatus = countBy(Mock.integrations, "status");
+
+  renderDonut(
+    "#integrationStatusDonut",
+    "#integrationStatusLegend",
+    Object.entries(byStatus).map(([label, value]) => ({ label, value })),
+    "Servicios"
+  );
+
+  renderBarChart("#integrationSyncChart", [
+    { label: "Éxito", value: 12 },
+    { label: "Alerta", value: 3 },
+    { label: "Error", value: 1 },
+    { label: "Pend.", value: 2 }
+  ]);
+}
+
+function integrationCard(item) {
+  return `
+    <article class="integration-card">
+      <div class="integration-card__top">
+        <span class="integration-card__icon">${esc(item.icon)}</span>
+        <div>
+          <h3>${esc(item.name)}</h3>
+          <p>${esc(item.description)}</p>
+        </div>
+        <span class="${pillClass(statusType(item.status))}">${esc(item.status)}</span>
+      </div>
+
+      <div class="integration-card__meta">
+        <span>${esc(item.type)}</span>
+        <span>${esc(item.criticality)}</span>
+        <span>${esc(item.lastSync)}</span>
+        <span>${esc(item.owner)}</span>
+      </div>
+
+      <div class="integration-card__actions">
+        <button type="button" data-action="view-integration" data-integration-id="${esc(item.id)}">Ver</button>
+        <button type="button" data-action="test-integration" data-integration-id="${esc(item.id)}">Probar</button>
+        <button type="button" data-action="logs-integration" data-integration-id="${esc(item.id)}">Logs</button>
+      </div>
+    </article>
+  `;
+}
+
+function integrationTableRow(item) {
+  return `
+    <tr>
+      <td>${esc(item.name)}</td>
+      <td>${esc(item.type)}</td>
+      <td><span class="${pillClass(statusType(item.status))}">${esc(item.status)}</span></td>
+      <td>${esc(item.lastSync)}</td>
+      <td>${esc(item.owner)}</td>
+      <td>${esc(item.criticality)}</td>
+      <td>
+        <button type="button" data-action="view-integration" data-integration-id="${esc(item.id)}">Ver</button>
+        <button type="button" data-action="logs-integration" data-integration-id="${esc(item.id)}">Logs</button>
+      </td>
+    </tr>
+  `;
+}
+
+function bindIntegrationActions(root = document) {
+  $$("[data-action='view-integration']", root).forEach(button => {
+    button.addEventListener("click", () => openIntegrationDetail(button.dataset.integrationId));
+  });
+
+  $$("[data-action='test-integration']", root).forEach(button => {
     button.addEventListener("click", () => {
-      const item = getIntegrationById(Number(button.dataset.integrationTest));
-      if (item) {
-        openGenericModal({
-          icon: "🔌",
-          title: "Prueba de integración",
-          text: `${item.nombre} respondió con latencia ${item.latencia} y disponibilidad ${item.disponibilidad}%.`
-        });
+      const integration = getIntegration(button.dataset.integrationId);
+
+      if (integration?.status === "Error") {
+        toast("Prueba con error", `${integration.name} no respondió correctamente.`, "danger");
+      } else if (integration?.status === "Con alerta") {
+        toast("Prueba con alerta", `${integration.name} respondió con latencia elevada.`, "warning");
+      } else {
+        toast("Conexión exitosa", `${integration?.name || "Integración"} respondió correctamente.`, "success");
       }
     });
   });
+
+  $$("[data-action='logs-integration']", root).forEach(button => {
+    button.addEventListener("click", () => openIntegrationLogsModal(button.dataset.integrationId));
+  });
 }
 
-function renderIntegrationHealth(items) {
-  const container = $("#integrationHealthRanking");
-  if (!container) return;
-
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <article class="metric-row">
-          <div class="metric-row__top">
-            <div>
-              <strong>${item.nombre}</strong>
-              <small>${item.tipo} · ${item.latencia}</small>
-            </div>
-
-            <span class="status-pill ${item.disponibilidad >= 97 ? "status-pill--success" : item.disponibilidad >= 90 ? "status-pill--warning" : "status-pill--danger"}">
-              ${item.disponibilidad}%
-            </span>
-          </div>
-
-          <div class="metric-bar">
-            <span style="width:${item.disponibilidad}%"></span>
-          </div>
-        </article>
-      `;
-    })
-    .join("");
+function integrationSummary(item) {
+  return summaryHTML([
+    ["Código", item.id],
+    ["Nombre", item.name],
+    ["Tipo", item.type],
+    ["Estado", item.status],
+    ["Última sincronización", item.lastSync],
+    ["Responsable", item.owner],
+    ["Criticidad", item.criticality],
+    ["Endpoint", item.endpoint],
+    ["Descripción", item.description]
+  ]);
 }
 
-function renderIntegrationAi(items) {
-  const container = $("#integrationAiSummary");
-  if (!container) return;
+function openIntegrationDetail(id) {
+  const item = getIntegration(id);
+  if (!item) return;
 
-  container.innerHTML = items
-    .map((item) => {
-      return `
-        <div class="ai-summary-item">
-          <strong>${item.titulo}</strong>
-          <p>${item.texto}</p>
-        </div>
-      `;
-    })
-    .join("");
-}
+  State.selectedIntegrationId = id;
 
-function getIntegrationById(id) {
-  return IntegrationState.integrations.find((item) => item.id === id);
-}
-
-function openIntegrationDetail(item) {
-  setText("#integrationModalIcon", item.icono);
-  setText("#integrationModalTitle", item.nombre);
-  setText("#integrationModalText", `Conector de tipo ${item.tipo} con estado ${item.estado}.`);
-
-  const summary = $("#integrationModalSummary");
-
-  if (summary) {
-    summary.innerHTML = `
-      <div>
-        <span>Tipo</span>
-        <strong>${item.tipo}</strong>
-      </div>
-      <div>
-        <span>Endpoint</span>
-        <strong>${item.endpoint}</strong>
-      </div>
-      <div>
-        <span>Autenticación</span>
-        <strong>${item.auth}</strong>
-      </div>
-      <div>
-        <span>Estado</span>
-        <strong>${item.estado}</strong>
-      </div>
-      <div>
-        <span>Latencia</span>
-        <strong>${item.latencia}</strong>
-      </div>
-      <div>
-        <span>Disponibilidad</span>
-        <strong>${item.disponibilidad}%</strong>
-      </div>
-    `;
-  }
+  setText("#integrationDetailIcon", item.icon);
+  setText("#integrationDetailTitle", item.name);
+  setText("#integrationDetailText", item.description);
+  setHTML("#integrationDetailSummary", integrationSummary(item));
 
   openModal("#integrationDetailModal");
 }
 
-function fillIntegrationForm(item) {
-  setText("#integrationFormTitle", "Editar integración");
+function openCreateIntegrationModal() {
+  State.selectedIntegrationId = null;
 
-  $("#integrationId").value = item.id;
-  $("#integrationName").value = item.nombre;
-  $("#integrationType").value = item.tipo;
-  $("#integrationEndpoint").value = item.endpoint;
-  $("#integrationAuth").value = item.auth;
-  $("#integrationStatus").value = item.estado;
-  $("#integrationMonitor").checked = true;
-
-  showToast({
-    title: "Integración seleccionada",
-    message: "Puedes editar los datos en el formulario lateral.",
-    type: "success"
-  });
-}
-
-function clearIntegrationForm() {
+  setText("#integrationFormEyebrow", "Nueva integración");
   setText("#integrationFormTitle", "Nueva integración");
+  setText("#integrationFormText", "Registra un servicio externo, API, webhook, autenticación o canal de notificación.");
 
-  $("#integrationId").value = "";
-  $("#integrationName").value = "";
-  $("#integrationType").value = "";
-  $("#integrationEndpoint").value = "";
-  $("#integrationAuth").value = "";
-  $("#integrationStatus").value = "";
-  $("#integrationMonitor").checked = true;
+  ["#integrationName", "#integrationEndpoint", "#integrationDescription"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
 
-  clearAdminFormErrors();
+  ["#integrationType", "#integrationStatus", "#integrationCriticality"].forEach(selector => {
+    if ($(selector)) $(selector).value = "";
+  });
+
+  if ($("#integrationDeclaration")) $("#integrationDeclaration").checked = false;
+
+  openModal("#integrationFormModal");
 }
 
-function getIntegrationPayload() {
-  const id = $("#integrationId")?.value;
+function openEditIntegrationModal(id) {
+  const item = getIntegration(id);
+  if (!item) return;
 
-  return {
-    id: id ? Number(id) : Date.now(),
-    icono: getIntegrationIcon($("#integrationType")?.value),
-    nombre: $("#integrationName")?.value.trim(),
-    tipo: $("#integrationType")?.value,
-    endpoint: $("#integrationEndpoint")?.value.trim(),
-    auth: $("#integrationAuth")?.value,
-    estado: $("#integrationStatus")?.value,
-    estadoTipo: getIntegrationStatusType($("#integrationStatus")?.value),
-    latencia: "180ms",
-    disponibilidad: 96,
-    monitor: $("#integrationMonitor")?.checked
-  };
+  State.selectedIntegrationId = id;
+
+  setText("#integrationFormEyebrow", "Editar integración");
+  setText("#integrationFormTitle", item.name);
+  setText("#integrationFormText", "Modifica datos técnicos y estado de la integración.");
+
+  if ($("#integrationName")) $("#integrationName").value = item.name;
+  if ($("#integrationType")) $("#integrationType").value = item.type;
+  if ($("#integrationStatus")) $("#integrationStatus").value = item.status;
+  if ($("#integrationCriticality")) $("#integrationCriticality").value = item.criticality;
+  if ($("#integrationEndpoint")) $("#integrationEndpoint").value = item.endpoint;
+  if ($("#integrationDescription")) $("#integrationDescription").value = item.description;
+  if ($("#integrationDeclaration")) $("#integrationDeclaration").checked = false;
+
+  openModal("#integrationFormModal");
 }
 
-function validateIntegrationPayload(payload) {
-  const errors = {};
-
-  if (!payload.nombre) errors.integrationName = "Ingresa el nombre de la integración.";
-  if (!payload.tipo) errors.integrationType = "Selecciona el tipo.";
-  if (!payload.endpoint) errors.integrationEndpoint = "Ingresa el endpoint.";
-  if (!payload.auth) errors.integrationAuth = "Selecciona el método de autenticación.";
-  if (!payload.estado) errors.integrationStatus = "Selecciona el estado.";
-
-  return buildAdminValidation(errors);
-}
-
-function upsertLocalIntegration(item) {
-  const index = IntegrationState.integrations.findIndex((integration) => integration.id === item.id);
-
-  if (index >= 0) {
-    IntegrationState.integrations[index] = item;
-  } else {
-    IntegrationState.integrations.unshift(item);
+function confirmSaveIntegration() {
+  if (
+    !getValue("#integrationName") ||
+    !getValue("#integrationType") ||
+    !getValue("#integrationStatus") ||
+    !getValue("#integrationCriticality") ||
+    !getValue("#integrationEndpoint") ||
+    !getValue("#integrationDescription") ||
+    !isChecked("#integrationDeclaration")
+  ) {
+    toast("Faltan datos", "Completa nombre, tipo, estado, criticidad, endpoint, descripción y confirmación.", "warning");
+    return;
   }
+
+  closeModals();
+  toast("Integración guardada", "La integración fue registrada correctamente.", "success");
+  renderIntegrationsPage();
 }
 
-function getIntegrationIcon(type) {
-  const icons = {
-    "Autenticación": "🔐",
-    "CRM": "🧩",
-    "Notificaciones": "🔔",
-    "Base de datos": "🗄️",
-    "IA": "🤖",
-    "Analítica": "📊"
-  };
+function openIntegrationLogsModal(id) {
+  const item = getIntegration(id);
+  if (!item) return;
 
-  return icons[type] || "🔌";
-}
+  State.selectedIntegrationId = id;
 
-function getIntegrationStatusType(status) {
-  if (status === "Activa") return "success";
-  if (status === "En prueba") return "warning";
-  return "danger";
+  setText("#integrationLogsTitle", `Eventos de ${item.name}`);
+
+  renderActivity("#integrationLogsTimeline", [
+    {
+      icon: item.status === "Error" ? "🚨" : "✅",
+      title: "Prueba de conexión",
+      text: item.status === "Error" ? "Servicio no respondió correctamente." : "Servicio respondió correctamente.",
+      date: item.lastSync
+    },
+    {
+      icon: "📄",
+      title: "Endpoint revisado",
+      text: item.endpoint,
+      date: "Registro técnico"
+    },
+    {
+      icon: "🔐",
+      title: "Validación de seguridad",
+      text: "No se muestran credenciales en pantalla.",
+      date: "Control interno"
+    }
+  ]);
+
+  openModal("#integrationLogsModal");
 }
 
 /* =========================================================
-   MODALES REUTILIZABLES
+   AUDITORÍA ADMIN
 ========================================================= */
 
-let reusableConfirmCallback = null;
-let reusableDeleteCallback = null;
-let reusablePreviewCallback = null;
+function initAdminAudit() {
+  renderAdminAuditPage();
 
-function openReusableModal(selector) {
-  const modal = document.querySelector(selector);
-  const backdrop = document.querySelector("#modalBackdrop");
+  $("#adminAuditSearch")?.addEventListener("input", renderAdminAuditPage);
 
-  if (!modal || !backdrop) return;
+  $$("[data-admin-audit-filter]").forEach(button => {
+    button.addEventListener("click", () => {
+      State.auditFilter = button.dataset.adminAuditFilter;
+      $$("[data-admin-audit-filter]").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderAdminAuditPage();
+    });
+  });
 
-  modal.classList.add("show");
-  modal.setAttribute("aria-hidden", "false");
-  backdrop.classList.add("show");
-  document.body.classList.add("modal-open");
+  $("#refreshAuditTypeChartBtn")?.addEventListener("click", () => {
+    renderAdminAuditCharts();
+    toast("Gráfico actualizado", "Se actualizó la actividad auditable.", "success");
+  });
+
+  $("#refreshAuditRiskBtn")?.addEventListener("click", () => {
+    renderAdminAuditRisk();
+    toast("Riesgos actualizados", "Se actualizaron los eventos críticos.", "success");
+  });
+
+  $("#refreshAuditEventsBtn")?.addEventListener("click", () => {
+    renderAdminAuditPage();
+    toast("Auditoría actualizada", "Se actualizaron los eventos administrativos.", "success");
+  });
+
+  $("#exportAdminAuditBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Auditoría preparada", "La auditoría administrativa fue preparada para exportación.");
+  });
+
+  $("#downloadAuditEventsBtn")?.addEventListener("click", () => {
+    genericModal("📄", "Descarga preparada", "Los eventos auditables fueron preparados para descarga.");
+  });
+
+  $("#compareAuditEventsBtn")?.addEventListener("click", () => {
+    openModal("#adminAuditCompareModal");
+  });
+
+  $("#adminAuditDownloadDetailBtn")?.addEventListener("click", () => {
+    genericModal("📄", "Detalle preparado", "El detalle auditable fue preparado para descarga.");
+  });
+
+  $("#adminAuditCompareDetailBtn")?.addEventListener("click", () => {
+    closeModals();
+    openModal("#adminAuditCompareModal");
+  });
+
+  $("#confirmAdminAuditCompareBtn")?.addEventListener("click", confirmAdminAuditCompare);
+
+  renderAi("#adminAuditAiSummary", [
+    ["Eventos sensibles", "Revisar cambios de usuarios, permisos, reglas SLA e integraciones."],
+    ["Mayor riesgo", "La API de facturación pasó a error y debe asociarse al seguimiento técnico."],
+    ["Control", "Toda modificación administrativa debe conservar antes, después, usuario, fecha e IP."]
+  ]);
+
+  renderChecklist("#adminAuditActionPlan", [
+    ["1", "Filtrar críticos", "Revisar eventos sensibles de seguridad y configuración."],
+    ["2", "Comparar cambios", "Validar antes y después en roles, SLA e integraciones."],
+    ["3", "Exportar evidencia", "Descargar trazabilidad para respaldo formal."]
+  ]);
 }
 
-function closeReusableModals() {
-  document.querySelectorAll(".modal").forEach((modal) => {
-    modal.classList.remove("show");
-    modal.setAttribute("aria-hidden", "true");
-  });
+function auditIcon(type) {
+  const icons = {
+    usuarios: "👤",
+    roles: "🔐",
+    catalogos: "🧩",
+    sla: "⏱️",
+    integraciones: "🔌",
+    configuracion: "⚙️"
+  };
 
-  document.querySelector("#modalBackdrop")?.classList.remove("show");
-  document.body.classList.remove("modal-open");
+  return icons[type] || "🕵️";
 }
 
-function bindReusableModals() {
-  document.querySelectorAll("[data-close-modal]").forEach((button) => {
-    button.addEventListener("click", closeReusableModals);
-  });
+function adminAuditFiltered() {
+  const query = getValue("#adminAuditSearch").toLowerCase();
 
-  document.querySelector("#modalBackdrop")?.addEventListener("click", closeReusableModals);
+  return Mock.audit.filter(item => {
+    const text = `${item.date} ${item.module} ${item.type} ${item.action} ${item.user} ${item.before} ${item.after} ${item.result} ${item.detail}`.toLowerCase();
+    const matchesSearch = !query || text.includes(query);
 
-  document.querySelector("#cancelConfirmActionBtn")?.addEventListener("click", closeReusableModals);
+    const matchesFilter =
+      State.auditFilter === "todos" ||
+      item.type === State.auditFilter ||
+      (State.auditFilter === "criticos" && item.critical);
 
-  document.querySelector("#acceptConfirmActionBtn")?.addEventListener("click", () => {
-    if (typeof reusableConfirmCallback === "function") {
-      reusableConfirmCallback();
-    }
-
-    reusableConfirmCallback = null;
-    closeReusableModals();
-  });
-
-  document.querySelector("#acceptDeleteActionBtn")?.addEventListener("click", () => {
-    if (typeof reusableDeleteCallback === "function") {
-      reusableDeleteCallback();
-    }
-
-    reusableDeleteCallback = null;
-    closeReusableModals();
-  });
-
-  document.querySelector("#acceptPreviewActionBtn")?.addEventListener("click", () => {
-    if (typeof reusablePreviewCallback === "function") {
-      reusablePreviewCallback();
-    }
-
-    reusablePreviewCallback = null;
-    closeReusableModals();
+    return matchesSearch && matchesFilter;
   });
 }
 
-function openConfirmActionModal({
-  title = "¿Deseas confirmar esta acción?",
-  text = "Revisa que la información ingresada sea correcta antes de continuar.",
-  actionName = "Acción pendiente",
-  summary = [],
-  onConfirm = null
-}) {
-  reusableConfirmCallback = onConfirm;
+function renderAdminAuditPage() {
+  const rows = adminAuditFiltered();
 
-  setReusableText("#confirmActionTitle", title);
-  setReusableText("#confirmActionText", text);
-  setReusableText("#confirmActionName", actionName);
+  setText("#auditSummaryTitle", `${rows.length} eventos visibles`);
+  setText("#auditSummaryText", `Filtro actual: ${State.auditFilter}.`);
 
-  const summaryContainer = document.querySelector("#confirmActionSummary");
+  renderKpis("#adminAuditKpiGrid", [
+    ["🕵️", Mock.audit.length, "Eventos", "Total registrado"],
+    ["⚠️", Mock.audit.filter(a => a.critical).length, "Críticos", "Impacto sensible"],
+    ["👤", Mock.audit.filter(a => a.type === "usuarios").length, "Usuarios", "Cambios de cuenta"],
+    ["🔌", Mock.audit.filter(a => a.type === "integraciones").length, "Integraciones", "Eventos técnicos"]
+  ]);
 
-  if (summaryContainer) {
-    summaryContainer.innerHTML = summary.length
-      ? summary.map((item) => {
-          return `
-            <div>
-              <span>${item.label}</span>
-              <strong>${item.value}</strong>
-            </div>
-          `;
-        }).join("")
-      : `
-        <div>
-          <span>Acción</span>
-          <strong>${actionName}</strong>
-        </div>
-        <div>
-          <span>Estado</span>
-          <strong>Por confirmar</strong>
-        </div>
-      `;
+  renderAdminAuditCharts();
+  renderAdminAuditRisk();
+  renderAdminAuditTable(rows);
+}
+
+function renderAdminAuditCharts() {
+  const byModule = countBy(Mock.audit, "module");
+  renderBarChart("#adminAuditTypeChart", Object.entries(byModule).map(([label, value]) => ({ label, value })));
+}
+
+function renderAdminAuditRisk() {
+  const rows = Mock.audit.filter(item => item.critical);
+
+  setHTML("#adminAuditRiskList", rows.map(item => `
+    <article class="admin-alert-item">
+      <span class="admin-alert-item__icon">${auditIcon(item.type)}</span>
+      <div>
+        <strong>${esc(item.action)} · ${esc(item.module)}</strong>
+        <p>${esc(item.detail)}</p>
+        <small>${esc(item.date)} · Usuario: ${esc(item.user)}</small>
+      </div>
+      <button type="button" data-admin-audit-id="${esc(item.id)}">Ver</button>
+    </article>
+  `).join(""));
+
+  $$("[data-admin-audit-id]").forEach(button => {
+    button.addEventListener("click", () => openAdminAuditDetail(button.dataset.adminAuditId));
+  });
+}
+
+function renderAdminAuditTable(rows) {
+  setHTML("#adminAuditTableBody", rows.map(item => `
+    <tr>
+      <td>${esc(item.date)}</td>
+      <td>${esc(item.module)}</td>
+      <td>${esc(item.action)}</td>
+      <td>${esc(item.user)}</td>
+      <td>${esc(item.before)}</td>
+      <td>${esc(item.after)}</td>
+      <td><span class="${pillClass(statusType(item.result))}">${esc(item.result)}</span></td>
+      <td>
+        <button type="button" data-admin-audit-id="${esc(item.id)}">Ver</button>
+      </td>
+    </tr>
+  `).join(""));
+
+  show($("#emptyAdminAuditState"), !rows.length);
+
+  $$("[data-admin-audit-id]").forEach(button => {
+    button.addEventListener("click", () => openAdminAuditDetail(button.dataset.adminAuditId));
+  });
+}
+
+function openAdminAuditDetail(id) {
+  const item = getAudit(id);
+  if (!item) return;
+
+  State.selectedAuditId = id;
+
+  setText("#adminAuditDetailIcon", auditIcon(item.type));
+  setText("#adminAuditDetailTitle", `${item.action} · ${item.module}`);
+  setText("#adminAuditDetailText", item.detail);
+
+  setHTML("#adminAuditDetailSummary", summaryHTML([
+    ["Fecha", item.date],
+    ["Módulo", item.module],
+    ["Acción", item.action],
+    ["Usuario", item.user],
+    ["Antes", item.before],
+    ["Después", item.after],
+    ["Resultado", item.result],
+    ["IP", item.ip],
+    ["Crítico", item.critical ? "Sí" : "No"]
+  ]));
+
+  openModal("#adminAuditDetailModal");
+}
+
+function confirmAdminAuditCompare() {
+  if (
+    !getValue("#adminAuditCompareModule") ||
+    !getValue("#adminAuditCompareType") ||
+    !isChecked("#adminAuditCompareDeclaration")
+  ) {
+    toast("Faltan datos", "Completa módulo, tipo de comparación y confirmación.", "warning");
+    return;
   }
 
-  openReusableModal("#confirmActionModal");
+  closeModals();
+  toast("Comparación preparada", "Se generó la comparación de eventos administrativos.", "success");
 }
 
-function openSuccessActionModal({
-  title = "Operación realizada",
-  text = "La información fue registrada correctamente."
-}) {
-  setReusableText("#successActionTitle", title);
-  setReusableText("#successActionText", text);
+/* =========================================================
+   RESPALDO
+========================================================= */
 
-  openReusableModal("#successActionModal");
+function initBackup() {
+  renderBackupPage();
+
+  $("#backupSearch")?.addEventListener("input", renderBackupPage);
+
+  $$("[data-backup-filter]").forEach(button => {
+    button.addEventListener("click", () => {
+      State.backupFilter = button.dataset.backupFilter;
+      $$("[data-backup-filter]").forEach(btn => btn.classList.remove("active"));
+      button.classList.add("active");
+      renderBackupPage();
+    });
+  });
+
+  $("#runBackupNowBtn")?.addEventListener("click", () => {
+    genericModal("💾", "Respaldo iniciado", "Se inició una copia incremental manual. El resultado quedará registrado en el historial.");
+  });
+
+  $("#scheduleBackupBtn")?.addEventListener("click", () => {
+    openModal("#scheduleBackupModal");
+  });
+
+  $("#confirmScheduleBackupBtn")?.addEventListener("click", confirmScheduleBackup);
+
+  $("#refreshBackupChartBtn")?.addEventListener("click", () => {
+    renderBackupCharts();
+    toast("Gráfico actualizado", "Se actualizó el historial semanal de respaldos.", "success");
+  });
+
+  $("#refreshBackupStatusBtn")?.addEventListener("click", () => {
+    renderBackupCharts();
+    toast("Estado actualizado", "Se actualizó el estado de copias.", "success");
+  });
+
+  $("#refreshBackupHistoryBtn")?.addEventListener("click", () => {
+    renderBackupPage();
+    toast("Historial actualizado", "Se actualizó el historial de respaldo.", "success");
+  });
+
+  $("#validateBackupBtn")?.addEventListener("click", () => {
+    toast("Validación iniciada", "Se inició la validación del último respaldo completado.", "success");
+  });
+
+  $("#exportBackupHistoryBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Historial preparado", "El historial de respaldos fue preparado para exportación.");
+  });
+
+  $("#backupValidateBtn")?.addEventListener("click", () => {
+    closeModals();
+    toast("Validación iniciada", "Se inició la validación de la copia seleccionada.", "success");
+  });
+
+  $("#backupRestoreBtn")?.addEventListener("click", () => {
+    closeModals();
+    openModal("#restoreTestModal");
+  });
+
+  $("#backupDownloadLogBtn")?.addEventListener("click", () => {
+    genericModal("📄", "Log preparado", "El log del respaldo fue preparado para descarga.");
+  });
+
+  $("#openRestoreTestBtn")?.addEventListener("click", () => {
+    openModal("#restoreTestModal");
+  });
+
+  $("#confirmRestoreTestBtn")?.addEventListener("click", confirmRestoreTest);
+
+  $("#refreshRestoreTimelineBtn")?.addEventListener("click", () => {
+    renderActivity("#restoreTimeline", Mock.restoreEvents);
+    toast("Restauración actualizada", "Se actualizaron eventos de restauración.", "success");
+  });
+
+  renderAi("#backupAiSummary", [
+    ["Estado general", "El último respaldo fue completado y verificado, pero existe una falla reciente a revisar."],
+    ["Revisión sugerida", "Validar copia más reciente y programar prueba de restauración parcial."],
+    ["Continuidad", "Mantener respaldo incremental diario y completo semanal."]
+  ]);
+
+  renderChecklist("#backupActionPlan", [
+    ["1", "Validar último respaldo", "Confirmar integridad de la copia más reciente."],
+    ["2", "Revisar falla", "Analizar causa del respaldo fallido."],
+    ["3", "Probar restauración", "Programar prueba parcial en ambiente no productivo."]
+  ]);
 }
 
-function openWarningActionModal({
-  title = "Revisión requerida",
-  text = "Hay información pendiente o campos que necesitan validación."
-}) {
-  setReusableText("#warningActionTitle", title);
-  setReusableText("#warningActionText", text);
+function backupFiltered() {
+  const query = getValue("#backupSearch").toLowerCase();
 
-  openReusableModal("#warningActionModal");
+  return Mock.backups.filter(item => {
+    const text = `${item.date} ${item.type} ${item.status} ${item.size} ${item.location} ${item.validation}`.toLowerCase();
+    const matchesSearch = !query || text.includes(query);
+
+    const filter = State.backupFilter;
+
+    const matchesFilter =
+      filter === "todos" ||
+      (filter === "completados" && item.status === "Completado") ||
+      (filter === "fallidos" && item.status === "Fallido") ||
+      (filter === "programados" && item.status === "Programado") ||
+      (filter === "verificados" && item.validation === "Verificado");
+
+    return matchesSearch && matchesFilter;
+  });
 }
 
-function openErrorActionModal({
-  title = "No se pudo completar la acción",
-  text = "Ocurrió un problema al procesar la solicitud."
-}) {
-  setReusableText("#errorActionTitle", title);
-  setReusableText("#errorActionText", text);
+function renderBackupPage() {
+  const rows = backupFiltered();
 
-  openReusableModal("#errorActionModal");
+  setText("#backupSummaryTitle", "Respaldo disponible");
+  setText("#backupSummaryText", `${rows.length} copias visibles según filtro.`);
+
+  renderKpis("#backupKpiGrid", [
+    ["💾", Mock.backups.length, "Copias", "Historial total"],
+    ["✅", Mock.backups.filter(b => b.status === "Completado").length, "Completados", "Copias exitosas"],
+    ["🚨", Mock.backups.filter(b => b.status === "Fallido").length, "Fallidos", "Requieren revisión"],
+    ["🧪", Mock.backups.filter(b => b.validation === "Verificado").length, "Verificados", "Recuperables"]
+  ]);
+
+  renderBackupCharts();
+  renderBackupTable(rows);
+  renderActivity("#restoreTimeline", Mock.restoreEvents);
 }
 
-function openDeleteActionModal({
-  title = "¿Deseas eliminar este registro?",
-  text = "Esta acción puede afectar la información asociada.",
-  recordName = "Registro seleccionado",
-  onDelete = null
-}) {
-  reusableDeleteCallback = onDelete;
+function renderBackupCharts() {
+  renderBarChart("#backupWeeklyChart", [
+    { label: "Lun", value: 1 },
+    { label: "Mar", value: 1 },
+    { label: "Mié", value: 1 },
+    { label: "Jue", value: 0 },
+    { label: "Vie", value: 1 },
+    { label: "Sáb", value: 1 }
+  ]);
 
-  setReusableText("#deleteActionTitle", title);
-  setReusableText("#deleteActionText", text);
-  setReusableText("#deleteActionName", recordName);
+  const byStatus = countBy(Mock.backups, "status");
 
-  openReusableModal("#deleteActionModal");
+  renderDonut(
+    "#backupStatusDonut",
+    "#backupStatusLegend",
+    Object.entries(byStatus).map(([label, value]) => ({ label, value })),
+    "Copias"
+  );
 }
 
-function openPreviewActionModal({
-  title = "Vista previa",
-  text = "Revisa la información antes de continuar.",
-  items = [],
-  onConfirm = null
-}) {
-  reusablePreviewCallback = onConfirm;
+function renderBackupTable(rows) {
+  setHTML("#backupTableBody", rows.map(item => `
+    <tr>
+      <td>${esc(item.date)}</td>
+      <td>${esc(item.type)}</td>
+      <td><span class="${pillClass(statusType(item.status))}">${esc(item.status)}</span></td>
+      <td>${esc(item.size)}</td>
+      <td>${esc(item.location)}</td>
+      <td>${esc(item.validation)}</td>
+      <td>
+        <button type="button" data-backup-id="${esc(item.id)}">Ver</button>
+      </td>
+    </tr>
+  `).join(""));
 
-  setReusableText("#previewActionTitle", title);
-  setReusableText("#previewActionText", text);
+  show($("#emptyBackupState"), !rows.length);
 
-  const content = document.querySelector("#previewActionContent");
+  $$("[data-backup-id]").forEach(button => {
+    button.addEventListener("click", () => openBackupDetail(button.dataset.backupId));
+  });
+}
 
-  if (content) {
-    content.innerHTML = items.length
-      ? items.map((item) => {
-          return `
-            <article>
-              <strong>${item.label}</strong>
-              <p>${item.value}</p>
-            </article>
-          `;
-        }).join("")
-      : `
-        <article>
-          <strong>Sin datos</strong>
-          <p>No se encontró información para mostrar.</p>
-        </article>
-      `;
+function backupSummary(item) {
+  return summaryHTML([
+    ["Código", item.id],
+    ["Fecha", item.date],
+    ["Tipo", item.type],
+    ["Estado", item.status],
+    ["Tamaño", item.size],
+    ["Ubicación", item.location],
+    ["Validación", item.validation],
+    ["Responsable", item.owner]
+  ]);
+}
+
+function openBackupDetail(id) {
+  const item = getBackup(id);
+  if (!item) return;
+
+  State.selectedBackupId = id;
+
+  setText("#backupDetailIcon", item.status === "Fallido" ? "🚨" : "💾");
+  setText("#backupDetailTitle", `${item.type} · ${item.date}`);
+  setText("#backupDetailText", `Estado: ${item.status}. Validación: ${item.validation}.`);
+  setHTML("#backupDetailSummary", backupSummary(item));
+
+  openModal("#backupDetailModal");
+}
+
+function confirmScheduleBackup() {
+  if (
+    !getValue("#backupFrequency") ||
+    !getValue("#backupType") ||
+    !getValue("#backupWindow") ||
+    !getValue("#backupRetention") ||
+    !isChecked("#backupScheduleDeclaration")
+  ) {
+    toast("Faltan datos", "Completa frecuencia, tipo, ventana, retención y confirmación.", "warning");
+    return;
   }
 
-  openReusableModal("#previewActionModal");
+  closeModals();
+  toast("Respaldo programado", "La programación fue registrada correctamente.", "success");
 }
 
-function openLoadingActionModal({
-  title = "Procesando solicitud",
-  text = "Estamos registrando la información. Por favor espera unos segundos."
-}) {
-  setReusableText("#loadingActionTitle", title);
-  setReusableText("#loadingActionText", text);
-
-  openReusableModal("#loadingActionModal");
-}
-
-function openAiActionModal({
-  title = "Análisis inteligente",
-  text = "La IA ha generado una recomendación para esta operación.",
-  recommendations = []
-}) {
-  setReusableText("#aiActionTitle", title);
-  setReusableText("#aiActionText", text);
-
-  const container = document.querySelector("#aiActionRecommendations");
-
-  if (container) {
-    container.innerHTML = recommendations.length
-      ? recommendations.map((item) => {
-          return `
-            <article>
-              <strong>${item.title}</strong>
-              <p>${item.text}</p>
-            </article>
-          `;
-        }).join("")
-      : `
-        <article>
-          <strong>Recomendación</strong>
-          <p>Verifica los datos principales antes de confirmar la acción.</p>
-        </article>
-      `;
+function confirmRestoreTest() {
+  if (
+    !getValue("#restoreTestType") ||
+    !getValue("#restoreEnvironment") ||
+    !isChecked("#restoreTestDeclaration")
+  ) {
+    toast("Faltan datos", "Completa tipo de prueba, ambiente y confirmación.", "warning");
+    return;
   }
 
-  openReusableModal("#aiActionModal");
+  closeModals();
+  toast("Prueba programada", "La prueba de restauración fue registrada.", "success");
 }
 
-function setReusableText(selector, value) {
-  const element = document.querySelector(selector);
+/* =========================================================
+   CONFIGURACIÓN DEL SISTEMA
+========================================================= */
 
-  if (element) {
-    element.textContent = value;
+function initSystemConfig() {
+  renderSystemConfigPage();
+
+  $("#saveSystemConfigBtn")?.addEventListener("click", () => {
+    openModal("#confirmSystemConfigModal");
+  });
+
+  $("#confirmSaveSystemConfigBtn")?.addEventListener("click", confirmSaveSystemConfig);
+
+  $("#restoreSystemConfigBtn")?.addEventListener("click", () => {
+    genericModal("↩", "Valores restaurados", "Se restauraron los valores recomendados del sistema.");
+  });
+
+  $("#refreshSystemConfigBtn")?.addEventListener("click", () => {
+    renderSystemConfigPage();
+    toast("Configuración actualizada", "Se actualizó la vista de configuración.", "success");
+  });
+
+  $("#exportSystemConfigBtn")?.addEventListener("click", () => {
+    genericModal("📤", "Configuración preparada", "Los parámetros del sistema fueron preparados para exportación.");
+  });
+
+  renderAi("#systemConfigAiSummary", [
+    ["Seguridad", "Mantener contraseña fuerte, intentos fallidos limitados y revisar MFA para perfiles administrativos."],
+    ["Notificaciones", "Las alertas de SLA, usuarios bloqueados, integraciones y respaldo están activas."],
+    ["Mantenimiento", "Mantener modo mantenimiento desactivado salvo ventana programada."]
+  ]);
+
+  renderChecklist("#systemConfigActionPlan", [
+    ["1", "Validar sesión", "Revisar expiración y política de intentos fallidos."],
+    ["2", "Revisar alertas", "Confirmar notificaciones críticas activas."],
+    ["3", "Guardar con control", "Todo cambio debe quedar registrado en auditoría."]
+  ]);
+}
+
+function renderSystemConfigPage() {
+  setText("#systemConfigSummaryTitle", "Configuración activa");
+  setText("#systemConfigSummaryText", "Parámetros listos para revisión.");
+
+  renderKpis("#systemConfigKpiGrid", [
+    ["🔐", "Fuerte", "Contraseña", "Política activa"],
+    ["🕘", "30 min", "Sesión", "Expiración"],
+    ["🔔", "4", "Alertas", "Notificaciones críticas"],
+    ["🛠️", "Off", "Mantenimiento", "Modo actual"]
+  ]);
+}
+
+function confirmSaveSystemConfig() {
+  if (!isChecked("#systemConfigDeclaration")) {
+    toast("Confirmación requerida", "Debes confirmar que revisaste los cambios.", "warning");
+    return;
   }
+
+  closeModals();
+  toast("Configuración guardada", "Los parámetros globales fueron actualizados correctamente.", "success");
 }

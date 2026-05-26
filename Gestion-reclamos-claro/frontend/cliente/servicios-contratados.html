@@ -4,17 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Mis casos | Claro Atención 360</title>
+  <title>Servicios contratados | Claro Atención 360</title>
 
   <meta
     name="description"
-    content="Listado de reclamos e incidencias del cliente con filtros, seguimiento, SLA, prioridad, acciones rápidas y análisis IA."
+    content="Pantalla del cliente para consultar servicios contratados, planes activos, estado técnico, casos asociados y acciones rápidas."
   />
 
   <link rel="stylesheet" href="../assets/css/cliente.css" />
 </head>
 
-<body data-page="mis-casos">
+<body data-page="servicios-contratados">
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
   <!-- SIDEBAR CLIENTE -->
@@ -43,12 +43,12 @@
         Registrar incidencia
       </a>
 
-      <a href="mis-casos.html" class="sidebar-link active">
+      <a href="mis-casos.html" class="sidebar-link">
         <span>🎫</span>
         Mis casos
       </a>
 
-      <a href="servicios-contratados.html" class="sidebar-link">
+      <a href="servicios-contratados.html" class="sidebar-link active">
         <span>📡</span>
         Servicios contratados
       </a>
@@ -92,8 +92,8 @@
         </button>
 
         <div>
-          <span class="eyebrow">Seguimiento y trazabilidad</span>
-          <h1 id="pageTitle">Mis casos</h1>
+          <span class="eyebrow">Servicios del cliente</span>
+          <h1 id="pageTitle">Servicios contratados</h1>
         </div>
       </div>
 
@@ -132,248 +132,234 @@
 
     <main class="dashboard-page">
       <!-- HERO -->
-      <section class="cases-hero">
-        <div class="cases-hero__content">
-          <span class="eyebrow eyebrow--red">Historial de atención</span>
+      <section class="services-hero">
+        <div class="services-hero__content">
+          <span class="eyebrow eyebrow--red">Servicios vinculados</span>
 
           <h2>
-            Consulta, prioriza y da seguimiento a todos tus casos
+            Consulta tus servicios, planes y estado de atención
           </h2>
 
           <p>
-            Desde esta vista puedes revisar reclamos e incidencias, filtrar por estado,
-            identificar pendientes, ver SLA, abrir el detalle completo o consultar a ClaroBot IA.
+            Revisa líneas móviles, internet hogar, TV, servicios empresariales o soluciones digitales.
+            Desde aquí puedes reportar incidencias, revisar casos asociados o solicitar soporte.
           </p>
 
           <div class="welcome-actions">
-            <a href="registrar-reclamo.html" class="btn btn--primary">
-              Nuevo reclamo
+            <a href="registrar-incidencia.html" class="btn btn--primary">
+              Reportar incidencia
             </a>
 
-            <a href="registrar-incidencia.html" class="btn btn--soft">
-              Nueva incidencia
+            <a href="registrar-reclamo.html" class="btn btn--soft">
+              Registrar reclamo
             </a>
 
             <button type="button" class="btn btn--ghost-dark" id="openBotWelcome">
-              Resumen IA
+              Consultar servicios con IA
             </button>
           </div>
         </div>
 
-        <div class="cases-hero__visual">
+        <div class="services-hero__visual">
           <img
-            src="https://images.unsplash.com/photo-1551434678-e076c223a692?auto=format&fit=crop&w=900&q=80"
-            alt="Gestión de casos digitales"
+            src="https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=900&q=80"
+            alt="Servicios digitales conectados"
           />
 
           <div class="hero-glass-card hero-glass-card--top">
-            <span>🎫</span>
+            <span>📡</span>
             <div>
-              <strong id="casesHeroTotal">Casos activos</strong>
-              <small>Seguimiento centralizado</small>
+              <strong id="servicesHeroTotal">Servicios activos</strong>
+              <small>Asociados a tu cuenta</small>
             </div>
           </div>
 
           <div class="hero-glass-card hero-glass-card--bottom">
-            <span>⏱️</span>
+            <span>🟢</span>
             <div>
-              <strong id="casesHeroSla">SLA monitoreado</strong>
-              <small>Alertas preventivas</small>
+              <strong id="servicesHeroStatus">Operación estable</strong>
+              <small>Sin caída general reportada</small>
             </div>
           </div>
         </div>
       </section>
 
       <!-- RESUMEN -->
-      <section class="case-summary-grid" id="casesSummaryGrid">
+      <section class="case-summary-grid services-summary-grid">
+        <article class="case-summary-card">
+          <span>📡</span>
+          <div>
+            <strong id="summaryActiveServices">0</strong>
+            <p>Servicios activos</p>
+          </div>
+        </article>
+
         <article class="case-summary-card">
           <span>🎫</span>
           <div>
-            <strong id="summaryTotalCases">0</strong>
-            <p>Total de casos</p>
-          </div>
-        </article>
-
-        <article class="case-summary-card">
-          <span>🟡</span>
-          <div>
-            <strong id="summaryInProgress">0</strong>
-            <p>En atención</p>
-          </div>
-        </article>
-
-        <article class="case-summary-card">
-          <span>🔴</span>
-          <div>
-            <strong id="summaryPendingClient">0</strong>
-            <p>Pendientes por cliente</p>
+            <strong id="summaryServicesCases">0</strong>
+            <p>Casos asociados</p>
           </div>
         </article>
 
         <article class="case-summary-card">
           <span>🟢</span>
           <div>
-            <strong id="summaryResolved">0</strong>
-            <p>Resueltos</p>
+            <strong id="summaryStableServices">0</strong>
+            <p>Sin alertas</p>
+          </div>
+        </article>
+
+        <article class="case-summary-card">
+          <span>⚠️</span>
+          <div>
+            <strong id="summaryObservedServices">0</strong>
+            <p>En observación</p>
           </div>
         </article>
       </section>
 
-      <!-- BARRA DE FILTROS -->
+      <!-- FILTROS -->
       <section class="cases-toolbar panel-card">
         <div class="cases-toolbar__top">
           <div class="search-box-large">
             <span>🔎</span>
             <input
-              id="casesSearchInput"
+              id="servicesSearchInput"
               type="text"
-              placeholder="Buscar por código, título, servicio, estado o prioridad..."
+              placeholder="Buscar por servicio, plan, código, estado o dirección..."
             />
           </div>
 
           <div class="view-toggle">
-            <button type="button" class="view-toggle__btn active" id="casesCardViewBtn" data-view="cards">
+            <button type="button" class="view-toggle__btn active" id="servicesCardViewBtn" data-view="cards">
               Cards
             </button>
 
-            <button type="button" class="view-toggle__btn" id="casesTableViewBtn" data-view="table">
+            <button type="button" class="view-toggle__btn" id="servicesTableViewBtn" data-view="table">
               Tabla
             </button>
           </div>
         </div>
 
         <div class="case-filters">
-          <button type="button" class="filter-chip active" data-case-filter="todos">
+          <button type="button" class="filter-chip active" data-service-filter="todos">
             Todos
           </button>
 
-          <button type="button" class="filter-chip" data-case-filter="Reclamo">
-            Reclamos
+          <button type="button" class="filter-chip" data-service-filter="Móvil">
+            Móvil
           </button>
 
-          <button type="button" class="filter-chip" data-case-filter="Incidencia">
-            Incidencias
+          <button type="button" class="filter-chip" data-service-filter="Internet hogar">
+            Internet hogar
           </button>
 
-          <button type="button" class="filter-chip" data-case-filter="En atención">
-            En atención
+          <button type="button" class="filter-chip" data-service-filter="TV">
+            TV
           </button>
 
-          <button type="button" class="filter-chip" data-case-filter="Pendiente por cliente">
-            Pendiente por cliente
+          <button type="button" class="filter-chip" data-service-filter="Empresa">
+            Empresa
           </button>
 
-          <button type="button" class="filter-chip" data-case-filter="Resuelto">
-            Resueltos
-          </button>
-
-          <button type="button" class="filter-chip" data-case-filter="SLA crítico">
-            SLA crítico
+          <button type="button" class="filter-chip" data-service-filter="Con alertas">
+            Con alertas
           </button>
         </div>
 
         <div class="advanced-filter-row">
           <div class="form-group">
-            <label for="casesTypeFilter">Tipo</label>
-            <select id="casesTypeFilter">
+            <label for="serviceTypeFilter">Tipo de servicio</label>
+            <select id="serviceTypeFilter">
               <option value="todos">Todos</option>
-              <option value="Reclamo">Reclamo</option>
-              <option value="Incidencia">Incidencia</option>
+              <option value="Móvil">Móvil</option>
+              <option value="Internet hogar">Internet hogar</option>
+              <option value="TV">TV</option>
+              <option value="Empresa">Empresa</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="casesStatusFilter">Estado</label>
-            <select id="casesStatusFilter">
+            <label for="serviceStatusFilter">Estado</label>
+            <select id="serviceStatusFilter">
               <option value="todos">Todos</option>
-              <option value="Registrado">Registrado</option>
-              <option value="En atención">En atención</option>
-              <option value="Pendiente por cliente">Pendiente por cliente</option>
-              <option value="Resuelto">Resuelto</option>
-              <option value="Cerrado">Cerrado</option>
+              <option value="Activo">Activo</option>
+              <option value="En observación">En observación</option>
+              <option value="Suspendido">Suspendido</option>
+              <option value="Baja solicitada">Baja solicitada</option>
             </select>
           </div>
 
           <div class="form-group">
-            <label for="casesPriorityFilter">Prioridad</label>
-            <select id="casesPriorityFilter">
-              <option value="todos">Todas</option>
-              <option value="Baja">Baja</option>
-              <option value="Media">Media</option>
-              <option value="Alta">Alta</option>
-              <option value="Crítica">Crítica</option>
-            </select>
-          </div>
-
-          <div class="form-group">
-            <label for="casesSortSelect">Ordenar por</label>
-            <select id="casesSortSelect">
+            <label for="serviceSortSelect">Ordenar por</label>
+            <select id="serviceSortSelect">
               <option value="reciente">Más recientes</option>
-              <option value="sla">SLA más cercano</option>
-              <option value="prioridad">Mayor prioridad</option>
+              <option value="tipo">Tipo de servicio</option>
               <option value="estado">Estado</option>
+              <option value="casos">Mayor número de casos</option>
             </select>
           </div>
 
           <div class="form-group advanced-filter-action">
             <label>&nbsp;</label>
-            <button type="button" class="btn btn--primary btn--full" id="applyAdvancedCasesFilter">
+            <button type="button" class="btn btn--primary btn--full" id="applyServicesFilterBtn">
               Aplicar
             </button>
           </div>
         </div>
       </section>
 
-      <!-- CONTENIDO PRINCIPAL -->
-      <section class="cases-page-layout cases-page-layout--enhanced">
+      <!-- LISTADO + PANEL IA -->
+      <section class="services-page-layout">
         <article class="panel-card">
           <div class="panel-card__header">
             <div>
               <span class="eyebrow eyebrow--red">Listado</span>
-              <h2>Casos registrados</h2>
+              <h2>Servicios asociados</h2>
             </div>
 
             <div class="panel-actions-group">
-              <button type="button" class="panel-action" id="exportCasesBtn">
-                Exportar
+              <button type="button" class="panel-action" id="servicesHealthCheckBtn">
+                Diagnóstico general
               </button>
 
-              <button type="button" class="panel-action" id="refreshCasesBtn">
+              <button type="button" class="panel-action" id="refreshServicesBtn">
                 Actualizar
               </button>
             </div>
           </div>
 
           <!-- Vista de cards -->
-          <div class="cases-list cases-list--cards" id="allCasesList">
+          <div class="services-grid services-grid--detailed" id="servicesFullGrid">
             <!-- MOCK DATA desde cliente.js -->
           </div>
 
           <!-- Vista de tabla -->
-          <div class="cases-table-wrap hidden" id="casesTableWrap">
+          <div class="cases-table-wrap hidden" id="servicesTableWrap">
             <table class="cases-table">
               <thead>
                 <tr>
                   <th>Código</th>
-                  <th>Tipo</th>
                   <th>Servicio</th>
+                  <th>Plan</th>
                   <th>Estado</th>
-                  <th>Prioridad</th>
-                  <th>SLA</th>
+                  <th>Ubicación</th>
+                  <th>Casos</th>
                   <th>Acciones</th>
                 </tr>
               </thead>
 
-              <tbody id="casesTableBody">
+              <tbody id="servicesTableBody">
                 <!-- MOCK DATA desde cliente.js -->
               </tbody>
             </table>
           </div>
 
-          <div class="empty-state hidden" id="emptyAllCasesState">
-            <span>🎫</span>
-            <h3>No se encontraron casos</h3>
-            <p>Cambia los filtros o registra un nuevo reclamo o incidencia.</p>
+          <div class="empty-state hidden" id="emptyServicesState">
+            <span>📡</span>
+            <h3>No se encontraron servicios</h3>
+            <p>Cambia los filtros o revisa nuevamente más tarde.</p>
           </div>
         </article>
 
@@ -383,57 +369,57 @@
               <span>🤖</span>
               <div>
                 <h2>Análisis IA</h2>
-                <p>Resumen automático de tus casos.</p>
+                <p>Lectura rápida de servicios y posibles acciones.</p>
               </div>
             </div>
 
-            <div class="ai-summary" id="casesAiSummary">
+            <div class="ai-summary" id="servicesAiSummary">
               <!-- MOCK DATA desde cliente.js -->
             </div>
 
             <div class="ai-insight-box">
               <span>✨</span>
               <p>
-                La IA puede detectar casos con riesgo de vencimiento, pendientes por cliente
-                o reclamos que requieren evidencia adicional.
+                ClaroBot puede sugerir si corresponde registrar reclamo, incidencia técnica
+                o consultar un caso existente según el servicio seleccionado.
               </p>
             </div>
 
-            <button type="button" class="btn btn--primary btn--full" id="analyzeAllCasesBtn">
-              Analizar lista
+            <button type="button" class="btn btn--primary btn--full" id="analyzeServicesBtn">
+              Analizar servicios
             </button>
           </article>
 
           <article class="panel-card priority-panel">
             <div class="panel-card__header">
               <div>
-                <span class="eyebrow eyebrow--red">Prioridad</span>
-                <h2>Acciones sugeridas</h2>
+                <span class="eyebrow eyebrow--red">Acciones sugeridas</span>
+                <h2>Soporte recomendado</h2>
               </div>
             </div>
 
-            <div class="suggestion-list" id="caseSuggestionList">
+            <div class="suggestion-list" id="servicesSuggestionList">
               <article>
-                <span>📎</span>
+                <span>⚠️</span>
                 <div>
-                  <strong>Adjuntar evidencia pendiente</strong>
-                  <p>Un caso podría requerir información adicional.</p>
+                  <strong>Reportar falla técnica</strong>
+                  <p>Usa incidencia si el servicio no funciona correctamente.</p>
                 </div>
               </article>
 
               <article>
-                <span>⏱️</span>
+                <span>📝</span>
                 <div>
-                  <strong>Revisar SLA próximo</strong>
-                  <p>Prioriza los casos con menor tiempo restante.</p>
+                  <strong>Registrar reclamo</strong>
+                  <p>Usa reclamo si tienes disconformidad por cobros o atención.</p>
                 </div>
               </article>
 
               <article>
-                <span>🔔</span>
+                <span>🎫</span>
                 <div>
-                  <strong>Responder solicitudes</strong>
-                  <p>Atiende los mensajes del asesor para evitar retrasos.</p>
+                  <strong>Revisar casos asociados</strong>
+                  <p>Evita duplicar registros si ya existe un caso abierto.</p>
                 </div>
               </article>
             </div>
@@ -441,14 +427,14 @@
 
           <article class="mini-image-card">
             <img
-              src="https://images.unsplash.com/photo-1553877522-43269d4ea984?auto=format&fit=crop&w=700&q=80"
-              alt="Seguimiento digital de casos"
+              src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&w=700&q=80"
+              alt="Servicios conectados"
             />
 
             <div>
-              <span class="eyebrow eyebrow--red">Seguimiento 360</span>
-              <h3>Todo el caso en una sola vista</h3>
-              <p>Abre el detalle para ver historial, evidencias, solicitudes y encuesta de cierre.</p>
+              <span class="eyebrow eyebrow--red">Gestión conectada</span>
+              <h3>Servicios y casos relacionados</h3>
+              <p>Consulta los casos abiertos por servicio para hacer seguimiento ordenado.</p>
             </div>
           </article>
         </aside>
@@ -462,7 +448,7 @@
       <div>
         <span>🤖</span>
         <strong>ClaroBot IA</strong>
-        <small>Asistente de casos</small>
+        <small>Asistente de servicios</small>
       </div>
 
       <button type="button" id="closeBotDrawer">
@@ -472,21 +458,21 @@
 
     <div class="bot-drawer__messages" id="botMessages">
       <div class="message message--bot">
-        Hola. Puedo resumir tus casos, identificar pendientes, ordenar por prioridad o explicar los estados.
+        Hola. Puedo ayudarte a revisar tus servicios, identificar alertas o sugerir qué tipo de caso registrar.
       </div>
     </div>
 
     <div class="bot-drawer__quick">
-      <button type="button" data-bot-prompt="Resume mis casos">
+      <button type="button" data-bot-prompt="Resume mis servicios">
         Resumen
       </button>
 
-      <button type="button" data-bot-prompt="Qué caso requiere mi atención">
-        Pendiente
+      <button type="button" data-bot-prompt="Qué servicio tiene alerta">
+        Alertas
       </button>
 
-      <button type="button" data-bot-prompt="Explica los estados">
-        Estados
+      <button type="button" data-bot-prompt="Debo registrar reclamo o incidencia">
+        Reclamo o incidencia
       </button>
     </div>
 
@@ -507,7 +493,7 @@
         <input
           type="text"
           id="globalSearchInput"
-          placeholder="Buscar caso, servicio, ayuda, notificación o estado..."
+          placeholder="Buscar servicio, caso, alerta, plan o ayuda..."
         />
 
         <button type="button" id="closeSearchBtn">
@@ -521,84 +507,79 @@
 
   <div class="modal-backdrop" id="modalBackdrop"></div>
 
-  <!-- MODAL ESPECÍFICO: VISTA RÁPIDA DE CASO -->
-  <section class="modal" id="caseQuickViewModal" aria-hidden="true">
+  <!-- MODAL ESPECÍFICO: DETALLE DEL SERVICIO -->
+  <section class="modal" id="serviceDetailModal" aria-hidden="true">
     <div class="modal__content modal__content--wide">
       <button type="button" class="modal__close" data-close-modal>
         ×
       </button>
 
-      <div class="modal__icon" id="caseQuickViewIcon">
-        🎫
+      <div class="modal__icon" id="serviceModalIcon">
+        📡
       </div>
 
-      <span class="eyebrow eyebrow--red">
-        Vista rápida del caso
+      <span class="eyebrow eyebrow--red" id="serviceModalType">
+        Servicio contratado
       </span>
 
-      <h3 id="caseQuickViewTitle">
-        Detalle del caso seleccionado
+      <h3 id="serviceModalTitle">
+        Detalle del servicio
       </h3>
 
-      <p id="caseQuickViewText">
-        Revisa el estado general del caso y accede al seguimiento completo.
+      <p id="serviceModalText">
+        Consulta la información principal del servicio seleccionado.
       </p>
 
-      <div class="case-modal-summary case-modal-summary--grid" id="caseQuickViewSummary">
+      <div class="case-modal-summary case-modal-summary--grid" id="serviceModalSummary">
         <div>
           <span>Código</span>
-          <strong id="quickCaseCode">-</strong>
+          <strong id="serviceModalCode">-</strong>
         </div>
 
         <div>
           <span>Tipo</span>
-          <strong id="quickCaseType">-</strong>
+          <strong id="serviceModalCategory">-</strong>
         </div>
 
         <div>
-          <span>Servicio</span>
-          <strong id="quickCaseService">-</strong>
+          <span>Plan</span>
+          <strong id="serviceModalPlan">-</strong>
         </div>
 
         <div>
           <span>Estado</span>
-          <strong id="quickCaseStatus">-</strong>
+          <strong id="serviceModalStatus">-</strong>
         </div>
 
         <div>
-          <span>Prioridad</span>
-          <strong id="quickCasePriority">-</strong>
+          <span>Ubicación</span>
+          <strong id="serviceModalLocation">-</strong>
         </div>
 
         <div>
-          <span>SLA</span>
-          <strong id="quickCaseSla">-</strong>
+          <span>Casos asociados</span>
+          <strong id="serviceModalCases">-</strong>
         </div>
 
         <div>
-          <span>Última actualización</span>
-          <strong id="quickCaseLastUpdate">-</strong>
+          <span>Última atención</span>
+          <strong id="serviceModalLastUpdate">-</strong>
         </div>
 
         <div>
-          <span>Acción pendiente</span>
-          <strong id="quickCasePendingAction">-</strong>
-        </div>
-
-        <div class="summary-full">
-          <span>Descripción</span>
-          <strong id="quickCaseDescription">-</strong>
+          <span>Recomendación</span>
+          <strong id="serviceModalRecommendation">-</strong>
         </div>
       </div>
 
       <div class="modal__actions">
-        <a href="detalle-caso.html" class="btn btn--primary">
-          Ver seguimiento completo
+        <a href="registrar-incidencia.html" class="btn btn--primary">
+          Reportar incidencia
         </a>
 
-        <button type="button" class="btn btn--soft" id="quickCaseAskAiBtn">
-          Analizar con IA
-        </button>
+        <a href="registrar-reclamo.html" class="btn btn--soft">
+          Registrar reclamo
+        </a>
 
         <button type="button" class="btn btn--ghost-dark" data-close-modal>
           Cerrar
@@ -607,43 +588,87 @@
     </div>
   </section>
 
-  <!-- MODAL ESPECÍFICO: FILTROS APLICADOS / EXPORTACIÓN -->
-  <section class="modal" id="casesExportModal" aria-hidden="true">
-    <div class="modal__content">
+  <!-- MODAL ESPECÍFICO: CASOS ASOCIADOS AL SERVICIO -->
+  <section class="modal" id="serviceCasesModal" aria-hidden="true">
+    <div class="modal__content modal__content--wide">
       <button type="button" class="modal__close" data-close-modal>
         ×
       </button>
 
       <div class="modal__icon">
-        📄
+        🎫
       </div>
 
       <span class="eyebrow eyebrow--red">
-        Exportación preparada
+        Casos asociados
       </span>
 
-      <h3>
-        Tus casos están listos para exportarse
+      <h3 id="serviceCasesTitle">
+        Casos vinculados al servicio
       </h3>
 
       <p>
-        Cuando se conecte el backend, esta acción generará un reporte con los filtros aplicados.
+        Revisa los casos registrados para este servicio antes de crear uno nuevo.
       </p>
 
-      <div class="case-modal-summary">
+      <div class="linked-cases-list" id="serviceLinkedCasesList">
+        <!-- MOCK DATA desde cliente.js -->
+      </div>
+
+      <div class="modal__actions">
+        <a href="mis-casos.html" class="btn btn--primary">
+          Ver todos mis casos
+        </a>
+
+        <button type="button" class="btn btn--ghost-dark" data-close-modal>
+          Cerrar
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL ESPECÍFICO: DIAGNÓSTICO GENERAL -->
+  <section class="modal" id="servicesHealthModal" aria-hidden="true">
+    <div class="modal__content modal__content--wide">
+      <button type="button" class="modal__close" data-close-modal>
+        ×
+      </button>
+
+      <div class="modal__icon">
+        🤖
+      </div>
+
+      <span class="eyebrow eyebrow--red">
+        Diagnóstico de servicios
+      </span>
+
+      <h3>
+        Resultado preliminar del análisis
+      </h3>
+
+      <p>
+        Esta lectura es referencial y se actualizará cuando la plataforma se conecte al backend.
+      </p>
+
+      <div class="case-modal-summary case-modal-summary--grid">
         <div>
-          <span>Formato</span>
-          <strong>Excel / PDF</strong>
+          <span>Servicios activos</span>
+          <strong id="healthActiveServices">0</strong>
         </div>
 
         <div>
-          <span>Origen</span>
-          <strong>Mis casos</strong>
+          <span>Servicios observados</span>
+          <strong id="healthObservedServices">0</strong>
         </div>
 
         <div>
-          <span>Estado</span>
-          <strong>Preparado para backend</strong>
+          <span>Casos abiertos</span>
+          <strong id="healthOpenCases">0</strong>
+        </div>
+
+        <div>
+          <span>Acción sugerida</span>
+          <strong id="healthSuggestedAction">Revisar casos abiertos</strong>
         </div>
       </div>
 

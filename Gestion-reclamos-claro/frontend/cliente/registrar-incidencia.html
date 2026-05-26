@@ -5,12 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
   <title>Registrar incidencia | Claro Atención 360</title>
+
+  <meta
+    name="description"
+    content="Formulario del cliente para registrar incidencias técnicas por fallas, lentitud, cortes, intermitencia o problemas de acceso en servicios Claro."
+  />
+
   <link rel="stylesheet" href="../assets/css/cliente.css" />
 </head>
 
 <body data-page="registrar-incidencia">
   <div class="toast-container" id="toastContainer" aria-live="polite"></div>
 
+  <!-- SIDEBAR CLIENTE -->
   <aside class="sidebar" id="sidebar">
     <div class="sidebar__brand">
       <a href="../index.html" class="brand">
@@ -22,43 +29,68 @@
 
     <nav class="sidebar__nav">
       <a href="dashboard.html" class="sidebar-link">
-        <span>🏠</span> Dashboard
+        <span>🏠</span>
+        Dashboard
       </a>
+
       <a href="registrar-reclamo.html" class="sidebar-link">
-        <span>📝</span> Registrar reclamo
+        <span>📝</span>
+        Registrar reclamo
       </a>
+
       <a href="registrar-incidencia.html" class="sidebar-link active">
-        <span>⚠️</span> Registrar incidencia
+        <span>⚠️</span>
+        Registrar incidencia
       </a>
+
       <a href="mis-casos.html" class="sidebar-link">
-        <span>🎫</span> Mis casos
+        <span>🎫</span>
+        Mis casos
       </a>
-      <a href="detalle-caso.html" class="sidebar-link">
-        <span>🔎</span> Seguimiento
+
+      <a href="servicios-contratados.html" class="sidebar-link">
+        <span>📡</span>
+        Servicios contratados
       </a>
+
       <a href="notificaciones.html" class="sidebar-link">
-        <span>🔔</span> Notificaciones
+        <span>🔔</span>
+        Notificaciones
         <small id="sidebarNotificationCount"></small>
       </a>
+
+      <a href="perfil.html" class="sidebar-link">
+        <span>👤</span>
+        Perfil
+      </a>
+
       <a href="../centro-ayuda.html" class="sidebar-link">
-        <span>❓</span> Centro de ayuda
+        <span>❓</span>
+        Centro de ayuda
       </a>
     </nav>
 
     <div class="sidebar__bottom">
       <button type="button" class="sidebar-ai-btn" id="openBotSidebar">
-        <span>🤖</span> ClaroBot IA
+        <span>🤖</span>
+        ClaroBot IA
       </button>
+
       <button type="button" class="logout-btn" id="logoutBtn">
-        <span>🚪</span> Cerrar sesión
+        <span>🚪</span>
+        Cerrar sesión
       </button>
     </div>
   </aside>
 
   <div class="app-shell">
+    <!-- TOPBAR -->
     <header class="topbar">
       <div class="topbar__left">
-        <button type="button" class="menu-btn" id="menuBtn">☰</button>
+        <button type="button" class="menu-btn" id="menuBtn" aria-label="Abrir menú">
+          ☰
+        </button>
+
         <div>
           <span class="eyebrow">Soporte técnico</span>
           <h1 id="pageTitle">Registrar incidencia</h1>
@@ -66,10 +98,17 @@
       </div>
 
       <div class="topbar__actions">
-        <button type="button" class="icon-btn" id="globalSearchBtn">🔎</button>
-        <button type="button" class="icon-btn" id="themeToggle">◐</button>
-        <button type="button" class="notification-btn" id="notificationBtn">
-          🔔 <span id="notificationBadge"></span>
+        <button type="button" class="icon-btn" id="globalSearchBtn" aria-label="Buscar">
+          🔎
+        </button>
+
+        <button type="button" class="icon-btn" id="themeToggle" aria-label="Cambiar tema">
+          ◐
+        </button>
+
+        <button type="button" class="notification-btn" id="notificationBtn" aria-label="Notificaciones">
+          🔔
+          <span id="notificationBadge"></span>
         </button>
 
         <div class="user-menu">
@@ -82,8 +121,8 @@
           </button>
 
           <div class="user-menu__dropdown" id="userMenuDropdown">
-            <a href="#">Mi perfil</a>
-            <a href="#">Preferencias</a>
+            <a href="perfil.html">Mi perfil</a>
+            <a href="servicios-contratados.html">Mis servicios</a>
             <a href="../seleccionar-rol.html">Cambiar perfil</a>
             <button type="button" id="logoutDropdownBtn">Cerrar sesión</button>
           </div>
@@ -92,42 +131,90 @@
     </header>
 
     <main class="dashboard-page">
-      <section class="welcome-card">
-        <div class="welcome-card__copy">
-          <span class="eyebrow eyebrow--red">Nueva incidencia</span>
-          <h2>Reporta una falla o problema técnico</h2>
+      <!-- HERO DEL FORMULARIO -->
+      <section class="case-form-hero case-form-hero--incident">
+        <div class="case-form-hero__content">
+          <span class="eyebrow eyebrow--red">Nueva incidencia técnica</span>
+
+          <h2>
+            Reporta una falla para activar el diagnóstico y seguimiento
+          </h2>
+
           <p>
-            Usa este formulario cuando un servicio no funcione correctamente:
-            lentitud, cortes, error de acceso, intermitencia, ausencia de señal o caída.
+            Usa este formulario cuando un servicio presente lentitud, cortes,
+            intermitencia, errores de acceso, ausencia de señal o caída. Antes de
+            enviar, podrás revisar todos los datos en una confirmación detallada.
           </p>
 
+          <div class="hero-mini-status">
+            <article>
+              <span>📡</span>
+              <div>
+                <strong>Diagnóstico guiado</strong>
+                <small>Clasificación técnica por servicio y síntoma.</small>
+              </div>
+            </article>
+
+            <article>
+              <span>🚦</span>
+              <div>
+                <strong>Priorización inteligente</strong>
+                <small>Impacto y urgencia para estimar prioridad.</small>
+              </div>
+            </article>
+          </div>
+
           <div class="welcome-actions">
-            <button type="button" class="btn btn--primary" id="openBotWelcome">
+            <button type="button" class="btn btn--primary" id="incidentDiagnosticBtn">
+              Diagnóstico IA
+            </button>
+
+            <button type="button" class="btn btn--soft" id="openBotWelcome">
               Recibir ayuda IA
             </button>
-            <a href="../estado-servicios.html" class="btn btn--soft">
+
+            <a href="../estado-servicios.html" class="btn btn--ghost-dark">
               Ver estado de servicios
             </a>
           </div>
         </div>
 
-        <div class="welcome-card__status">
-          <div class="status-orb"><span></span></div>
-          <div>
-            <strong>Diagnóstico habilitado</strong>
-            <small>Clasificación técnica simulada</small>
+        <div class="case-form-hero__visual">
+          <img
+            src="https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=900&q=80"
+            alt="Infraestructura de telecomunicaciones"
+          />
+
+          <div class="hero-glass-card hero-glass-card--top">
+            <span>⚠️</span>
+            <div>
+              <strong>Incidencia técnica</strong>
+              <small>Registro con diagnóstico</small>
+            </div>
+          </div>
+
+          <div class="hero-glass-card hero-glass-card--bottom">
+            <span>⏱️</span>
+            <div>
+              <strong>SLA estimado</strong>
+              <small>Se calculará por impacto</small>
+            </div>
           </div>
         </div>
       </section>
 
-      <section class="form-layout">
+      <!-- FORMULARIO + ASISTENTE -->
+      <section class="form-layout form-layout--enhanced">
         <article class="panel-card form-panel">
           <div class="panel-card__header">
             <div>
               <span class="eyebrow eyebrow--red">Formulario</span>
               <h2>Datos de la incidencia</h2>
             </div>
-            <span class="status-pill status-pill--warning">Pendiente</span>
+
+            <span class="status-pill status-pill--warning" id="incidentDraftStatus">
+              Pendiente
+            </span>
           </div>
 
           <form
@@ -137,16 +224,25 @@
             data-method="POST"
             novalidate
           >
+            <!-- Servicio y síntoma -->
+            <div class="form-section-title">
+              <span>01</span>
+              <div>
+                <strong>Servicio y síntoma</strong>
+                <small>Identifica dónde ocurre la falla y cómo se presenta.</small>
+              </div>
+            </div>
+
             <div class="form-grid">
               <div class="form-group">
                 <label for="incidentService">Servicio afectado</label>
                 <select id="incidentService" name="service">
                   <option value="">Seleccionar</option>
-                  <option value="movil">Red móvil</option>
-                  <option value="internet">Internet hogar</option>
-                  <option value="tv">Claro TV+</option>
-                  <option value="cloud">Cloud empresa</option>
-                  <option value="correo">Correo empresa</option>
+                  <option value="Red móvil">Red móvil</option>
+                  <option value="Internet hogar">Internet hogar</option>
+                  <option value="Claro TV+">Claro TV+</option>
+                  <option value="Cloud empresa">Cloud empresa</option>
+                  <option value="Correo empresa">Correo empresa</option>
                 </select>
                 <small class="form-error" id="incidentServiceError"></small>
               </div>
@@ -155,13 +251,22 @@
                 <label for="incidentSymptom">Síntoma principal</label>
                 <select id="incidentSymptom" name="symptom">
                   <option value="">Seleccionar</option>
-                  <option value="sin-servicio">Sin servicio</option>
-                  <option value="lento">Lentitud</option>
-                  <option value="intermitente">Intermitencia</option>
-                  <option value="error-acceso">Error de acceso</option>
-                  <option value="senal">Problemas de señal</option>
+                  <option value="Sin servicio">Sin servicio</option>
+                  <option value="Lentitud">Lentitud</option>
+                  <option value="Intermitencia">Intermitencia</option>
+                  <option value="Error de acceso">Error de acceso</option>
+                  <option value="Problemas de señal">Problemas de señal</option>
                 </select>
                 <small class="form-error" id="incidentSymptomError"></small>
+              </div>
+            </div>
+
+            <!-- Impacto -->
+            <div class="form-section-title">
+              <span>02</span>
+              <div>
+                <strong>Impacto y urgencia</strong>
+                <small>Ayuda a priorizar la atención según afectación.</small>
               </div>
             </div>
 
@@ -170,10 +275,10 @@
                 <label for="incidentImpact">Impacto</label>
                 <select id="incidentImpact" name="impact">
                   <option value="">Seleccionar</option>
-                  <option value="individual">Solo mi servicio</option>
-                  <option value="familia">Varios usuarios del hogar</option>
-                  <option value="empresa">Varios usuarios de la empresa</option>
-                  <option value="masivo">Aparentemente masivo</option>
+                  <option value="Solo mi servicio">Solo mi servicio</option>
+                  <option value="Varios usuarios del hogar">Varios usuarios del hogar</option>
+                  <option value="Varios usuarios de la empresa">Varios usuarios de la empresa</option>
+                  <option value="Aparentemente masivo">Aparentemente masivo</option>
                 </select>
                 <small class="form-error" id="incidentImpactError"></small>
               </div>
@@ -182,12 +287,21 @@
                 <label for="incidentUrgency">Urgencia</label>
                 <select id="incidentUrgency" name="urgency">
                   <option value="">Seleccionar</option>
-                  <option value="baja">Baja</option>
-                  <option value="media">Media</option>
-                  <option value="alta">Alta</option>
-                  <option value="critica">Crítica</option>
+                  <option value="Baja">Baja</option>
+                  <option value="Media">Media</option>
+                  <option value="Alta">Alta</option>
+                  <option value="Crítica">Crítica</option>
                 </select>
                 <small class="form-error" id="incidentUrgencyError"></small>
+              </div>
+            </div>
+
+            <!-- Ubicación -->
+            <div class="form-section-title">
+              <span>03</span>
+              <div>
+                <strong>Ubicación y detalle técnico</strong>
+                <small>Describe dónde ocurre y qué pruebas realizaste.</small>
               </div>
             </div>
 
@@ -197,9 +311,15 @@
                 id="incidentAddress"
                 name="address"
                 type="text"
-                placeholder="Distrito, dirección referencial o zona donde ocurre la falla"
+                placeholder="Distrito, dirección referencial, sede, piso, zona o área afectada"
               />
               <small class="form-error" id="incidentAddressError"></small>
+            </div>
+
+            <div class="form-group">
+              <label for="incidentStartDate">Fecha/hora aproximada de inicio</label>
+              <input id="incidentStartDate" name="startDate" type="datetime-local" />
+              <small class="form-error" id="incidentStartDateError"></small>
             </div>
 
             <div class="form-group">
@@ -210,6 +330,15 @@
                 placeholder="Describe el problema, desde cuándo ocurre, si es permanente o intermitente y qué pruebas realizaste..."
               ></textarea>
               <small class="form-error" id="incidentDescriptionError"></small>
+            </div>
+
+            <!-- Evidencia -->
+            <div class="form-section-title">
+              <span>04</span>
+              <div>
+                <strong>Evidencia técnica</strong>
+                <small>Adjunta información que ayude al diagnóstico.</small>
+              </div>
             </div>
 
             <div class="upload-box">
@@ -228,17 +357,31 @@
 
             <div class="file-list" id="incidentFileList"></div>
 
+            <!-- Declaración -->
+            <div class="form-section-title">
+              <span>05</span>
+              <div>
+                <strong>Declaración</strong>
+                <small>Confirma que la información corresponde a una falla real.</small>
+              </div>
+            </div>
+
             <div class="form-check">
               <input type="checkbox" id="incidentDeclaration" name="declaration" />
               <label for="incidentDeclaration">
                 Confirmo que la información registrada corresponde a una falla técnica real.
               </label>
             </div>
+
             <small class="form-error" id="incidentDeclarationError"></small>
 
             <div class="form-actions">
-              <button type="button" class="btn btn--ghost-dark" id="incidentDiagnosticBtn">
-                Diagnóstico IA
+              <button type="button" class="btn btn--ghost-dark" id="incidentSaveDraft">
+                Guardar borrador
+              </button>
+
+              <button type="button" class="btn btn--soft" id="incidentPreviewBtn">
+                Vista previa
               </button>
 
               <button type="submit" class="btn btn--primary" id="incidentSubmitBtn">
@@ -249,35 +392,100 @@
           </form>
         </article>
 
-        <aside class="panel-card assist-panel">
-          <div class="ai-panel__header">
-            <span>🤖</span>
+        <!-- PANEL LATERAL -->
+        <aside class="form-side-stack">
+          <article class="panel-card assist-panel">
+            <div class="ai-panel__header">
+              <span>🤖</span>
+              <div>
+                <h2>Clasificación IA</h2>
+                <p>Evalúa urgencia, impacto y evidencia técnica.</p>
+              </div>
+            </div>
+
+            <div class="ai-summary">
+              <div class="ai-summary-item">
+                <strong>Consejo</strong>
+                <p>Indica si el problema afecta a un equipo, una zona, varios usuarios o toda la empresa.</p>
+              </div>
+
+              <div class="ai-summary-item">
+                <strong>Evidencia ideal</strong>
+                <p>Incluye capturas, pruebas de velocidad, mensajes de error o fotos del equipo.</p>
+              </div>
+
+              <div class="ai-summary-item">
+                <strong>Priorización</strong>
+                <p>Si el impacto es empresarial o masivo, la incidencia se marcará con mayor prioridad.</p>
+              </div>
+            </div>
+
+            <button type="button" class="btn btn--primary btn--full" id="incidentAnalyzeSideBtn">
+              Analizar incidencia
+            </button>
+          </article>
+
+          <article class="panel-card technical-check-panel">
+            <div class="panel-card__header">
+              <div>
+                <span class="eyebrow eyebrow--red">Checklist técnico</span>
+                <h2>Antes de enviar</h2>
+              </div>
+            </div>
+
+            <div class="checklist-list">
+              <article>
+                <span>✓</span>
+                <div>
+                  <strong>Servicio identificado</strong>
+                  <small>Selecciona el servicio exacto afectado.</small>
+                </div>
+              </article>
+
+              <article>
+                <span>✓</span>
+                <div>
+                  <strong>Síntoma claro</strong>
+                  <small>Indica si hay lentitud, corte, señal o acceso.</small>
+                </div>
+              </article>
+
+              <article>
+                <span>✓</span>
+                <div>
+                  <strong>Impacto real</strong>
+                  <small>Define si afecta solo a ti, a varios usuarios o a una zona.</small>
+                </div>
+              </article>
+
+              <article>
+                <span>✓</span>
+                <div>
+                  <strong>Evidencia técnica</strong>
+                  <small>Adjunta capturas, pruebas o fotos del equipo.</small>
+                </div>
+              </article>
+            </div>
+          </article>
+
+          <article class="mini-image-card">
+            <img
+              src="https://images.unsplash.com/photo-1516321497487-e288fb19713f?auto=format&fit=crop&w=700&q=80"
+              alt="Soporte técnico digital"
+            />
+
             <div>
-              <h2>Clasificación IA</h2>
-              <p>Evalúa urgencia e impacto técnico.</p>
+              <span class="eyebrow eyebrow--red">Diagnóstico digital</span>
+              <h3>Mayor claridad, mejor atención</h3>
+              <p>Una incidencia bien descrita facilita la clasificación y reduce observaciones.</p>
             </div>
-          </div>
-
-          <div class="ai-summary">
-            <div class="ai-summary-item">
-              <strong>Consejo</strong>
-              <p>Indica si el problema afecta a un equipo, una zona, varios usuarios o toda la empresa.</p>
-            </div>
-
-            <div class="ai-summary-item">
-              <strong>Evidencia ideal</strong>
-              <p>Incluye capturas, pruebas de velocidad, mensajes de error o fotos del equipo.</p>
-            </div>
-          </div>
-
-          <button type="button" class="btn btn--primary btn--full" id="openBotWelcome">
-            Preguntar a ClaroBot
-          </button>
+          </article>
         </aside>
       </section>
     </main>
   </div>
 
+  <!-- CHATBOT -->
   <aside class="bot-drawer" id="botDrawer" aria-hidden="true">
     <div class="bot-drawer__header">
       <div>
@@ -285,7 +493,10 @@
         <strong>ClaroBot IA</strong>
         <small>Asistente técnico</small>
       </div>
-      <button type="button" id="closeBotDrawer">×</button>
+
+      <button type="button" id="closeBotDrawer">
+        ×
+      </button>
     </div>
 
     <div class="bot-drawer__messages" id="botMessages">
@@ -295,9 +506,17 @@
     </div>
 
     <div class="bot-drawer__quick">
-      <button type="button" data-bot-prompt="Tengo internet lento">Internet lento</button>
-      <button type="button" data-bot-prompt="No tengo servicio">Sin servicio</button>
-      <button type="button" data-bot-prompt="Qué evidencia técnica adjunto">Evidencia técnica</button>
+      <button type="button" data-bot-prompt="Tengo internet lento">
+        Internet lento
+      </button>
+
+      <button type="button" data-bot-prompt="No tengo servicio">
+        Sin servicio
+      </button>
+
+      <button type="button" data-bot-prompt="Qué evidencia técnica adjunto">
+        Evidencia técnica
+      </button>
     </div>
 
     <form class="bot-drawer__form" id="botForm">
@@ -307,321 +526,283 @@
   </aside>
 
   <div class="drawer-backdrop" id="drawerBackdrop"></div>
-  <div class="modal-backdrop" id="modalBackdrop"></div>
 
-  <section class="modal" id="successCaseModal" aria-hidden="true">
-    <div class="modal__content">
-      <div class="modal__icon">✓</div>
-      <h3>Incidencia registrada</h3>
-      <p id="successCaseText">
-        Tu incidencia fue registrada correctamente.
-      </p>
-
-      <div class="case-modal-summary" id="successCaseSummary"></div>
-
-      <div class="modal__actions">
-        <a href="mis-casos.html" class="btn btn--primary">Ver mis casos</a>
-        <button type="button" class="btn btn--ghost-dark" data-close-modal>Cerrar</button>
-      </div>
-    </div>
-  </section>
-
+  <!-- BUSCADOR GLOBAL -->
   <section class="search-modal" id="searchModal" aria-hidden="true">
     <div class="search-modal__content">
       <div class="search-modal__bar">
         <span>🔎</span>
-        <input type="text" id="globalSearchInput" placeholder="Buscar..." />
-        <button type="button" id="closeSearchBtn">Esc</button>
+
+        <input
+          type="text"
+          id="globalSearchInput"
+          placeholder="Buscar caso, servicio, ayuda, incidencia o notificación..."
+        />
+
+        <button type="button" id="closeSearchBtn">
+          Esc
+        </button>
       </div>
+
       <div class="search-results" id="searchResults"></div>
     </div>
   </section>
 
-  <section class="modal" id="genericModal" aria-hidden="true">
-    <div class="modal__content">
-      <button type="button" class="modal__close" data-close-modal>×</button>
-      <div class="modal__icon" id="genericModalIcon">ℹ</div>
-      <h3 id="genericModalTitle">Información</h3>
-      <p id="genericModalText">Mensaje del sistema.</p>
+  <div class="modal-backdrop" id="modalBackdrop"></div>
+
+  <!-- MODAL ESPECÍFICO: CONFIRMACIÓN DE INCIDENCIA -->
+  <section class="modal" id="confirmIncidentModal" aria-hidden="true">
+    <div class="modal__content modal__content--wide">
+      <button type="button" class="modal__close" data-close-modal>
+        ×
+      </button>
+
+      <div class="modal__icon modal__icon--warning">
+        ⚠️
+      </div>
+
+      <span class="eyebrow eyebrow--red">
+        Confirmación de incidencia
+      </span>
+
+      <h3>
+        Revisa tu incidencia antes de enviarla
+      </h3>
+
+      <p>
+        Verifica que los datos técnicos sean correctos. Si todo está conforme,
+        confirma el registro de la incidencia.
+      </p>
+
+      <div class="case-modal-summary case-modal-summary--grid" id="incidentConfirmSummary">
+        <div>
+          <span>Servicio afectado</span>
+          <strong id="summaryIncidentService">-</strong>
+        </div>
+
+        <div>
+          <span>Síntoma principal</span>
+          <strong id="summaryIncidentSymptom">-</strong>
+        </div>
+
+        <div>
+          <span>Impacto</span>
+          <strong id="summaryIncidentImpact">-</strong>
+        </div>
+
+        <div>
+          <span>Urgencia</span>
+          <strong id="summaryIncidentUrgency">-</strong>
+        </div>
+
+        <div>
+          <span>Ubicación</span>
+          <strong id="summaryIncidentAddress">-</strong>
+        </div>
+
+        <div>
+          <span>Inicio aproximado</span>
+          <strong id="summaryIncidentStartDate">No registrado</strong>
+        </div>
+
+        <div>
+          <span>Evidencias</span>
+          <strong id="summaryIncidentEvidence">Sin archivos adjuntos</strong>
+        </div>
+
+        <div>
+          <span>Diagnóstico estimado</span>
+          <strong id="summaryIncidentDiagnosis">Pendiente</strong>
+        </div>
+
+        <div class="summary-full">
+          <span>Descripción técnica</span>
+          <strong id="summaryIncidentDescription">-</strong>
+        </div>
+      </div>
+
       <div class="modal__actions">
-        <button type="button" class="btn btn--primary" data-close-modal>Entendido</button>
+        <button type="button" class="btn btn--ghost-dark" data-close-modal>
+          Seguir editando
+        </button>
+
+        <button type="button" class="btn btn--soft" id="cancelIncidentConfirmBtn">
+          Cancelar
+        </button>
+
+        <button type="button" class="btn btn--primary" id="acceptIncidentConfirmBtn">
+          Confirmar registro
+        </button>
       </div>
     </div>
   </section>
 
-  <!-- =========================================================
-     PARTIAL: MODALES REUTILIZABLES
-     Claro Atención 360
-========================================================= -->
+  <!-- MODAL ESPECÍFICO: INCIDENCIA REGISTRADA -->
+  <section class="modal" id="successIncidentModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>
+        ×
+      </button>
 
-<div class="modal-backdrop" id="modalBackdrop"></div>
-
-<!-- MODAL GENERAL DE CONFIRMACIÓN -->
-<section class="modal" id="confirmActionModal" aria-hidden="true">
-  <div class="modal__content">
-    <button type="button" class="modal__close" data-close-modal>×</button>
-
-    <div class="modal__icon modal__icon--warning" id="confirmActionIcon">
-      !
-    </div>
-
-    <span class="eyebrow eyebrow--red" id="confirmActionEyebrow">
-      Confirmación requerida
-    </span>
-
-    <h3 id="confirmActionTitle">
-      ¿Deseas confirmar esta acción?
-    </h3>
-
-    <p id="confirmActionText">
-      Revisa que la información ingresada sea correcta antes de continuar.
-    </p>
-
-    <div class="case-modal-summary" id="confirmActionSummary">
-      <div>
-        <span>Acción</span>
-        <strong id="confirmActionName">Pendiente</strong>
+      <div class="modal__icon modal__icon--success">
+        ✓
       </div>
-      <div>
-        <span>Estado</span>
-        <strong>Por confirmar</strong>
+
+      <span class="eyebrow eyebrow--red">
+        Incidencia registrada
+      </span>
+
+      <h3>
+        Tu incidencia fue registrada correctamente
+      </h3>
+
+      <p id="successIncidentText">
+        Se generó un código de atención para que puedas realizar seguimiento desde Mis casos.
+      </p>
+
+      <div class="case-modal-summary" id="successIncidentSummary">
+        <div>
+          <span>Código de caso</span>
+          <strong id="successIncidentCode">INC-2026-000000</strong>
+        </div>
+
+        <div>
+          <span>Estado inicial</span>
+          <strong>Registrado</strong>
+        </div>
+
+        <div>
+          <span>Siguiente paso</span>
+          <strong>Diagnóstico y asignación técnica</strong>
+        </div>
       </div>
-    </div>
 
-    <div class="modal__actions">
-      <button type="button" class="btn btn--ghost-dark" data-close-modal>
-        Seguir editando
-      </button>
+      <div class="modal__actions">
+        <a href="mis-casos.html" class="btn btn--primary">
+          Ver mis casos
+        </a>
 
-      <button type="button" class="btn btn--soft" id="cancelConfirmActionBtn">
-        Cancelar
-      </button>
+        <a href="detalle-caso.html" class="btn btn--soft">
+          Ver seguimiento
+        </a>
 
-      <button type="button" class="btn btn--primary" id="acceptConfirmActionBtn">
-        Confirmar
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- MODAL DE ÉXITO -->
-<section class="modal" id="successActionModal" aria-hidden="true">
-  <div class="modal__content">
-    <button type="button" class="modal__close" data-close-modal>×</button>
-
-    <div class="modal__icon modal__icon--success">
-      ✓
-    </div>
-
-    <span class="eyebrow eyebrow--red">
-      Operación completada
-    </span>
-
-    <h3 id="successActionTitle">
-      Registro exitoso
-    </h3>
-
-    <p id="successActionText">
-      La información fue registrada correctamente.
-    </p>
-
-    <div class="modal__actions">
-      <button type="button" class="btn btn--primary" data-close-modal>
-        Entendido
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- MODAL DE ADVERTENCIA -->
-<section class="modal" id="warningActionModal" aria-hidden="true">
-  <div class="modal__content">
-    <button type="button" class="modal__close" data-close-modal>×</button>
-
-    <div class="modal__icon modal__icon--warning">
-      !
-    </div>
-
-    <span class="eyebrow eyebrow--red">
-      Revisión necesaria
-    </span>
-
-    <h3 id="warningActionTitle">
-      Información incompleta
-    </h3>
-
-    <p id="warningActionText">
-      Hay campos pendientes o datos que requieren validación.
-    </p>
-
-    <div class="modal__actions">
-      <button type="button" class="btn btn--primary" data-close-modal>
-        Entendido
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- MODAL DE ERROR -->
-<section class="modal" id="errorActionModal" aria-hidden="true">
-  <div class="modal__content">
-    <button type="button" class="modal__close" data-close-modal>×</button>
-
-    <div class="modal__icon modal__icon--danger">
-      ×
-    </div>
-
-    <span class="eyebrow eyebrow--red">
-      Error del sistema
-    </span>
-
-    <h3 id="errorActionTitle">
-      No se pudo completar la acción
-    </h3>
-
-    <p id="errorActionText">
-      Ocurrió un problema al procesar la solicitud. Intenta nuevamente.
-    </p>
-
-    <div class="modal__actions">
-      <button type="button" class="btn btn--primary" data-close-modal>
-        Intentar nuevamente
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- MODAL DE ELIMINACIÓN -->
-<section class="modal" id="deleteActionModal" aria-hidden="true">
-  <div class="modal__content">
-    <button type="button" class="modal__close" data-close-modal>×</button>
-
-    <div class="modal__icon modal__icon--danger">
-      🗑️
-    </div>
-
-    <span class="eyebrow eyebrow--red">
-      Eliminación de registro
-    </span>
-
-    <h3 id="deleteActionTitle">
-      ¿Deseas eliminar este registro?
-    </h3>
-
-    <p id="deleteActionText">
-      Esta acción puede afectar información asociada. Revisa antes de continuar.
-    </p>
-
-    <div class="case-modal-summary" id="deleteActionSummary">
-      <div>
-        <span>Registro</span>
-        <strong id="deleteActionName">No seleccionado</strong>
-      </div>
-      <div>
-        <span>Acción</span>
-        <strong>Eliminar</strong>
+        <button type="button" class="btn btn--ghost-dark" data-close-modal>
+          Cerrar
+        </button>
       </div>
     </div>
+  </section>
 
-    <div class="modal__actions">
-      <button type="button" class="btn btn--ghost-dark" data-close-modal>
-        Cancelar
+  <!-- MODAL ESPECÍFICO: BORRADOR DE INCIDENCIA -->
+  <section class="modal" id="incidentDraftModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>
+        ×
       </button>
 
-      <button type="button" class="btn btn--primary" id="acceptDeleteActionBtn">
-        Eliminar
-      </button>
+      <div class="modal__icon">
+        💾
+      </div>
+
+      <span class="eyebrow eyebrow--red">
+        Borrador guardado
+      </span>
+
+      <h3>
+        Tu incidencia quedó guardada como borrador
+      </h3>
+
+      <p>
+        Podrás continuar editándola antes de enviarla formalmente.
+      </p>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>
+          Entendido
+        </button>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
-<!-- MODAL DE VISTA PREVIA -->
-<section class="modal" id="previewActionModal" aria-hidden="true">
-  <div class="modal__content modal__content--wide">
-    <button type="button" class="modal__close" data-close-modal>×</button>
-
-    <div class="modal__icon">
-      👁️
-    </div>
-
-    <span class="eyebrow eyebrow--red">
-      Vista previa
-    </span>
-
-    <h3 id="previewActionTitle">
-      Revisa la información antes de continuar
-    </h3>
-
-    <p id="previewActionText">
-      Esta es una vista previa de los datos ingresados.
-    </p>
-
-    <div class="preview-box" id="previewActionContent">
-      <!-- JS llenará el contenido -->
-    </div>
-
-    <div class="modal__actions">
-      <button type="button" class="btn btn--ghost-dark" data-close-modal>
-        Seguir editando
+  <!-- MODAL ESPECÍFICO: DIAGNÓSTICO IA -->
+  <section class="modal" id="incidentDiagnosticModal" aria-hidden="true">
+    <div class="modal__content modal__content--wide">
+      <button type="button" class="modal__close" data-close-modal>
+        ×
       </button>
 
-      <button type="button" class="btn btn--primary" id="acceptPreviewActionBtn">
-        Confirmar
+      <div class="modal__icon">
+        🤖
+      </div>
+
+      <span class="eyebrow eyebrow--red">
+        Diagnóstico IA
+      </span>
+
+      <h3>
+        Resultado preliminar de clasificación
+      </h3>
+
+      <p>
+        Esta lectura es referencial y se actualizará cuando el caso sea validado por el equipo de atención.
+      </p>
+
+      <div class="case-modal-summary case-modal-summary--grid" id="incidentDiagnosticSummary">
+        <div>
+          <span>Prioridad estimada</span>
+          <strong id="diagnosticPriority">Media</strong>
+        </div>
+
+        <div>
+          <span>Tipo de afectación</span>
+          <strong id="diagnosticAffectation">Servicio individual</strong>
+        </div>
+
+        <div>
+          <span>Evidencia recomendada</span>
+          <strong id="diagnosticEvidence">Captura o prueba técnica</strong>
+        </div>
+
+        <div>
+          <span>Acción sugerida</span>
+          <strong id="diagnosticAction">Registrar incidencia</strong>
+        </div>
+      </div>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>
+          Entendido
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <!-- MODAL GENÉRICO SOLO PARA MENSAJES SIMPLES -->
+  <section class="modal" id="genericModal" aria-hidden="true">
+    <div class="modal__content">
+      <button type="button" class="modal__close" data-close-modal>
+        ×
       </button>
+
+      <div class="modal__icon" id="genericModalIcon">
+        ℹ
+      </div>
+
+      <h3 id="genericModalTitle">
+        Información
+      </h3>
+
+      <p id="genericModalText">
+        Mensaje del sistema.
+      </p>
+
+      <div class="modal__actions">
+        <button type="button" class="btn btn--primary" data-close-modal>
+          Entendido
+        </button>
+      </div>
     </div>
-  </div>
-</section>
-
-<!-- MODAL DE CARGA -->
-<section class="modal" id="loadingActionModal" aria-hidden="true">
-  <div class="modal__content modal__content--loading">
-    <div class="loader-ring"></div>
-
-    <h3 id="loadingActionTitle">
-      Procesando solicitud
-    </h3>
-
-    <p id="loadingActionText">
-      Estamos registrando la información. Por favor espera unos segundos.
-    </p>
-  </div>
-</section>
-
-<!-- MODAL DE IA -->
-<section class="modal" id="aiActionModal" aria-hidden="true">
-  <div class="modal__content modal__content--wide">
-    <button type="button" class="modal__close" data-close-modal>×</button>
-
-    <div class="modal__icon">
-      🤖
-    </div>
-
-    <span class="eyebrow eyebrow--red">
-      Asistente IA
-    </span>
-
-    <h3 id="aiActionTitle">
-      Análisis inteligente
-    </h3>
-
-    <p id="aiActionText">
-      La IA ha generado una recomendación para esta operación.
-    </p>
-
-    <div class="ai-modal-list" id="aiActionRecommendations">
-      <article>
-        <strong>Recomendación</strong>
-        <p>Verifica los datos principales antes de confirmar la acción.</p>
-      </article>
-    </div>
-
-    <div class="modal__actions">
-      <button type="button" class="btn btn--primary" data-close-modal>
-        Entendido
-      </button>
-    </div>
-  </div>
-</section>
+  </section>
 
   <script src="../assets/js/cliente.js"></script>
 </body>

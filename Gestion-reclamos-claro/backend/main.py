@@ -8,6 +8,7 @@ from fastapi.middleware.cors import CORSMiddleware
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
 django.setup()
 
+from api.auth import router as auth_router  # noqa: E402
 from api.home import router as home_router  # noqa: E402
 from api.user import router as user_router  # noqa: E402
 
@@ -19,12 +20,13 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
+app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(home_router, prefix="/api/public", tags=["public"])
 app.include_router(user_router, prefix="/api/users", tags=["users"])
 

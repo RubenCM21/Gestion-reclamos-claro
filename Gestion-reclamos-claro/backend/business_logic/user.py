@@ -1,3 +1,5 @@
+from django.contrib.auth.hashers import make_password
+
 from dao.models import UserModel
 from dao.models.enums import UserRole
 from schemas.user import UserIn, UserOut, UserRolesToCreate, UsersOut
@@ -39,7 +41,7 @@ def create_user(user_in: UserIn, role: UserRolesToCreate) -> UserOut:
     user = UserModel.objects.create(
         username=user_in.username,
         full_name=user_in.full_name,
-        hashed_password=user_in.password,
+        hashed_password=make_password(user_in.password),
         role=role_value,
     )
 

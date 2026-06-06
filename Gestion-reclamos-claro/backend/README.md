@@ -72,6 +72,16 @@ GET http://localhost:8000/api/public/services
 GET http://localhost:8000/api/public/services?segment=personas
 ```
 
+APIs de autenticacion:
+
+```text
+POST http://localhost:8000/api/auth/login
+GET  http://localhost:8000/api/auth/session
+POST http://localhost:8000/api/auth/logout
+```
+
+Los accesos demo de `frontend/login.html` usan la contrasena `1234`.
+
 La configuracion por defecto conecta a PostgreSQL en `localhost:5432`, usando:
 
 ```text

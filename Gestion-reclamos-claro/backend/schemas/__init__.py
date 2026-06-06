@@ -1,3 +1,11 @@
+from schemas.auth import (
+    LoginIn,
+    LoginOut,
+    LoginRole,
+    LogoutOut,
+    SessionOut,
+    SessionUserOut,
+)
 from schemas.home import (
     CustomerSegment,
     HomeActionOut,
@@ -14,7 +22,13 @@ __all__ = [
     "HomeHeroOut",
     "HomeOut",
     "HomeServiceOut",
+    "LoginIn",
+    "LoginOut",
+    "LoginRole",
+    "LogoutOut",
     "ServiceCode",
+    "SessionOut",
+    "SessionUserOut",
     "UserAuth",
     "UserIn",
     "UserOut",

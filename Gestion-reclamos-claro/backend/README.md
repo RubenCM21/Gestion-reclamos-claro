@@ -63,6 +63,15 @@ Comprobar el servidor:
 http://localhost:8000/health
 ```
 
+APIs publicas de la primera vista:
+
+```text
+GET http://localhost:8000/api/public/home?segment=personas
+GET http://localhost:8000/api/public/home?segment=empresas
+GET http://localhost:8000/api/public/services
+GET http://localhost:8000/api/public/services?segment=personas
+```
+
 La configuracion por defecto conecta a PostgreSQL en `localhost:5432`, usando:
 
 ```text

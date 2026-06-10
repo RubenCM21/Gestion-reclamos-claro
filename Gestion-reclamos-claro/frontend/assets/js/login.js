@@ -65,33 +65,30 @@ const RoleConfig = {
 
 const AuthApi = {
   async login(payload) {
-    await delay(900);
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          username: payload.username,
+          password: payload.password,
+          role: payload.role,
+          remember_me: payload.rememberMe
+        })
+      });
+      const data = await response.json();
 
-    if (!payload.username || !payload.password || !payload.role) {
+      if (!response.ok) {
+        return { ok: false, message: data.detail || "No se pudo iniciar sesión." };
+      }
+
+      return data;
+    } catch {
       return {
         ok: false,
-        message: "Completa todos los campos obligatorios."
+        message: "No se pudo conectar con el servidor de autenticación."
       };
     }
-
-    if (payload.password.length < 4) {
-      return {
-        ok: false,
-        message: "La contraseña ingresada no cumple el mínimo requerido."
-      };
-    }
-
-    return {
-      ok: true,
-      token: "mock-token-claro-360",
-      user: {
-        id: 1,
-        name: getRoleUserName(payload.role),
-        role: payload.role,
-        username: payload.username
-      },
-      redirect: RoleConfig[payload.role].redirect
-    };
   }
 };
 

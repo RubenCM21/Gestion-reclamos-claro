@@ -67,6 +67,10 @@ def fetch_session(token: str) -> SessionOut:
     return SessionOut(user=_session_user(session.user))
 
 
+def fetch_active_user(token: str) -> UserModel:
+    return _active_session(token).user
+
+
 def logout(token: str) -> None:
     session = _active_session(token)
     session.active = False

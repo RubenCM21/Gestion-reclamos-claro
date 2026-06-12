@@ -82,6 +82,74 @@ POST http://localhost:8000/api/auth/logout
 
 Los accesos demo de `frontend/login.html` usan la contrasena `1234`.
 
+## API del asesor
+
+Las rutas del asesor requieren el token obtenido en el login:
+
+```text
+Authorization: Bearer <token>
+```
+
+El usuario autenticado debe tener el rol `OPERATOR`. Las migraciones crean
+catalogos, cinco casos demo, historial, evidencias, notificaciones y plantillas
+para `asesor@demo.com`.
+
+Lectura:
+
+```text
+GET /api/advisor/dashboard
+GET /api/advisor/catalogs
+GET /api/advisor/cases
+GET /api/advisor/cases/{case_code}
+GET /api/advisor/templates
+GET /api/advisor/notifications
+GET /api/advisor/performance?period=week
+```
+
+Operaciones de casos:
+
+```text
+POST /api/advisor/cases/{case_code}/updates
+POST /api/advisor/cases/{case_code}/information-requests
+POST /api/advisor/cases/{case_code}/derive
+POST /api/advisor/cases/{case_code}/close
+POST /api/advisor/cases/{case_code}/evidence
+POST /api/advisor/cases/{case_code}/sla-reminders
+POST /api/advisor/cases/{case_code}/sla-follow-ups
+```
+
+Plantillas y notificaciones:
+
+```text
+POST   /api/advisor/templates
+POST   /api/advisor/templates/{template_id}/send
+PATCH  /api/advisor/notifications/{notification_id}/read
+POST   /api/advisor/notifications/read-all
+DELETE /api/advisor/notifications/read
+```
+
+Filtros disponibles en la bandeja:
+
+```text
+GET /api/advisor/cases?search=internet
+GET /api/advisor/cases?priority=Alta
+GET /api/advisor/cases?status=En%20atencion
+GET /api/advisor/cases?queue_status=Pendiente%20cliente
+GET /api/advisor/cases?sla_risk=true
+```
+
+La carga de evidencia registra los metadatos y la ruta del archivo. El
+almacenamiento binario debe ser atendido por el servicio de archivos que use el
+despliegue.
+
+## Pruebas
+
+La configuracion de pruebas utiliza SQLite y no modifica PostgreSQL:
+
+```bash
+python manage.py test tests --settings=config.test_settings -v 2
+```
+
 La configuracion por defecto conecta a PostgreSQL en `localhost:5432`, usando:
 
 ```text

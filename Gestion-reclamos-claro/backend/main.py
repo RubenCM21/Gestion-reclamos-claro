@@ -11,6 +11,7 @@ django.setup()
 from api.auth import router as auth_router  # noqa: E402
 from api.advisor import router as advisor_router  # noqa: E402
 from api.home import router as home_router  # noqa: E402
+from api.portal import router as portal_router  # noqa: E402
 from api.user import router as user_router  # noqa: E402
 
 
@@ -29,6 +30,7 @@ app.add_middleware(
 
 app.include_router(auth_router, prefix="/api/auth", tags=["auth"])
 app.include_router(advisor_router, prefix="/api/advisor", tags=["advisor"])
+app.include_router(portal_router, prefix="/api", tags=["portal"])
 app.include_router(home_router, prefix="/api/public", tags=["public"])
 app.include_router(user_router, prefix="/api/users", tags=["users"])
 

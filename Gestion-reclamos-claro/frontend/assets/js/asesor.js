@@ -425,7 +425,8 @@ function toast(title, message, type = "info") {
    INIT
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadAdvisorModuleData();
   applyTheme(State.theme);
   setupBaseUI();
   setupGlobalEvents();
@@ -442,6 +443,125 @@ document.addEventListener("DOMContentLoaded", () => {
   if (State.page === "asesor-notificaciones") initNotificaciones();
   if (State.page === "asesor-rendimiento") initRendimiento();
 });
+
+async function loadAdvisorModuleData() {
+  const token = localStorage.getItem("claro360-token");
+  if (!token) return;
+
+  const headers = { Authorization: `Bearer ${token}` };
+
+  try {
+    const [dashboard, cases, templates, notifications, performance] = await Promise.all([
+      apiJson("http://localhost:8000/api/advisor/dashboard", headers),
+      apiJson("http://localhost:8000/api/advisor/cases", headers),
+      apiJson("http://localhost:8000/api/advisor/templates", headers),
+      apiJson("http://localhost:8000/api/advisor/notifications", headers),
+      apiJson("http://localhost:8000/api/advisor/performance", headers)
+    ]);
+
+    if (dashboard?.advisor) {
+      Mock.advisor = {
+        id: dashboard.advisor.id,
+        name: dashboard.advisor.name,
+        initials: dashboard.advisor.initials,
+        role: dashboard.advisor.role,
+        status: dashboard.advisor.status,
+        shift: dashboard.advisor.shift,
+        lastAccess: dashboard.advisor.last_access
+      };
+    }
+    if (cases?.items) Mock.cases = cases.items.map(mapAdvisorCase);
+    if (templates?.items) Mock.templates = templates.items.map(mapAdvisorTemplate);
+    if (notifications?.items) Mock.notifications = notifications.items.map(mapAdvisorNotification);
+    if (performance) Mock.performance = mapAdvisorPerformance(performance);
+  } catch {
+    return;
+  }
+}
+
+async function apiJson(url, headers) {
+  const response = await fetch(url, { headers });
+  if (!response.ok) throw new Error("advisor api unavailable");
+  return response.json();
+}
+
+function mapAdvisorCase(item) {
+  return {
+    id: item.code,
+    icon: item.priority === "Crítica" ? "🔥" : item.case_type === "Incidencia" ? "⚠️" : "📝",
+    type: item.case_type,
+    clientType: item.client_type,
+    clientName: item.client_name,
+    document: item.document,
+    title: item.title,
+    description: item.description,
+    reason: item.description,
+    service: item.service,
+    channel: item.channel,
+    priority: item.priority,
+    status: item.status,
+    queueStatus: item.queue_status,
+    slaHours: item.sla_hours ?? 999,
+    slaText: item.sla_text,
+    slaGroup: item.sla_group,
+    createdAt: new Date(item.registered_at).toLocaleString(),
+    updatedAt: new Date(item.updated_at).toLocaleString(),
+    assignedTo: Mock.advisor.name,
+    action: item.action,
+    evidence: [],
+    history: []
+  };
+}
+
+function mapAdvisorTemplate(item) {
+  return {
+    id: item.id,
+    name: item.name,
+    category: item.category,
+    channel: item.channel,
+    description: item.description,
+    body: item.body,
+    status: item.active ? "Activo" : "Inactivo"
+  };
+}
+
+function mapAdvisorNotification(item) {
+  return {
+    id: item.id,
+    icon: item.priority === "alta" ? "⚠️" : "🔔",
+    title: item.title,
+    text: item.message,
+    type: item.notification_type,
+    priority: item.priority,
+    read: item.read,
+    unread: !item.read,
+    date: new Date(item.generated_at).toLocaleString(),
+    caseId: item.case_code
+  };
+}
+
+function mapAdvisorPerformance(item) {
+  const chart = (item.by_type || []).map(row => [row.label, row.total]);
+  const table = (item.by_priority || []).map(row => [
+    row.label,
+    row.total,
+    "Según SLA",
+    `${item.sla_compliance_percent}%`,
+    row.total ? "Vigilar" : "Bueno",
+    row.total ? "warning" : "success"
+  ]);
+
+  return {
+    kpis: [
+      ["📥", item.assigned_cases, "Casos asignados", "Periodo actual"],
+      ["🎧", item.attended_cases, "Casos atendidos", "Periodo actual"],
+      ["✅", item.closed_cases, "Casos cerrados", "Con respuesta final"],
+      ["⏱️", `${item.sla_compliance_percent}%`, "SLA cumplido", "Meta operativa"]
+    ],
+    chart: chart.length ? chart : [["Sin datos", 0]],
+    table: table.length ? table : [["Sin datos", 0, "Sin datos", "0%", "Bueno", "success"]]
+  };
+}
 
 /* =========================================================
    BASE UI

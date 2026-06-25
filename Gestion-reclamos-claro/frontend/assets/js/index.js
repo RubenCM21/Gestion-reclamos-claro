@@ -237,8 +237,29 @@ const api = {
   },
 
   async getHomeData(segment) {
-    await delay(120);
-    return HomeData[segment];
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/public/home?segment=${encodeURIComponent(segment)}`
+      );
+      if (!response.ok) throw new Error("home api unavailable");
+      const data = await response.json();
+      return {
+        ...HomeData[segment],
+        hero: {
+          eyebrow: data.hero.eyebrow,
+          title: data.hero.title,
+          description: data.hero.description,
+          primaryText: data.hero.primary_text,
+          primaryHref: data.hero.primary_href,
+          panelTitle: data.hero.panel_title,
+          statusText: data.hero.status_text
+        },
+        services: data.services
+      };
+    } catch {
+      await delay(120);
+      return HomeData[segment];
+    }
   }
 };
 

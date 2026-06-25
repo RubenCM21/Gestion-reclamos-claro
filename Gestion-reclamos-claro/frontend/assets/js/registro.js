@@ -18,8 +18,6 @@ const RegisterState = {
 
 const RegisterApi = {
   async verifyDocument({ accountType, documentType, documentNumber }) {
-    await delay(600);
-
     if (!documentType || !documentNumber) {
       return {
         ok: false,
@@ -41,32 +39,85 @@ const RegisterApi = {
       };
     }
 
-    return {
-      ok: true,
-      message: "Documento validado correctamente."
-    };
+    try {
+      const params = new URLSearchParams({ document_number: documentNumber });
+      const response = await fetch(
+        `http://localhost:8000/api/auth/register/verify-document?${params}`
+      );
+      if (!response.ok) throw new Error("verify api unavailable");
+      return response.json();
+    } catch {
+      await delay(600);
+      return {
+        ok: true,
+        message: "Documento validado correctamente."
+      };
+    }
   },
 
   async sendOtp() {
-    await delay(500);
-
-    return {
-      ok: true,
-      message: "OTP enviado correctamente."
-    };
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/register/send-otp", {
+        method: "POST"
+      });
+      if (!response.ok) throw new Error("otp api unavailable");
+      return response.json();
+    } catch {
+      await delay(500);
+      return {
+        ok: true,
+        message: "OTP enviado correctamente."
+      };
+    }
   },
 
   async register(payload) {
-    await delay(900);
-
-    return {
-      ok: true,
-      userId: "USR-" + Date.now(),
-      accountType: payload.accountType,
-      email: payload.email
-    };
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(toRegisterApiPayload(payload))
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        return { ok: false, message: data.detail || "No se pudo crear la cuenta." };
+      }
+      return {
+        ok: true,
+        userId: data.username,
+        accountType: payload.accountType,
+        email: payload.email
+      };
+    } catch {
+      await delay(900);
+      return {
+        ok: true,
+        userId: "USR-" + Date.now(),
+        accountType: payload.accountType,
+        email: payload.email
+      };
+    }
   }
 };
+
+function toRegisterApiPayload(payload) {
+  return {
+    account_type: payload.accountType,
+    document_type: payload.documentType,
+    document_number: payload.documentNumber,
+    first_name: payload.firstName,
+    last_name: payload.lastName,
+    business_name: payload.businessName,
+    representative_name: payload.representativeName,
+    email: payload.email,
+    phone: payload.phone,
+    address: payload.address,
+    service_type: payload.serviceType,
+    service_number: payload.serviceNumber,
+    plan_type: payload.planType,
+    password: payload.password
+  };
+}
 
 document.addEventListener("DOMContentLoaded", () => {
   applyTheme(RegisterState.theme);

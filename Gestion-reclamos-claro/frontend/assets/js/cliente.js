@@ -363,7 +363,8 @@ function formatBytes(bytes) {
    INIT
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadClientModuleData();
   applyTheme(State.theme);
   setupLayout();
   setupUser();
@@ -384,6 +385,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (State.page === "servicios-contratados") initServices();
   if (State.page === "perfil") initProfile();
 });
+
+async function loadClientModuleData() {
+  const token = localStorage.getItem("claro360-token");
+  if (!token) return;
+
+  try {
+    const response = await fetch("http://localhost:8000/api/client/module", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    Object.assign(Mock, await response.json());
+  } catch {
+    return;
+  }
+}
 
 /* =========================================================
    GENERAL UI
@@ -1514,9 +1530,13 @@ function initClaim() {
     e.preventDefault();
     prepareClaim(true);
   });
-  $("#acceptClaimConfirmBtn")?.addEventListener("click", () => {
+  $("#acceptClaimConfirmBtn")?.addEventListener("click", async () => {
     closeModals();
-    text("#successClaimCode", `REC-2026-${Math.floor(100000 + Math.random() * 899999)}`);
+    const result = await sendCustomerCase("claims", claimPayload());
+    text(
+      "#successClaimCode",
+      result?.code || `REC-2026-${Math.floor(100000 + Math.random() * 899999)}`
+    );
     openModal("#successClaimModal");
   });
 }
@@ -1575,11 +1595,44 @@ function initIncident() {
     e.preventDefault();
     prepareIncident(true);
   });
-  $("#acceptIncidentConfirmBtn")?.addEventListener("click", () => {
+  $("#acceptIncidentConfirmBtn")?.addEventListener("click", async () => {
     closeModals();
-    text("#successIncidentCode", `INC-2026-${Math.floor(100000 + Math.random() * 899999)}`);
+    const result = await sendCustomerCase("incidents", incidentPayload());
+    text(
+      "#successIncidentCode",
+      result?.code || `INC-2026-${Math.floor(100000 + Math.random() * 899999)}`
+    );
     openModal("#successIncidentModal");
   });
+}
+
+async function sendCustomerCase(kind, payload) {
+  const token = localStorage.getItem("claro360-token");
+  if (!token) return null;
+
+  const body = {
+    title: payload.title || payload.symptom || "Caso registrado por cliente",
+    description: payload.description,
+    service: payload.service,
+    category: payload.category || payload.symptom || null,
+    priority: payload.priority || payload.urgency || "Media",
+    channel: payload.contact || "Portal cliente"
+  };
+
+  try {
+    const response = await fetch(`http://localhost:8000/api/client/${kind}`, {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify(body)
+    });
+    if (!response.ok) return null;
+    return response.json();
+  } catch {
+    return null;
+  }
 }
 
 function incidentPayload() {

@@ -163,7 +163,8 @@ const IncidentsData = [
   }
 ];
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadServiceStatusData();
   applyTheme(StatusState.theme);
   bindTheme();
   bindSegment();
@@ -176,6 +177,64 @@ document.addEventListener("DOMContentLoaded", () => {
   renderSegment("personas");
   renderIncidents();
 });
+
+async function loadServiceStatusData() {
+  try {
+    const response = await fetch("http://localhost:8000/api/public/service-status");
+    if (!response.ok) return;
+    const data = await response.json();
+    const services = data.services.map(mapStatusService);
+
+    StatusData.personas.services = services.filter(item => item.segment === "personas");
+    StatusData.empresas.services = services.filter(item => item.segment === "empresas");
+
+    for (const segment of ["personas", "empresas"]) {
+      const segmentServices = StatusData[segment].services;
+      if (!segmentServices.length) continue;
+      const average = Math.round(
+        segmentServices.reduce((sum, item) => sum + item.health, 0) / segmentServices.length
+      );
+      StatusData[segment].availability = average;
+      StatusData[segment].generalStatus = segmentServices.some(item => item.type !== "ok")
+        ? "Monitoreado"
+        : "Operativo";
+    }
+
+    IncidentsData.splice(0, IncidentsData.length, ...data.incidents.map(mapStatusIncident));
+  } catch {
+    return;
+  }
+}
+
+function mapStatusService(item) {
+  const type = item.statusType === "success" ? "ok" : item.statusType;
+  return {
+    id: item.id,
+    icon: item.segment === "empresas" ? "🏢" : item.name === "Móvil" ? "📱" : "🏠",
+    name: item.name,
+    segment: item.segment,
+    description: item.description,
+    status: item.status,
+    type,
+    health: Math.round(item.availability || 99),
+    area: item.segment === "empresas" ? "Empresas" : "Personas"
+  };
+}
+
+function mapStatusIncident(item) {
+  return {
+    code: item.code,
+    segment: item.segment,
+    service: item.service,
+    zone: item.location,
+    type: item.type,
+    status: item.status,
+    statusType: item.priority === "Crítica" ? "danger" : "warning",
+    start: item.updatedAt,
+    eta: "Según SLA",
+    description: item.description
+  };
+}
 
 function $(selector, parent = document) {
   return parent.querySelector(selector);

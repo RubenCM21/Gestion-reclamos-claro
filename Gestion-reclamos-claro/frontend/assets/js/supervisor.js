@@ -743,7 +743,8 @@ function toast(title, message, type = "info") {
    INIT
 ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
+  await loadSupervisorModuleData();
   applyTheme(State.theme);
   setupBaseUI();
   setupGlobalEvents();
@@ -762,6 +763,21 @@ document.addEventListener("DOMContentLoaded", () => {
   if (State.page === "supervisor-auditoria-casos") initAudit();
   if (State.page === "supervisor-configuracion-supervision") initConfig();
 });
+
+async function loadSupervisorModuleData() {
+  const token = localStorage.getItem("claro360-token");
+  if (!token) return;
+
+  try {
+    const response = await fetch("http://localhost:8000/api/supervisor/module", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    if (!response.ok) return;
+    Object.assign(Mock, await response.json());
+  } catch {
+    return;
+  }
+}
 
 /* =========================================================
    BASE UI

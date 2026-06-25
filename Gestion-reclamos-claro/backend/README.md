@@ -78,9 +78,66 @@ APIs de autenticacion:
 POST http://localhost:8000/api/auth/login
 GET  http://localhost:8000/api/auth/session
 POST http://localhost:8000/api/auth/logout
+POST http://localhost:8000/api/auth/register
+GET  http://localhost:8000/api/auth/register/verify-document?document_number=47859621
+POST http://localhost:8000/api/auth/register/send-otp
 ```
 
 Los accesos demo de `frontend/login.html` usan la contrasena `1234`.
+
+## APIs publicas generales
+
+Consulta rápida y estado de servicios:
+
+```text
+GET /api/public/cases/lookup?case_code=CAS-2026-0001&document_number=47859621
+GET /api/public/cases/{case_code}
+GET /api/public/service-status
+GET /api/public/service-status?segment=personas
+GET /api/public/service-status?segment=empresas
+```
+
+## API del cliente
+
+Las rutas del cliente requieren token:
+
+```text
+Authorization: Bearer <token>
+```
+
+El usuario autenticado debe tener rol `CLIENT_PERSON` o `CLIENT_COMPANY`.
+
+```text
+GET  /api/client/module
+POST /api/client/claims
+POST /api/client/incidents
+```
+
+`GET /api/client/module` entrega la información agregada para las vistas del
+cliente: perfil, casos, servicios, notificaciones y actividad.
+
+## API del supervisor
+
+Las rutas del supervisor requieren token y rol `SUPERVISOR`.
+
+```text
+GET /api/supervisor/module
+```
+
+Este endpoint entrega datos agregados para las vistas de supervisión: casos,
+asesores, indicadores, auditoría, reglas de configuración y reportes.
+
+## API del administrador
+
+Las rutas del administrador requieren token y rol `ADMIN`.
+
+```text
+GET /api/admin/module
+```
+
+Este endpoint entrega datos agregados para las vistas administrativas: usuarios,
+roles, permisos, catálogos, reglas SLA, métricas, integraciones, auditoría,
+respaldos, alertas y configuración.
 
 ## API del asesor
 

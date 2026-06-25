@@ -126,19 +126,37 @@ const MockCases = [
 
 const QuickApi = {
   async lookupCase({ caseCode, documentNumber }) {
-    await delay(700);
-
-    return MockCases.find((item) => {
-      return (
-        item.code.toLowerCase() === caseCode.toLowerCase() &&
-        item.documentNumber === documentNumber
-      );
-    });
+    try {
+      const params = new URLSearchParams({
+        case_code: caseCode,
+        document_number: documentNumber
+      });
+      const response = await fetch(`http://localhost:8000/api/public/cases/lookup?${params}`);
+      if (response.status === 404) return null;
+      if (!response.ok) throw new Error("lookup api unavailable");
+      return response.json();
+    } catch {
+      await delay(700);
+      return MockCases.find((item) => {
+        return (
+          item.code.toLowerCase() === caseCode.toLowerCase() &&
+          item.documentNumber === documentNumber
+        );
+      });
+    }
   },
 
   async refreshCase(caseCode) {
-    await delay(600);
-    return MockCases.find((item) => item.code === caseCode);
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/public/cases/${encodeURIComponent(caseCode)}`
+      );
+      if (!response.ok) throw new Error("case api unavailable");
+      return response.json();
+    } catch {
+      await delay(600);
+      return MockCases.find((item) => item.code === caseCode);
+    }
   }
 };
 

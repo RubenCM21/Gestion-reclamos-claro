@@ -151,6 +151,14 @@ El usuario autenticado debe tener el rol `OPERATOR`. Las migraciones crean
 catalogos, cinco casos demo, historial, evidencias, notificaciones y plantillas
 para `asesor@demo.com`.
 
+Otro ususarios:
+USUARIO                      / Contraseña
+cliente.persona@demo.com     / 1234
+cliente.empresa@demo.com     / 1234
+asesor@demo.com              / 1234
+supervisor@demo.com          / 1234
+admin@demo.com               / 1234
+
 Lectura:
 
 ```text

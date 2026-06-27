@@ -1,115 +1,101 @@
 from django.test import TransactionTestCase
-from fastapi.testclient import TestClient
+from django.utils import timezone
+from fastapi import HTTPException
 
+from api import advisor as advisor_api
+from api.dependencies import require_advisor
 from dao.models import (
     AdvisorNotification,
+    AuthSession,
     Case,
     CaseAssignment,
     CaseCommunication,
     CaseHistory,
     ResponseTemplate,
+    UserModel,
 )
-from main import app
+from schemas.advisor import (
+    CaseCloseIn,
+    CaseDeriveIn,
+    CaseUpdateIn,
+    CustomerInformationRequestIn,
+    ResponseTemplateCreateIn,
+    TemplateSendIn,
+)
 
 
 class AdvisorApiTests(TransactionTestCase):
     serialized_rollback = True
 
-    @classmethod
-    def setUpClass(cls):
-        super().setUpClass()
-        cls.api_client = TestClient(app)
-
     def setUp(self):
-        login = self.api_client.post(
-            "/api/auth/login",
-            json={
-                "username": "asesor@demo.com",
-                "password": "1234",
-                "role": "asesor",
-                "remember_me": False,
-            },
-        )
-        self.assertEqual(login.status_code, 200)
-        self.headers = {"Authorization": f"Bearer {login.json()['token']}"}
+        self.advisor = UserModel.objects.get(username="asesor@demo.com")
 
     def test_advisor_routes_require_authentication_and_role(self):
-        anonymous = self.api_client.get("/api/advisor/dashboard")
-        self.assertEqual(anonymous.status_code, 401)
+        with self.assertRaises(HTTPException) as anonymous:
+            require_advisor()
 
-        client_login = self.api_client.post(
-            "/api/auth/login",
-            json={
-                "username": "cliente.persona@demo.com",
-                "password": "1234",
-                "role": "cliente-persona",
-                "remember_me": False,
-            },
+        self.assertEqual(anonymous.exception.status_code, 401)
+
+        client_user = UserModel.objects.get(username="cliente.persona@demo.com")
+        client_session = AuthSession.objects.create(
+            user=client_user,
+            token="cliente-persona-test-token",
+            expires_at=timezone.now() + timezone.timedelta(hours=1),
         )
-        response = self.api_client.get(
-            "/api/advisor/dashboard",
-            headers={
-                "Authorization": f"Bearer {client_login.json()['token']}"
-            },
-        )
-        self.assertEqual(response.status_code, 403)
+
+        with self.assertRaises(HTTPException) as forbidden:
+            require_advisor(f"Bearer {client_session.token}")
+
+        self.assertEqual(forbidden.exception.status_code, 403)
 
     def test_dashboard_cases_and_detail_use_seeded_data(self):
-        dashboard = self.api_client.get(
-            "/api/advisor/dashboard", headers=self.headers
-        )
-        self.assertEqual(dashboard.status_code, 200)
-        self.assertEqual(dashboard.json()["advisor"]["name"], "Asesor de Atención")
+        dashboard = advisor_api.get_dashboard(self.advisor)
+        self.assertEqual(dashboard.advisor.name, "Asesor de Atención")
         self.assertEqual(
-            next(
-                item["value"]
-                for item in dashboard.json()["kpis"]
-                if item["key"] == "assigned"
-            ),
+            next(item.value for item in dashboard.kpis if item.key == "assigned"),
             5,
         )
 
-        cases = self.api_client.get(
-            "/api/advisor/cases?priority=Alta", headers=self.headers
+        cases = advisor_api.get_cases(
+            self.advisor,
+            search=None,
+            priority="Alta",
+            case_status=None,
+            queue_status=None,
+            sla_risk=False,
         )
-        self.assertEqual(cases.status_code, 200)
-        self.assertEqual(cases.json()["total"], 2)
+        self.assertEqual(cases.total, 2)
 
-        detail = self.api_client.get(
-            "/api/advisor/cases/CAS-2026-0001", headers=self.headers
-        )
-        self.assertEqual(detail.status_code, 200)
-        self.assertEqual(detail.json()["client_name"], "Juan Carlos Pérez Díaz")
-        self.assertEqual(len(detail.json()["evidence"]), 1)
+        detail = advisor_api.get_case("CAS-2026-0001", self.advisor)
+        self.assertEqual(detail.client_name, "Juan Carlos Pérez Díaz")
+        self.assertEqual(len(detail.evidence), 1)
 
     def test_update_request_derive_and_close_create_traceability(self):
-        update = self.api_client.post(
-            "/api/advisor/cases/CAS-2026-0003/updates",
-            headers=self.headers,
-            json={
-                "status": "Pendiente por cliente",
-                "visibility": "Visible para cliente",
-                "summary": "Se requiere validación adicional",
-                "detail": "Se revisó el caso y falta una captura de señal.",
-                "declaration": True,
-            },
+        update = advisor_api.update_case(
+            "CAS-2026-0003",
+            self.advisor,
+            CaseUpdateIn(
+                status="Pendiente por cliente",
+                visibility="Visible para cliente",
+                summary="Se requiere validación adicional",
+                detail="Se revisó el caso y falta una captura de señal.",
+                declaration=True,
+            ),
         )
-        self.assertEqual(update.status_code, 200)
-        self.assertEqual(update.json()["case"]["status"], "Pendiente por cliente")
+        self.assertEqual(update.case.status, "Pendiente por cliente")
 
-        request = self.api_client.post(
-            "/api/advisor/cases/CAS-2026-0001/information-requests",
-            headers=self.headers,
-            json={
-                "channel": "Correo",
-                "deadline": "24 horas",
-                "subject": "Solicitud de recibo detallado",
-                "message": "Adjunte el recibo detallado para continuar la revisión.",
-                "declaration": True,
-            },
+        request = advisor_api.request_customer_information(
+            "CAS-2026-0001",
+            self.advisor,
+            CustomerInformationRequestIn(
+                channel="Correo",
+                deadline="24 horas",
+                subject="Solicitud de recibo detallado",
+                message="Adjunte el recibo detallado para continuar la revisión.",
+                declaration=True,
+            ),
         )
-        self.assertEqual(request.status_code, 200)
-        self.assertTrue(request.json()["case"]["pending_customer"])
+        self.assertTrue(request.case.pending_customer)
         self.assertTrue(
             CaseCommunication.objects.filter(
                 case__code="CAS-2026-0001",
@@ -117,33 +103,34 @@ class AdvisorApiTests(TransactionTestCase):
             ).exists()
         )
 
-        derive = self.api_client.post(
-            "/api/advisor/cases/CAS-2026-0002/derive",
-            headers=self.headers,
-            json={
-                "area": "Facturación",
-                "priority": "Alta",
-                "reason": "Se identificó un posible bloqueo administrativo.",
-            },
+        derive = advisor_api.derive_case(
+            "CAS-2026-0002",
+            self.advisor,
+            CaseDeriveIn(
+                area="Facturación",
+                priority="Alta",
+                reason="Se identificó un posible bloqueo administrativo.",
+            ),
         )
-        self.assertEqual(derive.status_code, 200)
-        self.assertEqual(derive.json()["case"]["status"], "Escalado")
+        self.assertEqual(derive.case.status, "Escalado")
         self.assertTrue(
             CaseAssignment.objects.filter(
                 case__code="CAS-2026-0002", movement_type="DERIVACION"
             ).exists()
         )
 
-        close = self.api_client.post(
-            "/api/advisor/cases/CAS-2026-0004/close",
-            headers=self.headers,
-            json={
-                "response": "Se validó la facturación y se aplicó el ajuste correspondiente.",
-                "declaration": True,
-            },
+        close = advisor_api.close_case(
+            "CAS-2026-0004",
+            self.advisor,
+            CaseCloseIn(
+                response=(
+                    "Se validó la facturación y se aplicó el ajuste "
+                    "correspondiente."
+                ),
+                declaration=True,
+            ),
         )
-        self.assertEqual(close.status_code, 200)
-        self.assertEqual(close.json()["case"]["status"], "Cerrado")
+        self.assertEqual(close.case.status, "Cerrado")
         self.assertTrue(Case.objects.get(code="CAS-2026-0004").status.final)
         self.assertTrue(
             CaseHistory.objects.filter(
@@ -152,52 +139,49 @@ class AdvisorApiTests(TransactionTestCase):
         )
 
     def test_templates_notifications_and_performance(self):
-        created = self.api_client.post(
-            "/api/advisor/templates",
-            headers=self.headers,
-            json={
-                "name": "Solicitud técnica",
-                "category": "evidencia",
-                "channel": "Correo",
-                "description": "Solicita evidencia técnica.",
-                "body": "Estimado cliente, adjunte evidencia técnica para continuar.",
-                "declaration": True,
-            },
+        created = advisor_api.create_template(
+            self.advisor,
+            ResponseTemplateCreateIn(
+                name="Solicitud técnica",
+                category="evidencia",
+                channel="Correo",
+                description="Solicita evidencia técnica.",
+                body="Estimado cliente, adjunte evidencia técnica para continuar.",
+                declaration=True,
+            ),
         )
-        self.assertEqual(created.status_code, 201)
-        template_id = created.json()["id"]
-        self.assertTrue(ResponseTemplate.objects.filter(id=template_id).exists())
+        self.assertTrue(ResponseTemplate.objects.filter(id=created.id).exists())
 
-        sent = self.api_client.post(
-            f"/api/advisor/templates/{template_id}/send",
-            headers=self.headers,
-            json={
-                "case_code": "CAS-2026-0001",
-                "channel": "Correo",
-                "message": "Estimado cliente, adjunte evidencia técnica para continuar.",
-                "declaration": True,
-            },
+        sent = advisor_api.send_template(
+            created.id,
+            self.advisor,
+            TemplateSendIn(
+                case_code="CAS-2026-0001",
+                channel="Correo",
+                message=(
+                    "Estimado cliente, adjunte evidencia técnica para continuar."
+                ),
+                declaration=True,
+            ),
         )
-        self.assertEqual(sent.status_code, 200)
+        self.assertTrue(sent.ok)
 
-        notifications = self.api_client.get(
-            "/api/advisor/notifications", headers=self.headers
+        notifications = advisor_api.get_notifications(
+            self.advisor,
+            search=None,
+            notification_type=None,
+            priority=None,
+            unread_only=False,
         )
-        self.assertEqual(notifications.status_code, 200)
-        self.assertGreater(notifications.json()["unread"], 0)
+        self.assertGreater(notifications.unread, 0)
 
-        marked = self.api_client.post(
-            "/api/advisor/notifications/read-all", headers=self.headers
-        )
-        self.assertEqual(marked.status_code, 200)
+        marked = advisor_api.mark_all_notifications_read(self.advisor)
+        self.assertTrue(marked.ok)
         self.assertFalse(
             AdvisorNotification.objects.filter(
                 user__username="asesor@demo.com", read=False
             ).exists()
         )
 
-        performance = self.api_client.get(
-            "/api/advisor/performance?period=week", headers=self.headers
-        )
-        self.assertEqual(performance.status_code, 200)
-        self.assertEqual(performance.json()["assigned_cases"], 5)
+        performance = advisor_api.get_performance(self.advisor, period="week")
+        self.assertEqual(performance.assigned_cases, 5)

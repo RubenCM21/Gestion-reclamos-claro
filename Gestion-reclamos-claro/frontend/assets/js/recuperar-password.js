@@ -12,8 +12,6 @@ const RecoveryState = {
 
 const RecoveryApi = {
   async requestOtp(payload) {
-    await delay(700);
-
     if (!payload.accountType || !payload.identifier) {
       return {
         ok: false,
@@ -21,20 +19,68 @@ const RecoveryApi = {
       };
     }
 
-    return {
-      ok: true,
-      maskedContact: "correo****@demo.com",
-      message: "Código OTP enviado correctamente."
-    };
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/recover-password/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          account_type: payload.accountType,
+          identifier: payload.identifier
+        })
+      });
+      const data = await response.json();
+
+      if (!response.ok) {
+        return {
+          ok: false,
+          message: data.detail || "No se pudo enviar el OTP."
+        };
+      }
+
+      return {
+        ok: true,
+        maskedContact: data.masked_contact,
+        message: data.message
+      };
+    } catch {
+      return {
+        ok: false,
+        message: "No se pudo conectar con el backend."
+      };
+    }
   },
 
   async resetPassword(payload) {
-    await delay(900);
+    try {
+      const response = await fetch("http://localhost:8000/api/auth/recover-password/confirm", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          account_type: payload.accountType,
+          identifier: payload.identifier,
+          otp: payload.otp,
+          new_password: payload.newPassword
+        })
+      });
+      const data = await response.json();
 
-    return {
-      ok: true,
-      message: "Contraseña actualizada correctamente."
-    };
+      if (!response.ok) {
+        return {
+          ok: false,
+          message: data.detail || "No se pudo actualizar la contraseña."
+        };
+      }
+
+      return {
+        ok: true,
+        message: data.message
+      };
+    } catch {
+      return {
+        ok: false,
+        message: "No se pudo conectar con el backend."
+      };
+    }
   }
 };
 
@@ -140,7 +186,7 @@ function bindStepperButtons() {
 
       showToast({
         title: "OTP enviado",
-        message: "Usa el código demo 123456 para continuar.",
+        message: `${response.message} Usa el código demo 123456 para continuar.`,
         type: "success"
       });
 
@@ -448,6 +494,7 @@ function bindRecoveryForm() {
 
     const payload = {
       ...getStepOnePayload(),
+      otp: getOtpCode(),
       newPassword: $("#newPassword")?.value
     };
 
@@ -459,7 +506,14 @@ function bindRecoveryForm() {
       localStorage.removeItem("claro360-token");
       localStorage.removeItem("claro360-session");
       openModal("#successModal");
+      return;
     }
+
+    showToast({
+      title: "No se pudo cambiar la contraseña",
+      message: response.message,
+      type: "danger"
+    });
   });
 }
 

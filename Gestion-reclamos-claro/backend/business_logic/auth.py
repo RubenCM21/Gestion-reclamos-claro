@@ -1,12 +1,23 @@
 import secrets
 from datetime import timedelta
 
-from django.contrib.auth.hashers import check_password
+from django.contrib.auth.hashers import check_password, make_password
+from django.db.models import Q
 from django.utils import timezone
 
-from dao.models import AuthSession, UserModel
+from dao.models import AuthSession, Customer, UserModel
 from dao.models.enums import UserRole
-from schemas.auth import LoginIn, LoginOut, LoginRole, SessionOut, SessionUserOut
+from schemas.auth import (
+    LoginIn,
+    LoginOut,
+    LoginRole,
+    PasswordRecoveryConfirmIn,
+    PasswordRecoveryConfirmOut,
+    PasswordRecoveryRequestIn,
+    PasswordRecoveryRequestOut,
+    SessionOut,
+    SessionUserOut,
+)
 
 
 class InvalidCredentialsError(ValueError):
@@ -14,6 +25,10 @@ class InvalidCredentialsError(ValueError):
 
 
 class InvalidSessionError(ValueError):
+    pass
+
+
+class PasswordRecoveryError(ValueError):
     pass
 
 
@@ -77,6 +92,31 @@ def logout(token: str) -> None:
     session.save(update_fields=["active"])
 
 
+def request_password_recovery(
+    payload: PasswordRecoveryRequestIn,
+) -> PasswordRecoveryRequestOut:
+    user = _recovery_user(payload.account_type, payload.identifier)
+    contact = _recovery_contact(user, payload.identifier)
+    return PasswordRecoveryRequestOut(
+        masked_contact=contact,
+        message="Código OTP enviado correctamente.",
+    )
+
+
+def confirm_password_recovery(
+    payload: PasswordRecoveryConfirmIn,
+) -> PasswordRecoveryConfirmOut:
+    if payload.otp != "123456":
+        raise PasswordRecoveryError("El código OTP no es válido.")
+
+    user = _recovery_user(payload.account_type, payload.identifier)
+    user.hashed_password = make_password(payload.new_password)
+    user.save(update_fields=["hashed_password", "updated_at"])
+
+    AuthSession.objects.filter(user=user, active=True).update(active=False)
+    return PasswordRecoveryConfirmOut(message="Contraseña actualizada correctamente.")
+
+
 def _active_session(token: str) -> AuthSession:
     session = AuthSession.objects.select_related("user").filter(token=token).first()
 
@@ -84,6 +124,51 @@ def _active_session(token: str) -> AuthSession:
         raise InvalidSessionError("La sesión no existe o ha expirado.")
 
     return session
+
+
+def _recovery_user(account_type: LoginRole, identifier: str) -> UserModel:
+    expected_role = ROLE_TO_MODEL[account_type]
+    normalized = identifier.strip()
+    user = UserModel.objects.filter(
+        username__iexact=normalized, role=expected_role
+    ).first()
+
+    if user is not None:
+        return user
+
+    customer = (
+        Customer.objects.select_related("user")
+        .filter(
+            Q(email__iexact=normalized) | Q(document_number=normalized),
+            user__role=expected_role,
+            user__isnull=False,
+        )
+        .first()
+    )
+
+    if customer and customer.user:
+        return customer.user
+
+    raise PasswordRecoveryError("No se encontró una cuenta con los datos indicados.")
+
+
+def _recovery_contact(user: UserModel, identifier: str) -> str:
+    customer = Customer.objects.filter(user=user).first()
+    email = customer.email if customer and customer.email else user.username
+
+    if "@" not in email:
+        return _mask_identifier(identifier)
+
+    local, domain = email.split("@", 1)
+    visible = local[: min(3, len(local))]
+    return f"{visible}{'*' * 4}@{domain}"
+
+
+def _mask_identifier(identifier: str) -> str:
+    value = identifier.strip()
+    if len(value) <= 4:
+        return "*" * len(value)
+    return f"{value[:2]}{'*' * (len(value) - 4)}{value[-2:]}"
 
 
 def _session_user(user: UserModel) -> SessionUserOut:

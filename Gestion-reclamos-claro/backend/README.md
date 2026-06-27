@@ -81,9 +81,12 @@ POST http://localhost:8000/api/auth/logout
 POST http://localhost:8000/api/auth/register
 GET  http://localhost:8000/api/auth/register/verify-document?document_number=47859621
 POST http://localhost:8000/api/auth/register/send-otp
+POST http://localhost:8000/api/auth/recover-password/request
+POST http://localhost:8000/api/auth/recover-password/confirm
 ```
 
 Los accesos demo de `frontend/login.html` usan la contrasena `1234`.
+La recuperacion de contrasena usa el OTP demo `123456`.
 
 ## APIs publicas generales
 

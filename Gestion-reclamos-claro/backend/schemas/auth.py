@@ -42,3 +42,25 @@ class SessionOut(BaseModel):
 
 class LogoutOut(BaseModel):
     ok: bool = True
+
+
+class PasswordRecoveryRequestIn(BaseModel):
+    account_type: LoginRole
+    identifier: str = Field(..., min_length=1, max_length=200)
+
+
+class PasswordRecoveryRequestOut(BaseModel):
+    ok: bool = True
+    masked_contact: str
+    message: str
+    demo_code: str = "123456"
+
+
+class PasswordRecoveryConfirmIn(PasswordRecoveryRequestIn):
+    otp: str = Field(..., min_length=6, max_length=6)
+    new_password: str = Field(..., min_length=6, max_length=100)
+
+
+class PasswordRecoveryConfirmOut(BaseModel):
+    ok: bool = True
+    message: str

@@ -3,11 +3,23 @@ from fastapi import APIRouter, Body, Header, HTTPException, status
 from business_logic.auth import (
     InvalidCredentialsError,
     InvalidSessionError,
+    PasswordRecoveryError,
+    confirm_password_recovery,
     fetch_session,
     login,
     logout,
+    request_password_recovery,
 )
-from schemas.auth import LoginIn, LoginOut, LogoutOut, SessionOut
+from schemas.auth import (
+    LoginIn,
+    LoginOut,
+    LogoutOut,
+    PasswordRecoveryConfirmIn,
+    PasswordRecoveryConfirmOut,
+    PasswordRecoveryRequestIn,
+    PasswordRecoveryRequestOut,
+    SessionOut,
+)
 
 
 router = APIRouter()
@@ -43,6 +55,40 @@ def logout_user(authorization: str | None = Header(None)):
         ) from exc
 
     return LogoutOut()
+
+
+@router.post(
+    "/recover-password/request",
+    response_model=PasswordRecoveryRequestOut,
+)
+def request_recover_password(payload: PasswordRecoveryRequestIn = Body(...)):
+    try:
+        return request_password_recovery(payload)
+    except PasswordRecoveryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
+
+
+@router.post(
+    "/recover-password/confirm",
+    response_model=PasswordRecoveryConfirmOut,
+)
+def confirm_recover_password(payload: PasswordRecoveryConfirmIn = Body(...)):
+    try:
+        return confirm_password_recovery(payload)
+    except PasswordRecoveryError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST, detail=str(exc)
+        ) from exc
+
+
+@router.post(
+    "/recover-password",
+    response_model=PasswordRecoveryConfirmOut,
+)
+def recover_password(payload: PasswordRecoveryConfirmIn = Body(...)):
+    return confirm_recover_password(payload)
 
 
 def _bearer_token(authorization: str | None) -> str:
